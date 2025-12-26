@@ -6,8 +6,22 @@ import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { setUserFromToken } from '@/store/userSlice';
-import NaverIcon from '@/components/NaverIcon';
-import KakaoButton from '@/components/KakaoButton';
+import NaverIcon from '@/components/button/NaverIcon';
+import KakaoButton from '@/components/button/KakaoButton';
+import AuthInput from '@/components/button/AuthInput';
+import { memo } from 'react';
+
+const SocialLoginSection = memo(function SocialLoginSection() {
+  return (
+    <div className="social-login">
+      <KakaoButton />
+      <button type="button" className="custom-social-btn naver">
+        <NaverIcon />
+        <span>네이버 로그인</span>
+      </button>
+    </div>
+  );
+});
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -37,27 +51,22 @@ export default function LoginPage() {
     <div className="auth-container">
       <h2>로그인</h2>
       <form onSubmit={handleLogin}>
-        <input
-          value={email}
+        <AuthInput
+          type="email"
           placeholder="이메일"
-          onChange={(e) => setEmail(e.target.value)}
+          onBlur={(value) => setEmail(value)}
+          required
         />
-        <input
+        <AuthInput
           type="password"
-          value={password}
           placeholder="비밀번호"
-          onChange={(e) => setPassword(e.target.value)}
+          onBlur={(value) => setPassword(value)}
+          required
         />
         <button type="submit">로그인</button>
       </form>
 
-      <div className="social-login">
-        <KakaoButton />
-        <button type="button" className="custom-social-btn naver">
-          <NaverIcon />
-          <span>네이버 로그인</span>
-        </button>
-      </div>
+      <SocialLoginSection />
     </div>
   );
 }

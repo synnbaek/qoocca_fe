@@ -4,8 +4,9 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { setUserFromToken } from '@/store/userSlice';
+import AuthInput from '@/components/button/AuthInput';
 
 export default function SignupPage() {
   const [username, setUsername] = useState('');
@@ -47,32 +48,28 @@ export default function SignupPage() {
     <div className="auth-container">
       <h2>회원가입</h2>
       <form onSubmit={handleSignup}>
-        <input
+        <AuthInput
           type="text"
           placeholder="이름"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onBlur={(value) => setUsername(value)}
           required
         />
-        <input
+        <AuthInput
           type="email"
           placeholder="이메일"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onBlur={(value) => setEmail(value)}
           required
         />
-        <input
+        <AuthInput
           type="password"
           placeholder="비밀번호"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onBlur={(value) => setPassword(value)}
           required
         />
-        <input
+        <AuthInput
           type="tel"
           placeholder="전화번호"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onBlur={(value) => setPhone(value)}
           required
         />
         <button type="submit">회원가입</button>
