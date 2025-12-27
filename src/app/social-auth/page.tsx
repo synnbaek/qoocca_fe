@@ -34,7 +34,7 @@ export default function SocialAuthPage() {
     try {
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/send-code`,
-        { phone }
+        { phone, isSocial: true }
       );
       alert('인증번호가 발송되었습니다.');
       setIsCodeSent(true);
