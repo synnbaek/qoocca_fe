@@ -25,9 +25,22 @@ function KakaoHandler() {
         );
 
         const accessToken = res.data.accessToken;
+
+        // const { accessToken, hasPhoneNumber } = res.data;
+
         Cookies.set('accessToken', accessToken, { expires: 0.021 });
         dispatch(setUserFromToken(accessToken));
+
         router.push('/');
+        // // 2. 조건부 리다이렉트 (핵심!)
+        // if (hasPhoneNumber) {
+        //   // 이미 전화번호가 있는 기존 회원이면 메인으로
+        //   router.push('/');
+        // } else {
+        //   // 전화번호가 없는 신규/미인증 회원이면 인증 페이지로
+        //   alert('추가 정보 입력이 필요합니다.');
+        //   router.push('/auth/verify-phone');
+        // }
       } catch (err) {
         console.error('카카오 로그인 실패:', err);
         alert('카카오 로그인 실패');

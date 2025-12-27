@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { logout } from '@/store/userSlice';
@@ -10,7 +10,6 @@ import Cookies from 'js-cookie';
 import './Header.css';
 
 export default function Header() {
-  const pathname = usePathname();
   const { role, isAuthenticated } = useSelector(
     (state: RootState) => state.user
   );
@@ -31,11 +30,14 @@ export default function Header() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-logo">쿠카티처스</div>
+      <Link
+        href="/"
+        className="navbar-logo"
+        style={{ textDecoration: 'none', color: 'inherit' }}
+      >
+        쿠카티처스
+      </Link>
       <div className="navbar-links">
-        <Link href="/" className={pathname === '/' ? 'active' : ''}>
-          홈
-        </Link>
         {isAuthenticated ? (
           <>
             {role === 'ROLE_ADMIN' && <Link href="/admin">관리자</Link>}
@@ -53,8 +55,7 @@ export default function Header() {
           </>
         ) : (
           <>
-            <Link href="/login">로그인</Link>
-            <Link href="/signup">회원가입</Link>
+            <Link href="/login">회원가입/로그인</Link>
           </>
         )}
       </div>

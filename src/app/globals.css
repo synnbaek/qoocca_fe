@@ -55,6 +55,7 @@ body {
 
 /* 4. 버튼 공통 스타일 (일반 & 소셜 통합) */
 .auth-container button,
+.signup-link,
 .custom-social-btn {
   width: 100%;
   display: flex;
@@ -65,6 +66,8 @@ body {
   cursor: pointer;
   font-weight: 600;
   transition: all 0.2s;
+  text-decoration: none;
+  box-sizing: border-box;
 }
 
 /* 일반 로그인 버튼 전용 */
@@ -73,6 +76,22 @@ body {
   background-color: #1f2937;
   color: #f9fafb;
   font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.signup-wrapper {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.signup-link-text {
+  margin-left: 8px;
+  color: #1f2937; /* 로그인 버튼과 같은 색상 계열 */
+  font-weight: bold;
+  text-decoration: none;
+  border-bottom: 1px solid #1f2937; /* 밑줄만 살짝 */
 }
 
 .auth-container button:hover {
@@ -109,4 +128,26 @@ body {
 .custom-social-btn.naver {
   background-color: #03c75a !important;
   color: #ffffff;
+}
+
+/* 전화번호 옆 인증 버튼 */
+.verify-btn {
+  width: 80px !important; /* 버튼 너비 고정 */
+  height: 60px !important; /* AuthInput 높이와 일치 */
+  background-color: #4b5563 !important; /* 진한 회색 */
+  color: white;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0; /* 버튼 크기 축소 방지 */
+}
+
+.verify-btn:hover {
+  background-color: #374151 !important;
+}
+
+/* AuthInput 마진 제거 (Flex 간격 사용 시) */
+.auth-container div > input {
+  margin-bottom: 0;
 }

@@ -10,6 +10,7 @@ import NaverIcon from '@/components/button/NaverIcon';
 import KakaoButton from '@/components/button/KakaoButton';
 import AuthInput from '@/components/button/AuthInput';
 import { memo } from 'react';
+import Link from 'next/link';
 
 const SocialLoginSection = memo(function SocialLoginSection() {
   return (
@@ -54,19 +55,28 @@ export default function LoginPage() {
         <AuthInput
           type="email"
           placeholder="이메일"
-          onBlur={(value) => setEmail(value)}
+          value={email}
+          onChange={(value) => setEmail(value)}
           required
         />
         <AuthInput
           type="password"
           placeholder="비밀번호"
-          onBlur={(value) => setPassword(value)}
+          value={password}
+          onChange={(value) => setPassword(value)}
           required
         />
         <button type="submit">로그인</button>
       </form>
 
       <SocialLoginSection />
+
+      <div className="signup-wrapper">
+        <span>아직 회원이 아니신가요?</span>
+        <Link href="/signup" className="signup-link-text">
+          회원가입하기
+        </Link>
+      </div>
     </div>
   );
 }

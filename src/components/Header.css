@@ -25,14 +25,49 @@
   font-weight: 400;
 }
 
-.navbar-links a {
-  margin-left: 1.5rem;
-  color: #1f2937;
-  text-decoration: none;
-  font-weight: 500;
-  transition: opacity 0.2s;
+.navbar-links {
+  display: flex;
+  align-items: center;
+  /* 1. 간격 조정: margin 대신 gap을 사용하여 요소 사이 간격만 일정하게 유지 */
+  gap: 1rem;
+  padding: 6px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px; /* 살짝 더 둥글게 */
+  background-color: #ffffff;
+  transition: all 0.2s ease-in-out;
 }
 
-.navbar-links a:hover {
-  opacity: 0.8;
+/* 마우스를 올렸을 때 박스 전체에 살짝 음영을 주어 '클릭 가능함'을 암시 */
+.navbar-links:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-links a,
+.navbar-links button {
+  /* 2. 개별 요소의 여백 제거: 부모의 gap이 간격을 조절함 */
+  margin: 0;
+  color: #4b5563; /* 조금 더 부드러운 검정색 */
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+
+  /* 버튼 초기화 스타일 (로그아웃 버튼용) */
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.navbar-links a:hover,
+.navbar-links button:hover {
+  color: #111827; /* 호버 시 더 진하게 */
+}
+
+/* 관리자/로그아웃 사이 혹은 링크들 사이의 아주 연한 구분선 (선택 사항) */
+.navbar-links a + button,
+.navbar-links a + a {
+  position: relative;
 }
