@@ -18,32 +18,38 @@ function KakaoHandler() {
       try {
         const res = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/api/auth/kakao`,
-          { code },
-          {
-            withCredentials: true,
-          }
+          { code }
         );
 
-        const accessToken = res.data.accessToken;
+        // 1. 휴대폰 인증이 필요한 경우 (신규 소셜 가입 혹은 번호 미등록)
+        if (res.data.accessToken === 'NEED_PHONE_AUTH') {
+          // 백엔드에서 refreshToken 필드에 담아준 socialId를 꺼냄
+          const socialId = res.data.refreshToken;
 
-        // const { accessToken, hasPhoneNumber } = res.data;
+          if (!socialId) {
+            throw new Error('소셜 식별 정보(socialId)가 없습니다.');
+          }
 
-        Cookies.set('accessToken', accessToken, { expires: 0.021 });
-        dispatch(setUserFromToken(accessToken));
-
-        router.push('/');
-        // // 2. 조건부 리다이렉트 (핵심!)
-        // if (hasPhoneNumber) {
-        //   // 이미 전화번호가 있는 기존 회원이면 메인으로
-        //   router.push('/');
-        // } else {
-        //   // 전화번호가 없는 신규/미인증 회원이면 인증 페이지로
-        //   alert('추가 정보 입력이 필요합니다.');
-        //   router.push('/auth/verify-phone');
-        // }
-      } catch (err) {
-        console.error('카카오 로그인 실패:', err);
-        alert('카카오 로그인 실패');
+          alert('추가 휴대폰 인증이 필요합니다.');
+          // socialId를 쿼리 스트링으로 안전하게 전달
+          router.push(`/social-auth?socialId=${encodeURIComponent(socialId)}`);
+        }
+        // 2. 정상 로그인 성공
+        else {
+          const accessToken = res.data.accessToken;
+          Cookies.set('accessToken', accessToken, {
+            expires: 0.021,
+            path: '/',
+          });
+          dispatch(setUserFromToken(accessToken));
+          router.push('/');
+        }
+      } catch (err: any) {
+        console.error(
+          '카카오 로그인 에러 상세:',
+          err.response?.data || err.message
+        );
+        alert('로그인 처리 중 오류가 발생했습니다.');
         router.push('/login');
       }
     };
@@ -56,7 +62,7 @@ function KakaoHandler() {
 
 export default function OAuthRedirectKakaoPage() {
   return (
-    <Suspense fallback={<div>로딩 중</div>}>
+    <Suspense fallback={<div>로그인 인증 중입니다...</div>}>
       <KakaoHandler />
     </Suspense>
   );

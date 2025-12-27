@@ -16,6 +16,7 @@ export default function SignupPage() {
   const [code, setCode] = useState('');
 
   const [isCodeSent, setIsCodeSent] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -26,17 +27,47 @@ export default function SignupPage() {
       return;
     }
     try {
-      // 실제 API 연결 시 주석 해제
-      // await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/send-code`, { phone });
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/send-code`,
+        { phone }
+      );
       alert('인증번호가 발송되었습니다.');
-      setIsCodeSent(true); // 입력창 나타나게 함
+      setIsCodeSent(true);
     } catch (err: any) {
-      alert('발송 실패: ' + (err.response?.data || err.message));
+      // 백엔드에서 보낸 "이미 가입된 휴대폰 번호입니다." 메시지를 출력
+      const errorMsg = err.response?.data || '인증번호 발송 실패';
+      alert(errorMsg);
+
+      // 만약 중복된 번호라면 입력창 초기화 등의 처리를 할 수 있습니다.
+      if (errorMsg.includes('이미 가입된')) {
+        setPhone('');
+      }
+    }
+  };
+
+  // 2. 인증번호 확인 함수 추가
+  const handleVerifyCode = async () => {
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify-code`,
+        { phone, code }
+      );
+      alert('인증에 성공했습니다.');
+      setIsPhoneVerified(true); // 인증 완료 처리
+    } catch (err: any) {
+      alert('인증 실패: ' + (err.response?.data || err.message));
     }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 3. 인증 안되었으면 가입 차단
+    if (!isPhoneVerified) {
+      alert('휴대폰 인증을 먼저 완료해주세요.');
+      return;
+    }
+
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`,
@@ -59,7 +90,7 @@ export default function SignupPage() {
       alert('회원가입 성공!');
       router.push('/');
     } catch (err: any) {
-      alert('회원가입 실패: ' + (err.response?.data || err.message));
+      alert('회원가입 실패: ' + err);
     }
   };
 
@@ -71,50 +102,78 @@ export default function SignupPage() {
           type="text"
           placeholder="이름"
           value={username}
-          onChange={(value) => setUsername(value)}
+          onChange={setUsername}
           required
         />
         <AuthInput
           type="email"
           placeholder="이메일"
           value={email}
-          onChange={(value) => setEmail(value)}
+          onChange={setEmail}
           required
         />
         <AuthInput
           type="password"
           placeholder="비밀번호"
           value={password}
-          onChange={(value) => setPassword(value)}
+          onChange={setPassword}
           required
         />
-        {/* 3. 전화번호 입력 및 인증 버튼 */}
+
         <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
           <div style={{ flex: 1 }}>
             <AuthInput
               type="tel"
               placeholder="전화번호"
               value={phone}
-              onChange={(value) => setPhone(value)}
+              onChange={setPhone}
+              disabled={isPhoneVerified} // 인증되면 수정 불가
               required
             />
           </div>
-          <button type="button" onClick={handleSendCode} className="verify-btn">
-            인증
+          <button
+            type="button"
+            onClick={handleSendCode}
+            className="verify-btn"
+            disabled={isPhoneVerified}
+          >
+            {isCodeSent ? '재발송' : '인증'}
           </button>
         </div>
 
-        {/* 4. 인증번호 입력창 (조건부 렌더링) */}
         {isCodeSent && (
-          <AuthInput
-            type="tel"
-            placeholder="인증번호"
-            value={code}
-            onChange={(value) => setCode(value)}
-            required
-          />
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+            <div style={{ flex: 1 }}>
+              <AuthInput
+                type="tel"
+                placeholder="인증번호"
+                value={code}
+                onChange={setCode}
+                disabled={isPhoneVerified} // 인증되면 수정 불가
+                required
+              />
+            </div>
+            {!isPhoneVerified && (
+              <button
+                type="button"
+                onClick={handleVerifyCode}
+                className="verify-btn"
+              >
+                확인
+              </button>
+            )}
+          </div>
         )}
-        <button type="submit">회원가입</button>
+
+        {isPhoneVerified && (
+          <p style={{ color: 'green', fontSize: '12px' }}>
+            ✓ 인증 완료되었습니다.
+          </p>
+        )}
+
+        <button type="submit" disabled={!isPhoneVerified}>
+          회원가입
+        </button>
       </form>
     </div>
   );
