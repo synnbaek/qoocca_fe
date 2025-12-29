@@ -10,6 +10,13 @@ interface UserState {
   isAuthenticated: boolean;
 }
 
+interface JwtPayload {
+  sub: string;
+  role: string;
+  iat: number;
+  exp: number;
+}
+
 const initialState: UserState = {
   email: null,
   role: null,
@@ -23,12 +30,11 @@ const userSlice = createSlice({
     setUserFromToken(state, action: PayloadAction<string>) {
       const token = action.payload;
       try {
-        const decoded: any = jwtDecode(token);
+        const decoded: JwtPayload = jwtDecode(token);
         state.email = decoded.sub;
         state.role = decoded.role;
         state.isAuthenticated = true;
       } catch {
-        // 토큰 에러 처리
         state.email = null;
         state.role = null;
         state.isAuthenticated = false;

@@ -1,5 +1,7 @@
 'use client';
 
+import { memo } from 'react';
+
 interface AuthInputProps {
   placeholder: string;
   type?: string;
@@ -9,7 +11,7 @@ interface AuthInputProps {
   disabled?: boolean;
 }
 
-export default function AuthInput({
+const AuthInput = memo(function AuthInput({
   placeholder,
   type = 'text',
   value,
@@ -21,11 +23,13 @@ export default function AuthInput({
     <input
       type={type}
       placeholder={placeholder}
-      value={value} // 부모의 state를 그대로 보여줌
-      onChange={(e) => onChange(e.target.value)} // 입력할 때마다 부모 state 업데이트
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
       required={required}
       disabled={disabled}
-      className="auth-input-style" // 필요시 클래스 추가
+      className="auth-input-style"
     />
   );
-}
+});
+
+export default AuthInput;

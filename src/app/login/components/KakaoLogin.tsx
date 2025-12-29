@@ -14,7 +14,7 @@ function KakaoIcon() {
   );
 }
 
-const KakaoButton = memo(function KakaoButton() {
+const KakaoLogin = memo(function KakaoLogin() {
   const KAKAO_AUTH_LOGIN_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI}&response_type=code`;
 
   const handleKakaoLogin = () => {
@@ -33,4 +33,4 @@ const KakaoButton = memo(function KakaoButton() {
   );
 });
 
-export default KakaoButton;
+export default KakaoLogin;

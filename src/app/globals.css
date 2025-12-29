@@ -53,30 +53,29 @@ body {
   border-color: #829a8f;
 }
 
-/* 4. 버튼 공통 스타일 (일반 & 소셜 통합) */
+.email-login-btn,
 .auth-container button,
-.signup-link,
 .custom-social-btn {
   width: 100%;
+  height: 60px; /* 모든 박스 높이 통일 */
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
+  border-radius: 8px; /* 둥근 모서리 통일 */
+  font-size: 16px;
   font-weight: 600;
-  transition: all 0.2s;
   text-decoration: none;
   box-sizing: border-box;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 12px; /* 박스 사이 간격 통일 */
 }
 
-/* 일반 로그인 버튼 전용 */
-.auth-container button:not(.custom-social-btn) {
-  height: 60px;
+.email-login-btn,
+.auth-container button {
   background-color: #1f2937;
-  color: #f9fafb;
-  font-size: 16px;
-  margin-bottom: 12px;
+  color: #ffffff;
 }
 
 .signup-wrapper {
@@ -103,13 +102,6 @@ body {
 
 .auth-container button:active {
   transform: translateY(0);
-}
-
-/* 5. 소셜 로그인 섹션 및 버튼 */
-.social-login {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
 }
 
 .custom-social-btn {

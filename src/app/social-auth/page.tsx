@@ -6,7 +6,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useDispatch } from 'react-redux';
 import { setUserFromToken } from '@/store/userSlice';
-import AuthInput from '@/components/button/AuthInput';
+import AuthInput from '@/components/AuthInput';
 
 export default function SocialAuthPage() {
   const router = useRouter();
