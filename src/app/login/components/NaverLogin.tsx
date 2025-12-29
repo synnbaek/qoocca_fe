@@ -13,10 +13,7 @@ const NaverIcon = () => (
 );
 
 const NaverLogin = memo(function NaverLogin() {
-  const NAVER_CLIENT_ID = 'fOBZMq3LkB_X5Urh21K_';
-  const NAVER_REDIRECT_URI = 'http://localhost:3000/oauth2/redirect/naver';
-
-  const NAVER_AUTH_LOGIN_URL = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${NAVER_REDIRECT_URI}`;
+  const NAVER_AUTH_LOGIN_URL = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_NAVER_REDIRECT_URI}`;
 
   const handleNaverLogin = () => {
     window.location.href = NAVER_AUTH_LOGIN_URL;
