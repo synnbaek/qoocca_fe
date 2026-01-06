@@ -1,11 +1,13 @@
-import Link from 'next/link';
+"use client";
+
+import Link from "next/link";
+import styles from "./SignupSection.module.css";
 
 export default function SignupSection() {
   return (
-    <div className="signup-wrapper">
-      <span>아직 회원이 아니신가요?</span>
-      <Link href="/signup" className="signup-link-text">
-        회원가입하기
+    <div className={styles.signupWrapper}>
+      <Link href="/signup" className={styles.signupLinkText}>
+        이메일 회원가입
       </Link>
     </div>
   );

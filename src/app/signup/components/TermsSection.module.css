@@ -1,0 +1,82 @@
+.termsContainer {
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background-color: #ffffff;
+}
+
+.allAgreeWrapper {
+  padding: 8px 4px;
+}
+
+.boldText {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 12px 0;
+}
+
+.individualWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  padding: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.item input[type='checkbox'],
+.allAgreeWrapper input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: #0070f3;
+}
+
+.required {
+  color: #ef4444;
+  font-weight: 600;
+  margin-right: 6px;
+  margin-left: 10px;
+}
+
+.optional {
+  color: #9ca3af;
+  font-weight: 500;
+  margin-right: 6px;
+  margin-left: 10px;
+}
+
+.textGroup {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+
+.subText {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.item label {
+  cursor: pointer;
+}

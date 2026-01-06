@@ -1,16 +1,8 @@
-import { memo } from 'react';
+'use client';
 
-const NaverIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M13.51 10.215L6.49 0H0V20H6.49V9.785L13.51 20H20V0H13.51V10.215Z" />
-  </svg>
-);
+import { memo } from 'react';
+import styles from './SocialLogin.module.css';
+import { NaverIcon } from '@/components/icons/SocialIcons';
 
 const NaverLogin = memo(function NaverLogin() {
   const NAVER_AUTH_LOGIN_URL = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_NAVER_REDIRECT_URI}`;
@@ -22,11 +14,11 @@ const NaverLogin = memo(function NaverLogin() {
   return (
     <button
       type="button"
-      className="custom-social-btn naver"
       onClick={handleNaverLogin}
+      className={`${styles.customSocialBtn} ${styles.naver}`}
     >
       <NaverIcon />
-      <span>네이버 로그인</span>
+      네이버 로그인
     </button>
   );
 });

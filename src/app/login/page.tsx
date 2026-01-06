@@ -1,21 +1,25 @@
 'use client';
 
-import Link from 'next/link';
-import KakaoLogin from '@/app/login/components/KakaoLogin';
-import NaverLogin from '@/app/login/components/NaverLogin';
 import LoginForm from './components/LoginForm';
 import SignupSection from './components/SignupSection';
+import styles from './login.module.css';
+import socialStyles from './components/SocialLogin.module.css';
+import SocialSection from './components/SocialSection';
 
 export default function LoginPage() {
   return (
-    <div className="auth-container">
-      <h2>로그인</h2>
+    <div className={styles.loginContainer}>
+      <h2>
+        학원 운영을 더 쉽게,
+        <span className={styles.highlight}>쿠카티처스</span>
+      </h2>
+      <p>출결·수업·수납 한 번에 학원 관리 올인원 플랫폼</p>
+
+      <SocialSection />
+
+      <div className={socialStyles.divider}>또는</div>
+
       <LoginForm />
-      {/* <Link href="/signup" className="email-login-btn">
-        이메일 로그인
-      </Link> */}
-      <KakaoLogin />
-      <NaverLogin />
       <SignupSection />
     </div>
   );
