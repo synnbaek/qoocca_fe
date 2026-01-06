@@ -67,7 +67,12 @@ export default function SignupForm() {
         password,
         phone,
         code,
-        agreements,
+        agreements: isExistingUser
+          ? null
+          : {
+              allRequiredAgreed: isRequiredAgreed,
+              marketing: agreements.marketing,
+            },
       });
 
       const { accessToken } = res.data;
@@ -80,7 +85,13 @@ export default function SignupForm() {
       toast.success('회원가입 성공!');
       router.push('/');
     } catch (err: any) {
-      toast.error('회원가입 실패: ' + err);
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        '알 수 없는 오류가 발생했습니다.';
+      toast.error('회원가입 실패: ' + errorMessage);
+      console.error(err);
     }
   };
 

@@ -71,6 +71,13 @@ export default function PhoneSection({
       toast.info('전화번호를 먼저 입력해주세요.');
       return;
     }
+
+    const phoneRegex = /^010\d{7,8}$/;
+    if (!phoneRegex.test(phone)) {
+      toast.warning('올바른 휴대폰 번호 형식을 입력해주세요.');
+      return;
+    }
+
     try {
       await axiosInstance.post('/api/auth/send-code', {
         phone,
@@ -82,12 +89,24 @@ export default function PhoneSection({
       setTimeLeft(180);
       setIsTimerActive(true);
     } catch (err: any) {
-      const errorMsg = err.response?.data || '인증번호 발송 실패';
-      toast.error(errorMsg);
+      const serverData = err.response?.data;
+      const errorMsg =
+        typeof serverData === 'string' ? serverData : serverData?.message || '';
 
       if (errorMsg.includes('이미 가입된')) {
+        toast.error(
+          '이미 가입된 번호입니다. 다른 번호를 입력하거나 로그인을 해주세요.'
+        );
         setPhone('');
+      } else if (errorMsg.includes('형식') || err.response?.status === 400) {
+        toast.error(
+          '번호 형식이 올바르지 않습니다. 다시 확인 후 입력해주세요.'
+        );
+      } else {
+        toast.error(errorMsg || '인증번호 발송에 실패했습니다.');
       }
+
+      console.error('서버 에러 상세:', serverData);
     }
   };
 
