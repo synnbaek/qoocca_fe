@@ -60,7 +60,12 @@ export default function SocialAuthPage() {
           phone,
           socialId,
           provider,
-          agreements,
+          agreements: isExistingUser
+            ? null
+            : {
+                allRequiredAgreed: isRequiredAgreed,
+                marketing: agreements.marketing,
+              },
         }
       );
 
@@ -78,7 +83,7 @@ export default function SocialAuthPage() {
         err.message ||
         '알 수 없는 오류가 발생했습니다.';
 
-      toast.error(`연결 실패: ${errorMessage}`);
+      toast.error(`회원가입 실패: ${errorMessage}`);
       console.error('상세 에러 로그:', err);
     }
   };

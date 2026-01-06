@@ -39,7 +39,9 @@ export default function LoginForm() {
       toast.success('로그인에 성공했습니다!');
       router.push('/');
     } catch (err: any) {
-      toast('로그인 실패: ' + (err.response?.data || err.message));
+      const errorMessage =
+        err.response?.data?.message || '로그인 정보를 확인해주세요.';
+      toast.error(errorMessage);
     }
   };
 
