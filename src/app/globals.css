@@ -8,138 +8,36 @@
 
 :root {
   --title-font: 'GangwonEducationTteontteon', sans-serif;
+
+  --input-height: 60px;
+  --radius-lg: 20px;
+  --radius-md: 16px;
+  --radius-sm: 8px;
+
+  --container-width: 450px;
+
+  --primary-color: #007aff;
+  --secondary-color: #1f2937;
+  --secondary-hover: #2d3748;
+  --divider-color: #d9d9d9;
+  --kakao-color: #fee500;
+  --naver-color: #03c75a;
+  --white: #ffffff;
 }
 
-/* 1. 기본 레이아웃 및 폰트 설정 */
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
-}
-
-/* 2. 컨테이너 및 텍스트 스타일 */
-.auth-container {
+  width: 100%;
   background-color: #ffffff;
-  padding: 2rem 3rem;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 400px;
+  overflow: hidden;
 }
 
-.auth-container h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: #333;
-}
-
-/* 3. 입력창(Input) 공통 스타일 */
-.auth-container input {
-  width: 100%;
-  height: 60px;
-  padding: 12px 14px;
-  margin-bottom: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  box-sizing: border-box;
-  transition: border-color 0.2s;
-}
-
-.auth-container input:focus {
-  outline: none;
-  border-color: #829a8f;
-}
-
-.email-login-btn,
-.auth-container button,
-.custom-social-btn {
-  width: 100%;
-  height: 60px; /* 모든 박스 높이 통일 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px; /* 둥근 모서리 통일 */
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-  box-sizing: border-box;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-bottom: 12px; /* 박스 사이 간격 통일 */
-}
-
-.email-login-btn,
-.auth-container button {
-  background-color: #1f2937;
-  color: #ffffff;
-}
-
-.signup-wrapper {
-  margin-top: 24px;
-  text-align: center;
-  font-size: 14px;
-  color: #666;
-}
-
-.signup-link-text {
-  margin-left: 8px;
-  color: #1f2937; /* 로그인 버튼과 같은 색상 계열 */
-  font-weight: bold;
-  text-decoration: none;
-  border-bottom: 1px solid #1f2937; /* 밑줄만 살짝 */
-}
-
-.auth-container button:hover {
-  background-color: #2d3748;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  transform: translateY(-1px);
-}
-
-.auth-container button:active {
-  transform: translateY(0);
-}
-
-.custom-social-btn {
-  height: 56px;
-  font-size: 16px;
-  margin-bottom: 12px;
-  gap: 8px; /* 아이콘과 텍스트 간격 */
-}
-
-/* 소셜 브랜드 컬러 */
-.custom-social-btn.kakao {
-  background-color: #fee500 !important;
-  color: #191919;
-}
-
-.custom-social-btn.naver {
-  background-color: #03c75a !important;
-  color: #ffffff;
-}
-
-/* 전화번호 옆 인증 버튼 */
-.verify-btn {
-  width: 80px !important; /* 버튼 너비 고정 */
-  height: 60px !important; /* AuthInput 높이와 일치 */
-  background-color: #4b5563 !important; /* 진한 회색 */
-  color: white;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0; /* 버튼 크기 축소 방지 */
-}
-
-.verify-btn:hover {
-  background-color: #374151 !important;
-}
-
-/* AuthInput 마진 제거 (Flex 간격 사용 시) */
-.auth-container div > input {
-  margin-bottom: 0;
+.highlight {
+  color: var(--primary-color);
 }

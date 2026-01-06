@@ -1,150 +1,114 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useDispatch } from 'react-redux';
 import { setUserFromToken } from '@/store/userSlice';
-import AuthInput from '@/components/AuthInput';
+import { toast } from 'sonner';
+import PhoneSection from '../signup/components/PhoneSection';
+import loginStyle from '../login/login.module.css';
+import signupStyle from '../signup/components/SignupForm.module.css';
+import TermsSection from '../signup/components/TermsSection';
 
 export default function SocialAuthPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
 
-  // URL 쿼리 파라미터에서 socialId 추출
   const socialId = searchParams.get('socialId');
+  const provider = searchParams.get('provider');
 
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
-  const [isCodeSent, setIsCodeSent] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
 
-  // socialId가 없으면 잘못된 접근이므로 홈으로 보냄
+  const [agreements, setAgreements] = useState({
+    service: false,
+    privacy: false,
+    thirdParty: false,
+    marketing: false,
+  });
+
+  const [isExistingUser, setIsExistingUser] = useState(false);
+
   useEffect(() => {
     if (!socialId) {
-      alert('잘못된 접근입니다.');
+      toast.error('잘못된 접근입니다.');
       router.push('/login');
     }
   }, [socialId, router]);
 
-  const handleSendCode = async () => {
-    if (!phone) return alert('전화번호를 입력해주세요.');
-    try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/send-code`,
-        { phone, isSocial: true }
-      );
-      alert('인증번호가 발송되었습니다.');
-      setIsCodeSent(true);
-    } catch (err: any) {
-      alert(err.response?.data || '인증번호 발송 실패');
-    }
-  };
+  const isRequiredAgreed = useMemo(() => {
+    return agreements.service && agreements.privacy && agreements.thirdParty;
+  }, [agreements]);
 
-  const handleVerifyCode = async () => {
-    try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify-code`,
-        { phone, code }
-      );
-      alert('인증 성공!');
-      setIsPhoneVerified(true);
-    } catch (err: any) {
-      alert('인증번호가 일치하지 않습니다.');
-    }
-  };
+  const isSubmitDisabled = useMemo(() => {
+    if (!isPhoneVerified) return true;
+    if (isExistingUser) return false;
+    return !isRequiredAgreed;
+  }, [isPhoneVerified, isExistingUser, isRequiredAgreed]);
 
   const handleLinkAccount = async () => {
-    if (!isPhoneVerified) return alert('휴대폰 인증이 필요합니다.');
+    if (isSubmitDisabled) return;
+
     try {
-      // 소셜 계정과 휴대폰 번호를 연결하는 API 호출
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/link-social`,
         {
           phone,
           socialId,
+          provider,
+          agreements,
         }
       );
 
       const { accessToken } = res.data;
       Cookies.set('accessToken', accessToken, { expires: 0.021, path: '/' });
       dispatch(setUserFromToken(accessToken));
-      alert('계정 연결 및 로그인 성공!');
+      toast.success(
+        isExistingUser ? '계정 통합 성공!' : '계정 연결 및 회원가입 성공!'
+      );
       router.push('/');
     } catch (err: any) {
-      alert('연결 실패: ' + (err.response?.data || err.message));
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data ||
+        err.message ||
+        '알 수 없는 오류가 발생했습니다.';
+
+      toast.error(`연결 실패: ${errorMessage}`);
+      console.error('상세 에러 로그:', err);
     }
   };
 
   return (
-    <div className="auth-container">
+    <div className={loginStyle.loginContainer}>
       <h2>추가 정보 입력</h2>
       <p>서비스 이용을 위해 휴대폰 인증이 필요합니다.</p>
 
-      <div style={{ marginTop: '1.5rem' }}>
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-          <div style={{ flex: 1 }}>
-            <AuthInput
-              type="tel"
-              placeholder="전화번호"
-              value={phone}
-              onChange={setPhone}
-              disabled={isPhoneVerified}
-              required
-            />
-          </div>
-          <button
-            type="button"
-            onClick={handleSendCode}
-            disabled={isPhoneVerified}
-            className="verify-btn"
-          >
-            인증
-          </button>
-        </div>
+      <PhoneSection
+        phone={phone}
+        setPhone={setPhone}
+        code={code}
+        setCode={setCode}
+        isPhoneVerified={isPhoneVerified}
+        setIsPhoneVerified={setIsPhoneVerified}
+        setIsExistingUser={setIsExistingUser}
+      />
 
-        {isCodeSent && (
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-            <div style={{ flex: 1 }}>
-              <AuthInput
-                type="tel"
-                placeholder="인증번호"
-                value={code}
-                onChange={setCode}
-                disabled={isPhoneVerified}
-                required
-              />
-            </div>
-            {!isPhoneVerified && (
-              <button
-                type="button"
-                onClick={handleVerifyCode}
-                className="verify-btn"
-              >
-                확인
-              </button>
-            )}
-          </div>
-        )}
+      {!isExistingUser && isPhoneVerified && (
+        <TermsSection agreements={agreements} setAgreements={setAgreements} />
+      )}
 
-        <button
-          onClick={handleLinkAccount}
-          disabled={!isPhoneVerified}
-          style={{
-            width: '100%',
-            padding: '0.75rem',
-            backgroundColor: isPhoneVerified ? '#000' : '#ccc',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-        >
-          시작하기
-        </button>
-      </div>
+      <button
+        onClick={handleLinkAccount}
+        disabled={!isPhoneVerified}
+        className={signupStyle.signupButton}
+      >
+        {isExistingUser ? '계정 연결하기' : '회원가입 완료'}
+      </button>
     </div>
   );
 }

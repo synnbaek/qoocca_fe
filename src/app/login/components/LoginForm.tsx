@@ -5,8 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import Cookies from 'js-cookie';
 import { setUserFromToken } from '@/store/userSlice';
-import AuthInput from '@/components/AuthInput';
+import AuthInput from '@/components/auth/AuthInput';
 import axiosInstance from '@/api/axiosInstance';
+import styles from './LoginForm.module.css';
+import { toast } from 'sonner';
 
 export default function LoginForm() {
   const dispatch = useDispatch();
@@ -34,15 +36,16 @@ export default function LoginForm() {
         path: '/',
       });
       dispatch(setUserFromToken(res.data.accessToken));
+      toast.success('로그인에 성공했습니다!');
       router.push('/');
     } catch (err: any) {
-      alert('로그인 실패: ' + (err.response?.data || err.message));
+      toast('로그인 실패: ' + (err.response?.data || err.message));
     }
   };
 
   return (
     <>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleLogin} className={styles.form}>
         <AuthInput
           type="email"
           placeholder="이메일"
@@ -57,7 +60,14 @@ export default function LoginForm() {
           onChange={handlePasswordChange}
           required
         />
-        <button type="submit">로그인</button>
+        <div className={styles.forgotPasswordWrapper}>
+          <span className={styles.passwordLinkText}>
+            비밀번호를 잊으셨습니까?
+          </span>
+        </div>
+        <button className={styles.loginButton} type="submit">
+          로그인
+        </button>
       </form>
     </>
   );

@@ -1,13 +1,17 @@
 'use client';
 
 import Cookies from 'js-cookie';
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { setUserFromToken } from '@/store/userSlice';
-import AuthInput from '@/components/AuthInput';
+import AuthInput from '@/components/auth/AuthInput';
 import PhoneSection from './PhoneSection';
+import TermsSection from './TermsSection';
 import axiosInstance from '@/api/axiosInstance';
+
+import styles from './SignupForm.module.css';
+import { toast } from 'sonner';
 
 export default function SignupForm() {
   const [username, setUsername] = useState('');
@@ -17,6 +21,29 @@ export default function SignupForm() {
   const [code, setCode] = useState('');
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
 
+  const [agreements, setAgreements] = useState({
+    service: false,
+    privacy: false,
+    thirdParty: false,
+    marketing: false,
+  });
+
+  const [isExistingUser, setIsExistingUser] = useState(false);
+
+  const isRequiredAgreed = useMemo(() => {
+    return agreements.service && agreements.privacy && agreements.thirdParty;
+  }, [agreements]);
+
+  const handleUsernameChange = useCallback(
+    (val: string) => setUsername(val),
+    []
+  );
+  const handleEmailChange = useCallback((val: string) => setEmail(val), []);
+  const handlePasswordChange = useCallback(
+    (val: string) => setPassword(val),
+    []
+  );
+
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -24,7 +51,12 @@ export default function SignupForm() {
     e.preventDefault();
 
     if (!isPhoneVerified) {
-      alert('휴대폰 인증을 먼저 완료해주세요.');
+      toast.info('휴대폰 인증을 먼저 완료해주세요.');
+      return;
+    }
+
+    if (!isExistingUser && !isRequiredAgreed) {
+      toast.info('필수 약관에 모두 동의하셔야 회원가입이 가능합니다.');
       return;
     }
 
@@ -35,6 +67,7 @@ export default function SignupForm() {
         password,
         phone,
         code,
+        agreements,
       });
 
       const { accessToken } = res.data;
@@ -44,35 +77,43 @@ export default function SignupForm() {
         path: '/',
       });
       dispatch(setUserFromToken(res.data.accessToken));
-      alert('회원가입 성공!');
+      toast.success('회원가입 성공!');
       router.push('/');
     } catch (err: any) {
-      alert('회원가입 실패: ' + err);
+      toast.error('회원가입 실패: ' + err);
     }
   };
 
+  const isSubmitDisabled = useMemo(() => {
+    if (!isPhoneVerified) return true;
+
+    if (isExistingUser) return false;
+
+    return !isRequiredAgreed;
+  }, [isPhoneVerified, isExistingUser, isRequiredAgreed]);
+
   return (
     <>
-      <form onSubmit={handleSignup}>
+      <form onSubmit={handleSignup} className={styles.form}>
         <AuthInput
           type="text"
           placeholder="이름"
           value={username}
-          onChange={setUsername}
+          onChange={handleUsernameChange}
           required
         />
         <AuthInput
           type="email"
           placeholder="이메일"
           value={email}
-          onChange={setEmail}
+          onChange={handleEmailChange}
           required
         />
         <AuthInput
           type="password"
           placeholder="비밀번호"
           value={password}
-          onChange={setPassword}
+          onChange={handlePasswordChange}
           required
         />
 
@@ -83,10 +124,19 @@ export default function SignupForm() {
           setCode={setCode}
           isPhoneVerified={isPhoneVerified}
           setIsPhoneVerified={setIsPhoneVerified}
+          setIsExistingUser={setIsExistingUser}
         />
 
-        <button type="submit" disabled={!isPhoneVerified}>
-          회원가입
+        {!isExistingUser && isPhoneVerified && (
+          <TermsSection agreements={agreements} setAgreements={setAgreements} />
+        )}
+
+        <button
+          type="submit"
+          className={styles.signupButton}
+          disabled={isSubmitDisabled}
+        >
+          {isExistingUser ? '계정 통합 및 가입' : '회원가입'}
         </button>
       </form>
     </>
