@@ -44,16 +44,8 @@
   padding: 0;
 }
 
-.verifiedMsg {
-  color: green;
-  font-size: 12px;
-  margin-top: -5px;
-  margin-bottom: 10px;
-  padding-left: 5px;
-}
-
 .timerText {
-  color: #ff4d4f;
+  color: var(--primary-color);
   padding: 0 14px;
   font-weight: 600;
   font-size: 14px;

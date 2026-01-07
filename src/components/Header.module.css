@@ -16,13 +16,11 @@
   z-index: 999;
 
   border-bottom: 1px solid var(--divider-color);
+  background-color: #ffffff;
 }
 
 .headerLogo {
   margin-top: 10px;
-  font-family: var(--title-font);
-  font-size: 24px;
-  font-weight: 400;
   text-decoration: none;
   color: inherit;
 }

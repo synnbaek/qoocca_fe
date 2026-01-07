@@ -3,8 +3,8 @@
   padding: 2rem 3rem;
   border-radius: var(--radius-sm);
   width: 100%;
-  min-width: var(--container-width);
-  margin: 0 auto;
+  width: var(--container-width);
+  margin: 200 auto;
 
   box-sizing: border-box;
   display: block;

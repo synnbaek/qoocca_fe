@@ -11,7 +11,7 @@ export default function LoginPage() {
     <div className={styles.loginContainer}>
       <h2>
         학원 운영을 더 쉽게,
-        <span className={styles.highlight}>쿠카티처스</span>
+        <span className="highlight"> 쿠카티처스</span>
       </h2>
       <p>출결·수업·수납 한 번에 학원 관리 올인원 플랫폼</p>
 
