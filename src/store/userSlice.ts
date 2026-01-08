@@ -17,30 +17,15 @@ interface JwtPayload {
   exp: number;
 }
 
-const getInitialAuthState = (): UserState => {
-  if (typeof window !== 'undefined') {
-    const token = Cookies.get('accessToken');
-    if (token) {
-      try {
-        const decoded: JwtPayload = jwtDecode(token);
-        return {
-          email: decoded.sub,
-          role: decoded.role,
-          isAuthenticated: true,
-        };
-      } catch (e) {
-        return { email: null, role: null, isAuthenticated: false };
-      }
-    }
-  }
-  return { email: null, role: null, isAuthenticated: false };
+const initialState: UserState = {
+  email: null,
+  role: null,
+  isAuthenticated: false,
 };
-
-const initialState: UserState = getInitialAuthState();
 
 const userSlice = createSlice({
   name: 'user',
-  initialState: initialState,
+  initialState,
   reducers: {
     setUserFromToken(state, action: PayloadAction<string>) {
       const token = action.payload;
@@ -50,6 +35,7 @@ const userSlice = createSlice({
         state.role = decoded.role;
         state.isAuthenticated = true;
       } catch {
+        Cookies.remove('accessToken');
         state.email = null;
         state.role = null;
         state.isAuthenticated = false;

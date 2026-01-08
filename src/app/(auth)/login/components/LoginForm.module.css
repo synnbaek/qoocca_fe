@@ -1,0 +1,26 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 12px;
+}
+
+.forgotPasswordWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4px;
+  margin-bottom: 12px;
+}
+
+.passwordLinkText {
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.passwordLinkText:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
