@@ -60,7 +60,9 @@ export default function SignupForm() {
         agreements: isExistingUser
           ? null
           : {
-              allRequiredAgreed: isRequiredAgreed,
+              service: agreements.service,
+              privacy: agreements.privacy,
+              thirdParty: agreements.thirdParty,
               marketing: agreements.marketing,
             },
       });

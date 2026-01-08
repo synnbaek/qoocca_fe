@@ -12,7 +12,15 @@ export default function Sidebar() {
     pathname.includes('/attendance') || pathname.includes('/payment')
   );
 
-  const excludedPaths = ['/', '/login', '/signup'];
+  const excludedPaths = [
+    '/',
+    '/login',
+    '/signup',
+    '/social-auth',
+    '/oauth2/redirect/kakao',
+    '/oauth2/redirect/naver',
+  ];
+
   if (excludedPaths.includes(pathname)) return null;
 
   const getMenuClass = (path: string) => {
