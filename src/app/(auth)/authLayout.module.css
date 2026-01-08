@@ -1,0 +1,29 @@
+.authWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-top: 160px;
+  box-sizing: border-box;
+}
+
+.authContainer {
+  width: 100%;
+  max-width: var(--container-width);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.authContainer h2 {
+  text-align: center;
+  font-size: 32px;
+  margin: 0px;
+  font-weight: bold;
+}
+
+.authContainer p {
+  text-align: center;
+  color: #666;
+  margin: 18px 0px;
+}
