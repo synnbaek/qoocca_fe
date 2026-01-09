@@ -10,6 +10,8 @@ import { useSubjects } from "@/hooks/useSubjects";
 import { useAges } from "@/hooks/useAges";
 import { createAcademy } from "@/api/academyApi";
 import { useAcademy } from "@/context/AcademyContext";
+import Button from "../../../components/common/Button";
+
 
 export default function AcademyFormPage() {
   const router = useRouter();
@@ -100,13 +102,12 @@ export default function AcademyFormPage() {
       <TextInput label="네이버 블로그" value={blog} onChange={setBlog} />
 
       <div className={styles.sectionBox}>
-        <button
-          className={styles.nextButton}
+        <Button
           onClick={handleRegister}
           disabled={!academyName || businessFiles.length === 0}
         >
           등록하기
-        </button>
+        </Button>
       </div>
     </div>
   );
