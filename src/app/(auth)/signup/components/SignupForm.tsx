@@ -60,14 +60,16 @@ export default function SignupForm() {
         agreements: isExistingUser
           ? null
           : {
-              allRequiredAgreed: isRequiredAgreed,
+              service: agreements.service,
+              privacy: agreements.privacy,
+              thirdParty: agreements.thirdParty,
               marketing: agreements.marketing,
             },
       });
 
       const { accessToken } = res.data;
       Cookies.set('accessToken', accessToken, {
-        expires: 0.021,
+        expires: 1,
         path: '/',
       });
       dispatch(setUserFromToken(res.data.accessToken));

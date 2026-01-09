@@ -5,8 +5,10 @@
   padding: 20px;
   box-sizing: border-box;
   position: fixed;
-  top: 60px;
-  bottom: 60px;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  height: 100vh;
   z-index: 99;
   overflow-y: auto;
 }

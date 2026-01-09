@@ -31,8 +31,10 @@ export default function LoginForm() {
       });
 
       Cookies.set('accessToken', res.data.accessToken, {
-        expires: 0.021,
+        expires: 1,
         path: '/',
+        // secure: true,
+        sameSite: 'strict',
       });
 
       dispatch(setUserFromToken(res.data.accessToken));

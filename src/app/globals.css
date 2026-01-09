@@ -1,13 +1,13 @@
 @font-face {
-  font-family: "GangwonEducationTteontteon";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff")
-    format("woff");
+  font-family: 'GangwonEducationTteontteon';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff')
+    format('woff');
   font-weight: normal;
   font-display: swap;
 }
 
 :root {
-  --title-font: "GangwonEducationTteontteon", sans-serif;
+  --title-font: 'GangwonEducationTteontteon', sans-serif;
 
   --input-height: 60px;
   --radius-lg: 20px;
@@ -20,6 +20,9 @@
   --primary-hover: #0056b3;
   --secondary-color: #1f2937;
   --secondary-hover: #2d3748;
+  --tertiary-color: #e6f1fd;
+  --tertiary-hover: #f0f6ff;
+  --perple: #edeefc;
   --divider-color: #e9ecef;
   --kakao-color: #fee500;
   --naver-color: #03c75a;
@@ -54,6 +57,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 60px;
   width: 100%;
 }
 

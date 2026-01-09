@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { KakaoIcon, NaverIcon } from "./icons/SocialIcons";
-import styles from "./Loading.module.css";
+import { KakaoIcon, NaverIcon } from '../icons/SocialIcons';
+import styles from './Loading.module.css';
 
 interface LoadingProps {
-  provider?: "kakao" | "naver";
+  provider?: 'kakao' | 'naver';
 }
 
-export default function Loading({ provider = "kakao" }: LoadingProps) {
+export default function Loading({ provider = 'kakao' }: LoadingProps) {
   return (
     <div className={styles.container}>
       <div className={styles.iconWrapper}>
         <div className={`${styles.bouncingIcon} ${styles[provider]}`}>
-          {provider === "kakao" ? (
+          {provider === 'kakao' ? (
             <KakaoIcon width={40} height={40} />
           ) : (
             <NaverIcon width={32} height={32} />
