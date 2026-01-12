@@ -1,7 +1,7 @@
 'use client';
 
 import styles from './PhoneSection.module.css';
-import { usePhoneAuth } from '../hooks/usePhoneAuth';
+import { usePhoneAuth } from '../../../../hooks/usePhoneAuth';
 
 interface Props {
   phone: string;

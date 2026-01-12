@@ -1,24 +1,24 @@
-import { useState, useMemo } from "react";
-import { useDispatch } from "react-redux";
-import { useRouter } from "next/navigation";
-import axiosInstance from "@/api/axiosInstance";
-import { setUserFromToken } from "@/store/userSlice";
+import { useState, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import { useRouter } from 'next/navigation';
+import axiosInstance from '@/api/axiosInstance';
+import { setUserFromToken } from '@/store/userSlice';
 import {
   validateEmail,
   validatePassword,
   validateName,
-} from "../utils/validation";
-import { toast } from "sonner";
+} from '../utils/validation';
+import { toast } from 'sonner';
 
 export function useSignup() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [code, setCode] = useState("");
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [code, setCode] = useState('');
 
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [isExistingUser, setIsExistingUser] = useState(false);
@@ -31,19 +31,19 @@ export function useSignup() {
   });
 
   const [errors, setErrors] = useState({
-    username: "",
-    email: "",
-    password: "",
+    username: '',
+    email: '',
+    password: '',
   });
 
   const handleFieldChange = (field: string, value: string) => {
-    if (field === "username") {
+    if (field === 'username') {
       setUsername(value);
       setErrors((prev) => ({ ...prev, username: validateName(value) }));
-    } else if (field === "email") {
+    } else if (field === 'email') {
       setEmail(value);
       setErrors((prev) => ({ ...prev, email: validateEmail(value) }));
-    } else if (field === "password") {
+    } else if (field === 'password') {
       setPassword(value);
       setErrors((prev) => ({ ...prev, password: validatePassword(value) }));
     }
@@ -66,7 +66,7 @@ export function useSignup() {
     setIsLoading(true);
 
     try {
-      const res = await axiosInstance.post("/api/auth/signup", {
+      const res = await axiosInstance.post('/api/auth/signup', {
         username,
         email,
         password,
@@ -76,10 +76,10 @@ export function useSignup() {
       });
 
       dispatch(setUserFromToken(res.data.accessToken));
-      toast.success(isExistingUser ? "계정 연동 성공!" : "회원가입 성공!");
-      router.push("/");
+      toast.success(isExistingUser ? '계정 연동 성공!' : '회원가입 성공!');
+      router.push('/');
     } catch (err: any) {
-      toast.error("가입 실패: " + (err.response?.data?.message || "오류 발생"));
+      toast.error('가입 실패: ' + (err.response?.data?.message || '오류 발생'));
     } finally {
       setIsLoading(false);
     }

@@ -5,7 +5,7 @@ import TermsSection from './TermsSection';
 import styles from './SignupForm.module.css';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
-import { useSignup } from '../hooks/useSignup';
+import { useSignup } from '../../../../hooks/useSignup';
 
 export default function SignupForm() {
   const {
