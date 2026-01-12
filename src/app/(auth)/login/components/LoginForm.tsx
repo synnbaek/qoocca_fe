@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
-import Cookies from 'js-cookie';
 import { setUserFromToken } from '@/store/userSlice';
 import axiosInstance from '@/api/axiosInstance';
 import styles from './LoginForm.module.css';
@@ -11,6 +10,7 @@ import { toast } from 'sonner';
 
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
+import Loading from '@/components/common/Loading';
 
 export default function LoginForm() {
   const dispatch = useDispatch();
@@ -30,14 +30,20 @@ export default function LoginForm() {
         password,
       });
 
-      Cookies.set('accessToken', res.data.accessToken, {
-        expires: 0.021,
-        path: '/',
-      });
+      console.log('서버 응답 전체:', res.data);
 
-      dispatch(setUserFromToken(res.data.accessToken));
-      toast.success('로그인에 성공했습니다!');
-      router.push('/');
+      const { accessToken, academyId } = res.data;
+      console.log('추출된 academyId:', academyId);
+
+      if (accessToken) {
+        dispatch(setUserFromToken(res.data.accessToken));
+      }
+
+      if (academyId) {
+        router.push(`/${academyId}`);
+      } else {
+        router.push('/');
+      }
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.message || '로그인 정보를 확인해주세요.';
@@ -73,7 +79,14 @@ export default function LoginForm() {
       </div>
 
       <Button variant="secondary" type="submit" disabled={isLoading}>
-        {isLoading ? '로그인 중...' : '로그인'}
+        {isLoading ? (
+          <div className={styles.loadingWrapper}>
+            <Loading provider="default" />
+            <span>로그인 중...</span>
+          </div>
+        ) : (
+          '로그인'
+        )}
       </Button>
     </form>
   );

@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   width: 100%;
+  max-width: 100%;
   height: 60px;
   border: 1px solid #ddd;
   border-radius: 16px;
@@ -14,6 +15,7 @@
 
 .insideInput {
   flex: 1;
+  min-width: 0;
   height: 100%;
   border: none;
   font-size: 1rem;
@@ -43,4 +45,10 @@
   border: none;
   cursor: pointer;
   white-space: nowrap;
+}
+
+.timerText {
+  color: var(--primary-color);
+  font-weight: bold;
+  margin-right: 10px;
 }

@@ -15,7 +15,13 @@
   box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
 }
 
-/* .input:focus {
-  border-color: #cbd5e0;
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
-} */
+.errorText {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.errorInput {
+  border-color: #ff4d4f !important;
+}

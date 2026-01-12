@@ -31,6 +31,13 @@ const userSlice = createSlice({
       const token = action.payload;
       try {
         const decoded: JwtPayload = jwtDecode(token);
+
+        Cookies.set('accessToken', token, {
+          expires: 0.021,
+          secure: true,
+          sameSite: 'strict',
+        });
+
         state.email = decoded.sub;
         state.role = decoded.role;
         state.isAuthenticated = true;

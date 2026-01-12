@@ -2,22 +2,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  padding-top: 160px;
+  padding-top: 120px;
   box-sizing: border-box;
 }
 
 .authContainer {
-  width: 100%;
-  max-width: var(--container-width);
+  width: var(--container-width);
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .authContainer h2 {
   text-align: center;
-  font-size: 32px;
+  font-size: 30px;
   margin: 0px;
   font-weight: bold;
 }

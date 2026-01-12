@@ -1,28 +1,28 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
-import { setUserFromToken } from "@/store/userSlice";
-import { toast } from "sonner";
-import PhoneSection from "../signup/components/PhoneSection";
-import loginStyle from "../login/login.module.css";
-import signupStyle from "../signup/components/SignupForm.module.css";
-import TermsSection from "../signup/components/TermsSection";
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Cookies from 'js-cookie';
+import { useDispatch } from 'react-redux';
+import { setUserFromToken } from '@/store/userSlice';
+import { toast } from 'sonner';
+import PhoneSection from '../signup/components/PhoneSection';
+import loginStyle from '../login/login.module.css';
+import TermsSection from '../signup/components/TermsSection';
+import Button from '@/components/common/Button';
+import axiosInstance from '@/api/axiosInstance';
 
 export default function SocialAuthPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
 
-  const socialId = searchParams.get("socialId");
-  const provider = searchParams.get("provider");
+  const socialId = searchParams.get('socialId');
+  const provider = searchParams.get('provider');
 
   const [isLoading, setIsLoading] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [code, setCode] = useState("");
+  const [phone, setPhone] = useState('');
+  const [code, setCode] = useState('');
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [isExistingUser, setIsExistingUser] = useState(false);
   const [agreements, setAgreements] = useState({
@@ -34,8 +34,8 @@ export default function SocialAuthPage() {
 
   useEffect(() => {
     if (!socialId) {
-      toast.error("잘못된 접근입니다.");
-      router.replace("/login");
+      toast.error('잘못된 접근입니다.');
+      router.replace('/login');
     }
   }, [socialId, router]);
 
@@ -54,29 +54,28 @@ export default function SocialAuthPage() {
 
     setIsLoading(true);
     try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/link-social`,
-        {
-          phone,
-          socialId,
-          provider,
-          agreements: isExistingUser
-            ? null
-            : {
-                allRequiredAgreed: isRequiredAgreed,
-                marketing: agreements.marketing,
-              },
-        }
-      );
+      const res = await axiosInstance.post('/api/auth/link-social', {
+        phone,
+        socialId,
+        provider,
+        agreements: isExistingUser
+          ? null
+          : {
+              service: agreements.service,
+              privacy: agreements.privacy,
+              thirdParty: agreements.thirdParty,
+              marketing: agreements.marketing,
+            },
+      });
 
       const { accessToken } = res.data;
-      Cookies.set("accessToken", accessToken, { expires: 0.021, path: "/" });
+      Cookies.set('accessToken', accessToken, { expires: 1, path: '/' });
       dispatch(setUserFromToken(accessToken));
 
-      toast.success(isExistingUser ? "계정 연결 성공!" : "회원가입 성공!");
-      router.replace("/");
+      toast.success(isExistingUser ? '계정 연결 성공!' : '회원가입 성공!');
+      router.replace('/');
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "처리에 실패했습니다.");
+      toast.error(err.response?.data?.message || '처리에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -101,13 +100,9 @@ export default function SocialAuthPage() {
         <TermsSection agreements={agreements} setAgreements={setAgreements} />
       )}
 
-      <button
-        onClick={handleLinkAccount}
-        disabled={!isPhoneVerified}
-        className={signupStyle.signupButton}
-      >
-        {isExistingUser ? "계정 연결하기" : "회원가입 완료"}
-      </button>
+      <Button onClick={handleLinkAccount} disabled={!isPhoneVerified}>
+        {isExistingUser ? '계정 연결하기' : '회원가입 완료'}
+      </Button>
     </div>
   );
 }
