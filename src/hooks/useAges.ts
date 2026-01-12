@@ -1,20 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAges, Age } from "@/api/ageApi";
+import axiosInstance from "@/api/axiosInstance";
+
+export type Age = {
+  id: number;
+  ageCode: string;
+};
 
 export const useAges = () => {
-  const [ages, setAges] = useState<Age[]>([]);
+  const [ageOptions, setAgeOptions] = useState<{ label: string; value: number }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const fetchAges = async () => {
       try {
-        const data = await getAges();
-        setAges(data);
+        const res = await axiosInstance.get<Age[]>("/api/ages");
+        setAgeOptions(res.data.map(a => ({ label: a.ageCode, value: a.id })));
       } catch (err) {
-        setError(err as Error);
+        console.error("나이 정보 불러오기 실패", err);
       } finally {
         setLoading(false);
       }
@@ -23,8 +27,5 @@ export const useAges = () => {
     fetchAges();
   }, []);
 
-  /** 🔥 UI에서 바로 쓰는 값 */
-  const ageOptions = ages.map((age) => age.ageCode);
-
-  return { ageOptions, loading, error };
+  return { ageOptions, loading };
 };

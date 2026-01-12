@@ -1,6 +1,6 @@
 "use client";
 
-import { KakaoIcon, NaverIcon } from "./icons/SocialIcons";
+import { KakaoIcon, NaverIcon } from "../icons/SocialIcons";
 import styles from "./Loading.module.css";
 
 interface LoadingProps {

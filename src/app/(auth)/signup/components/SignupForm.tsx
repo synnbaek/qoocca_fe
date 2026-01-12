@@ -72,7 +72,7 @@ export default function SignupForm() {
       });
       dispatch(setUserFromToken(res.data.accessToken));
       toast.success('회원가입 성공!');
-      router.push('/');
+      router.push('/academy');
     } catch (err: any) {
       toast.error('가입 실패: ' + (err.response?.data?.message || '오류 발생'));
     } finally {
