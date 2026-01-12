@@ -1,4 +1,4 @@
-import AcademyDashboard from './AcademyDashboard';
+import AcademyDashboard from './Dashboard';
 
 export default async function Page({
   params,

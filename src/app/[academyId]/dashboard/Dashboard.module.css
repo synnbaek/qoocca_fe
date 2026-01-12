@@ -6,7 +6,6 @@
   margin-right: auto;
   display: flex;
   flex-direction: column;
-  gap: 40px;
 }
 
 .promoBanner > p,
@@ -60,6 +59,22 @@
   background-color: #f9f9fa;
   border-radius: var(--radius-lg);
   padding: 30px 40px;
+}
+
+.statCard > p {
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.statLabelText {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.statNum {
+  font-size: 24px;
+  font-weight: bold;
+  color: black;
 }
 
 .statsGrid {
@@ -134,29 +149,36 @@
   margin: 15px 0;
 }
 
+.sectionTitle {
+  margin-top: 40px;
+  margin-bottom: 0;
+}
+
 .scrollSection {
   width: 0;
   min-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   display: block;
-  padding-right: 30px;
-
-  scroll-snap-type: x mandatory;
-
-  -webkit-mask-image: linear-gradient(
-    to right,
-    black 0%,
-    black 95%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(to right, black 0%, black 95%, transparent 100%);
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  scroll-behavior: smooth;
 }
 
 .scrollSection::-webkit-scrollbar {
-  display: none;
+  height: 6px;
+}
+
+.scrollSection::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.scrollSection::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 10px;
+}
+
+.scrollSection::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark-color, #555);
 }
 
 .classSection {
@@ -165,7 +187,6 @@
   gap: 20px;
   width: max-content;
   padding: 20px 0;
-  margin-top: 40px;
 }
 
 .classSection > div {

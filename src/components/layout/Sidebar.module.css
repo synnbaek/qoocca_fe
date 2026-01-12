@@ -31,6 +31,10 @@
   gap: 4px;
 }
 
+.subItem {
+  margin-left: 12px;
+}
+
 .menuLink,
 .subLinkItem,
 .toggleHeader {

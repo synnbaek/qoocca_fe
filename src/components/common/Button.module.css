@@ -27,6 +27,11 @@
   transform: translateY(-1px);
 }
 
+.button.gray:hover:not(:disabled) {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
 .primary {
   background-color: var(--primary-color);
   color: white;
@@ -35,4 +40,10 @@
 .secondary {
   background-color: var(--secondary-color);
   color: white;
+}
+
+.gray {
+  background-color: #f1f3f5;
+  color: #868e96;
+  border: none;
 }

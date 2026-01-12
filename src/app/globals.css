@@ -41,7 +41,7 @@ body {
   display: flex;
   flex: 1;
   width: 100%;
-  min-height: 0; /* ⭐ flex overflow 문제 해결 */
+  min-height: 0;
 }
 
 .layoutWrapper:has(nav:empty) .mainContent,
@@ -61,7 +61,7 @@ body {
   padding-top: 60px;
   width: 100%;
 
-  min-height: 0;        /* ⭐⭐⭐ 중요 */
+  min-height: 0;
 }
 
 .highlight {

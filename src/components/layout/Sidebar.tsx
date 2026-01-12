@@ -31,7 +31,7 @@ export default function Sidebar({ academyId }: SidebarProps) {
       <ul className={style.menuList}>
         <div className={style.menuGroupTitle}>학원</div>
         <li className={style.menuItem}>
-          <Link href={`/${academyId}`} className={getMenuClass('/')}>
+          <Link href={`/${academyId}/dashboard`} className={getMenuClass('/')}>
             홈
           </Link>
         </li>
