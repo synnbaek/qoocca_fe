@@ -1,9 +1,8 @@
-import Providers from "./providers";
-import "./globals.css";
-import Header from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
-import { Toaster } from "sonner";
-import Footer from "@/components/layout/Footer";
+import Providers from './providers';
+import './globals.css';
+import Header from '@/components/layout/Header';
+import { Toaster } from 'sonner';
+import Footer from '@/components/layout/Footer';
 
 export default function RootLayout({
   children,
@@ -16,7 +15,6 @@ export default function RootLayout({
         <Providers>
           <Header />
           <div className="layoutWrapper">
-            <Sidebar />
             <main className="mainContent">{children}</main>
           </div>
           <Footer />

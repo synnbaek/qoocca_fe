@@ -1,0 +1,22 @@
+.customSocialBtn {
+  width: 100%;
+  height: 56px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--radius-lg);
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.kakao {
+  background-color: var(--kakao-color);
+  color: #191919;
+}
+.naver {
+  background-color: var(--naver-color);
+  color: #ffffff;
+}

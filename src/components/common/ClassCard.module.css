@@ -1,5 +1,5 @@
 .card {
-  width: 267px;
+  min-width: 250px;
   height: 144px;
   background-color: var(--tertiary-color);
   border-radius: 20px;
@@ -22,6 +22,11 @@
 .className,
 .label {
   font-size: 18px;
+}
+
+.className {
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .studentCount {

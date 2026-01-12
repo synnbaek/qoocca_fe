@@ -1,9 +1,12 @@
 .container {
-  width: 90%;
-  max-width: 1348px;
-  margin-top: 40px;
-  margin-left: 40px;
+  width: 100%;
+  max-width: 1400px;
+  margin-top: 0;
+  margin-left: 0;
   margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
 }
 
 .promoBanner > p,

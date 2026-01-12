@@ -38,8 +38,7 @@ axiosInstance.interceptors.response.use(
     const originalRequest = err.config as CustomAxiosRequestConfig;
 
     if (
-      err.response?.status === 401 &&
-      originalRequest &&
+      (err.response?.status === 401 || err.response?.status === 403) &&
       !originalRequest._retry
     ) {
       if (isRefreshing) {
