@@ -41,6 +41,7 @@ body {
   display: flex;
   flex: 1;
   width: 100%;
+  min-height: 0; /* ⭐ flex overflow 문제 해결 */
 }
 
 .layoutWrapper:has(nav:empty) .mainContent,
@@ -59,8 +60,16 @@ body {
   align-items: center;
   padding-top: 60px;
   width: 100%;
+
+  min-height: 0;        /* ⭐⭐⭐ 중요 */
 }
 
 .highlight {
   color: var(--primary-color);
+}
+
+.appLayout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }

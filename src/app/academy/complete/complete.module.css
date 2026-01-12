@@ -1,0 +1,55 @@
+/* 전체 컨테이너 */
+.completeContainer {
+  background-color: var(--white);
+  padding: 2rem 3rem;                  /* 좌우 3rem, academyContainer와 동일 */
+  width: 100%;
+  min-width: var(--container-width);   /* academyContainer와 동일 */
+  margin: 0 auto;
+  border-radius: var(--radius-sm);
+  box-sizing: border-box;
+
+  max-height: 100vh;   /* 화면 세로 제한 */
+  overflow-y: auto;    /* 세로 스크롤 허용 */
+}
+
+/* 제목 영역 */
+.titleWrapper {
+  display: flex;
+  justify-content: center; /* 가로 가운데 정렬 */
+  margin-top: 40px;        /* 상단 여백 */
+  margin-bottom: 24px;     /* 아래 여백 */
+}
+
+.completeTitle {
+  font-size: 16px;
+  font-weight: 600;
+
+  color: #111827;      /* ✅ 진짜 검정 (Tailwind gray-900) */
+
+  margin: 0;
+  line-height: 1.4;    /* ⭐ 줄 간격 줄이기 */
+  text-align: center;
+}
+
+/* 바로 다음 줄만 살짝만 붙이기 */
+.completeTitle + .completeTitle {
+  margin-top: 0.3px;     /* ⭐ 거의 한 문단처럼 */
+}
+
+/* 안내 문단 */
+.completeText {
+  font-size: 14px;
+  font-weight: 400;       /* 일반 글씨 */
+  color: #6b7280;         /* 연한 회색 */
+  line-height: 1.6;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* 섹션 박스 (여백 통일용) */
+.sectionBox {
+  padding: 0;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+

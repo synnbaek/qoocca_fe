@@ -1,4 +1,3 @@
-// src/app/(auth)/signup/components/SignupForm.tsx
 'use client';
 
 import PhoneSection from './PhoneSection';

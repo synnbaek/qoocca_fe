@@ -1,0 +1,88 @@
+.formContainer {
+  background-color: var(--white);
+  padding: 2rem 3rem;
+  width: 100%;
+  min-width: var(--container-width);
+  margin: 0 auto;
+  border-radius: var(--radius-sm);
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  overflow-y: visible;
+}
+
+.titleWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  margin-bottom: 24px;
+}
+
+.sectionBox {
+  padding: 0;
+  margin-top: 16px;
+  box-sizing: border-box;
+}
+
+/* ===== MultiSelect ===== */
+
+.multiSelectWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.multiSelectLabel {
+  font-weight: 500;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+/* 전역 Input 스타일을 쓰므로 border/padding 제거 */
+.multiSelectBox {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.arrow {
+  margin-left: 8px;
+  font-size: 12px;
+}
+
+/* 드롭다운 */
+.multiSelectOptionsDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+
+  border: 1px solid var(--divider-color);
+  border-radius: var(--radius-md);
+  margin-top: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+  background-color: #fff;
+
+  z-index: 9999;
+}
+
+.multiSelectOption {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.multiSelectOption:hover {
+  background-color: #f0f0f0;
+}
+
+.selected {
+  background-color: var(--primary-color);
+  color: white;
+}
