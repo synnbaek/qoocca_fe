@@ -1,4 +1,4 @@
-import styles from "../form/form.module.css";
+import Input from "../../../components/common/Input";
 
 type Props = {
   label: string;
@@ -8,13 +8,10 @@ type Props = {
 
 export default function TextInput({ label, value, onChange }: Props) {
   return (
-    <div className={styles.textInputWrapper}>
-      <label className={styles.textInputLabel}>{label}</label>
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={styles.textInputField}
-      />
-    </div>
+    <Input
+      label={label}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
   );
 }
