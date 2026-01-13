@@ -1,12 +1,12 @@
-import styles from "./Button.module.css";
+import styles from './Button.module.css';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline";
+  variant?: 'primary' | 'secondary' | 'gray';
 }
 
 export default function Button({
   children,
-  variant = "primary",
+  variant = 'primary',
   ...props
 }: ButtonProps) {
   return (

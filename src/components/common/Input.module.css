@@ -10,6 +10,14 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+}
+
 .input:focus {
   border-color: #a1ccff;
   box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);

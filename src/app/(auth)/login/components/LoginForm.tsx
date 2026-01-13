@@ -30,17 +30,14 @@ export default function LoginForm() {
         password,
       });
 
-      console.log('서버 응답 전체:', res.data);
-
       const { accessToken, academyId } = res.data;
-      console.log('추출된 academyId:', academyId);
 
       if (accessToken) {
         dispatch(setUserFromToken(res.data.accessToken));
       }
 
       if (academyId) {
-        router.push(`/${academyId}`);
+        router.push(`/${academyId}/dashboard`);
       } else {
         router.push('/');
       }
