@@ -37,7 +37,7 @@ export default function LoginForm() {
       }
 
       if (academyId) {
-        router.push(`/${academyId}/dashboard`);
+        router.push(`/academy/${academyId}`);
       } else {
         router.push('/');
       }

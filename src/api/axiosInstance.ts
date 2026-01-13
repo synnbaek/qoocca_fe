@@ -65,7 +65,7 @@ axiosInstance.interceptors.response.use(
         const newAccessToken = res.data.accessToken;
 
         Cookies.set('accessToken', newAccessToken, {
-          expires: 1,
+          expires: 0.021,
           path: '/',
           secure: process.env.NODE_ENV === 'production',
         });

@@ -3,8 +3,6 @@
 import { useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch } from 'react-redux';
-import axios from 'axios';
-import Cookies from 'js-cookie';
 import { setUserFromToken } from '@/store/userSlice';
 import { toast } from 'sonner';
 import Loading from '@/components/common/Loading';
@@ -41,10 +39,6 @@ export default function SocialHandler({ provider }: SocialHandlerProps) {
             )}&provider=${provider}`
           );
         } else {
-          Cookies.set('accessToken', accessToken, {
-            expires: 0.021,
-            path: '/',
-          });
           dispatch(setUserFromToken(accessToken));
           toast.success('로그인 성공!');
           router.replace('/');

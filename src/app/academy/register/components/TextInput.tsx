@@ -1,4 +1,4 @@
-import Input from "../../../components/common/Input";
+import Input from '../../../../components/common/Input';
 
 type Props = {
   label: string;

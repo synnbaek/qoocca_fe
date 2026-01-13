@@ -2,12 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, use } from 'react';
-import AcademyTitle from '../../academy/components/AcademyTitle';
-import TextInput from '../../academy/components/TextInput';
+import AcademyTitle from '../register/components/AcademyTitle';
+import TextInput from '../register/components/TextInput';
 import Button from '../../../components/common/Button';
 import axiosInstance from '@/api/axiosInstance';
 import { toast } from 'sonner';
-import MultiSelect from '@/app/academy/components/MultiSelect';
+import MultiSelect from '@/app/academy/register/components/MultiSelect';
 import { useSubjects } from '@/hooks/useSubjects';
 import { useAges } from '@/hooks/useAges';
 import styles from './AcademyEditPage.module.css';

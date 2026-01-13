@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import styles from "./complete.module.css";
-import AcademyTitle from "../components/AcademyTitle";
-import Button from "../../../components/common/Button";
+import { useRouter } from 'next/navigation';
+import styles from './complete.module.css';
+import AcademyTitle from '../components/AcademyTitle';
+import Button from '../../../../components/common/Button';
 
 export default function AcademyCompletePage() {
   const router = useRouter();
@@ -22,14 +22,13 @@ export default function AcademyCompletePage() {
         </p>
 
         <p className={styles.completeText}>
-          승인 완료 후 출결, 수업 관리, 수납 관리 등 모든 기능을 이용하실 수 있습니다.
+          승인 완료 후 출결, 수업 관리, 수납 관리 등 모든 기능을 이용하실 수
+          있습니다.
         </p>
       </div>
 
       <div className={styles.sectionBox}>
-        <Button onClick={() => router.push("/")}>
-          확인
-        </Button>
+        <Button onClick={() => router.push('/')}>확인</Button>
       </div>
     </div>
   );

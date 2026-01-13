@@ -1,16 +1,17 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useAcademy } from "../../context/AcademyContext";
-import AcademyTitle from "../academy/components/AcademyTitle";
-import TextInput from "../academy/components/TextInput";
-import MultiFileInput from "../academy/components/MultiFileInput";
-import styles from "./academy.module.css";
-import Button from "../../components/common/Button";
+import { useRouter } from 'next/navigation';
+import { useAcademy } from '../../../context/AcademyContext';
+import AcademyTitle from './components/AcademyTitle';
+import TextInput from './components/TextInput';
+import MultiFileInput from './components/MultiFileInput';
+import styles from './academy.module.css';
+import Button from '../../../components/common/Button';
 
-export default function AcademyStartPage() {
+export default function AcademyRegisterPage() {
   const router = useRouter();
-  const { academyName, setAcademyName, businessFiles, setBusinessFiles } = useAcademy();
+  const { academyName, setAcademyName, businessFiles, setBusinessFiles } =
+    useAcademy();
 
   return (
     <div className={styles.academyContainer}>
@@ -35,12 +36,11 @@ export default function AcademyStartPage() {
       <div className={styles.sectionBox}>
         <Button
           disabled={!academyName || businessFiles.length === 0}
-          onClick={() => router.push("/academy/form")}
+          onClick={() => router.push('/academy/form')}
         >
           다음
         </Button>
       </div>
-
     </div>
   );
 }

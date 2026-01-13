@@ -29,38 +29,44 @@ export default function Dashboard({ academyId }: Props) {
     description: '',
   });
 
+  const [studentCount, setStudentCount] = useState(0);
+
   const router = useRouter();
+
+  const isRegistered = !!academyId && academyId !== 'undefined';
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!academyId) return;
+
       try {
         setIsLoading(true);
-        const res = await axiosInstance.get(`/api/academy/${academyId}`);
-        console.log('서버에서 받은 학원 데이터:', res.data);
 
-        const status = res.data.approvalStatus;
+        const [academyRes, countRes] = await Promise.all([
+          axiosInstance.get(`/api/academy/${academyId}`),
+          axiosInstance.get(`/api/academy/${academyId}/student/cnt`),
+        ]);
+
+        const status = academyRes.data.approvalStatus;
         setApprovalStatus(status);
+
+        setStudentCount(countRes.data);
 
         if (status === 'APPROVED') {
           const classRes = await axiosInstance.get(
             `/api/academy/${academyId}/class`
           );
           setClasses(classRes.data || []);
-        } else if (status === 'PENDING') {
-        } else if (status === 'REJECTED') {
         }
       } catch (err: any) {
-        console.error('API 호출 실패 상세:', err.response?.data || err.message);
+        console.error('데이터 로딩 실패:', err.response?.data || err.message);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (academyId) fetchData();
+    fetchData();
   }, [academyId]);
-
-  const isRegistered = !!academyId;
-  console.log(isRegistered);
 
   const handleFeatureClick = (path?: string) => {
     if (!isRegistered) {
@@ -96,7 +102,7 @@ export default function Dashboard({ academyId }: Props) {
 
   return (
     <div className={styles.container}>
-      {!isLoading && (
+      {!isRegistered && (
         <DashboardBanner
           isRegistered={isRegistered}
           approvalStatus={approvalStatus}
@@ -106,7 +112,7 @@ export default function Dashboard({ academyId }: Props) {
       <div onClick={() => handleFeatureClick()}>
         <DashboardStats
           isRegistered={isRegistered}
-          studentCount={classes.length}
+          studentCount={isRegistered ? studentCount : 0}
         />
       </div>
 
