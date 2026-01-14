@@ -29,7 +29,7 @@ export default function SocialHandler({ provider }: SocialHandlerProps) {
       try {
         const res = await axiosInstance.post(`/api/auth/${provider}`, { code });
 
-        const { accessToken, socialId } = res.data;
+        const { accessToken, socialId, academyId } = res.data;
 
         if (accessToken === 'NEED_PHONE_AUTH') {
           toast.info('추가 휴대폰 인증이 필요합니다.');
@@ -41,7 +41,11 @@ export default function SocialHandler({ provider }: SocialHandlerProps) {
         } else {
           dispatch(setUserFromToken(accessToken));
           toast.success('로그인 성공!');
-          router.replace('/');
+          if (academyId) {
+            router.push(`/academy/${academyId}`);
+          } else {
+            router.push('/academy');
+          }
         }
       } catch (err: any) {
         toast.error(

@@ -15,11 +15,24 @@ interface Props {
   academyId?: string;
 }
 
+interface DashboardStatsData {
+  studentCount: number;
+  presentCount: number;
+  totalTodayCount: number;
+  noCardCount: number;
+  totalMonthlyFee: number;
+}
+
 export default function Dashboard({ academyId }: Props) {
+  const router = useRouter();
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const [approvalStatus, setApprovalStatus] = useState<
-    'REJECTED' | 'PENDING' | 'APPROVED'
-  >('PENDING');
+    'REJECTED' | 'PENDING' | 'APPROVED' | null
+  >(null);
+
+  const isRegistered = !!academyId && academyId !== 'undefined';
+
   const [classes, setClasses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,34 +42,39 @@ export default function Dashboard({ academyId }: Props) {
     description: '',
   });
 
-  const [studentCount, setStudentCount] = useState(0);
-
-  const router = useRouter();
-
-  const isRegistered = !!academyId && academyId !== 'undefined';
+  const [stats, setStats] = useState<DashboardStatsData>({
+    studentCount: 0,
+    presentCount: 0,
+    totalTodayCount: 0,
+    noCardCount: 0,
+    totalMonthlyFee: 0,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!academyId) return;
+      if (!isRegistered) {
+        setIsLoading(false);
+        return;
+      }
 
       try {
         setIsLoading(true);
 
-        const [academyRes, countRes] = await Promise.all([
+        const [academyRes] = await Promise.all([
           axiosInstance.get(`/api/academy/${academyId}`),
-          axiosInstance.get(`/api/academy/${academyId}/student/cnt`),
         ]);
 
         const status = academyRes.data.approvalStatus;
         setApprovalStatus(status);
 
-        setStudentCount(countRes.data);
-
         if (status === 'APPROVED') {
-          const classRes = await axiosInstance.get(
-            `/api/academy/${academyId}/class`
-          );
+          const [classRes, statsRes] = await Promise.all([
+            axiosInstance.get(`/api/academy/${academyId}/class/summary`),
+            axiosInstance.get(`/api/academy/${academyId}/stats`),
+          ]);
+
           setClasses(classRes.data || []);
+          setStats(statsRes.data);
         }
       } catch (err: any) {
         console.error('데이터 로딩 실패:', err.response?.data || err.message);
@@ -66,7 +84,7 @@ export default function Dashboard({ academyId }: Props) {
     };
 
     fetchData();
-  }, [academyId]);
+  }, [academyId, isRegistered]);
 
   const handleFeatureClick = (path?: string) => {
     if (!isRegistered) {
@@ -103,16 +121,17 @@ export default function Dashboard({ academyId }: Props) {
   return (
     <div className={styles.container}>
       {!isRegistered && (
-        <DashboardBanner
-          isRegistered={isRegistered}
-          approvalStatus={approvalStatus}
-        />
+        <DashboardBanner isRegistered={isRegistered} approvalStatus={''} />
       )}
 
       <div onClick={() => handleFeatureClick()}>
         <DashboardStats
           isRegistered={isRegistered}
-          studentCount={isRegistered ? studentCount : 0}
+          studentCount={isRegistered ? stats.studentCount : 0}
+          presentCount={stats.presentCount}
+          totalTodayCount={stats.totalTodayCount}
+          noCardCount={stats.noCardCount}
+          totalMonthlyFee={stats.totalMonthlyFee}
         />
       </div>
 
@@ -124,9 +143,11 @@ export default function Dashboard({ academyId }: Props) {
               <ClassCard
                 key={cls.classId}
                 name={cls.className}
-                count={cls.maxCount ? `0/${cls.maxCount}` : '0/0'}
-                late={0}
-                absent={0}
+                count={`${cls.presentCount + cls.lateCount}/${
+                  cls.currentCount
+                }`}
+                late={cls.lateCount}
+                absent={cls.absentCount}
                 bgColor={
                   index % 2 === 0 ? 'var(--tertiary-color)' : 'var(--perple)'
                 }
@@ -137,7 +158,9 @@ export default function Dashboard({ academyId }: Props) {
             ))}
           <ClassCard
             isEmpty
-            onClick={() => handleFeatureClick(`/${academyId}/class/register`)}
+            onClick={() =>
+              handleFeatureClick(`/academy/${academyId}/class/register`)
+            }
           />
         </section>
       </div>
