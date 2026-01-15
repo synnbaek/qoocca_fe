@@ -14,12 +14,12 @@ export const usePayment = (academyId: string) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [classList, setClassList] = useState<ClassSummary[]>([]);
   const [expandedClassId, setExpandedClassId] = useState<number | null>(null);
+  const [totalMonthlyFee, setTotalMonthlyFee] = useState<number>(0);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   
-  // Selection States
-  const [selectedIds, setSelectedIds] = useState<number[]>([]); // Class selection
-  const [selectedStudentIds, setSelectedStudentIds] = useState<number[]>([]); // Student selection
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedStudentIds, setSelectedStudentIds] = useState<number[]>([]);
 
-  // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalConfig, setModalConfig] = useState<ModalConfig>({
     title: '',
@@ -53,6 +53,23 @@ export const usePayment = (academyId: string) => {
     fetchSummary();
   }, [academyId, currentDate]);
 
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!academyId) return;
+      try {
+        const res = await axiosInstance.get(`/api/academy/${academyId}/stats`);
+        setTotalMonthlyFee(res.data.totalMonthlyFee);
+      } catch (err) {
+        console.error('스탯 로딩 실패:', err);
+      }
+    };
+    fetchStats();
+  }, [academyId]);
+
+  const filteredClassList = classList.filter((cls) =>
+    cls.className.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   // Date Handlers
   const handlePrevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
@@ -62,18 +79,17 @@ export const usePayment = (academyId: string) => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
   };
 
-  // Row Handler
   const handleRowClick = (classId: number) => {
     setExpandedClassId(expandedClassId === classId ? null : classId);
   };
 
-  // Selection Handlers - Class
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      const allIds = classList.map((cls) => cls.classId);
-      setSelectedIds(allIds);
+      const visibleIds = filteredClassList.map((cls) => cls.classId);
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...visibleIds])));
     } else {
-      setSelectedIds([]);
+      const visibleIds = filteredClassList.map((cls) => cls.classId);
+      setSelectedIds((prev) => prev.filter((id) => !visibleIds.includes(id)));
     }
   };
 
@@ -83,7 +99,6 @@ export const usePayment = (academyId: string) => {
     );
   };
 
-  // Selection Handlers - Student
   const handleSelectAllStudents = (
     e: React.ChangeEvent<HTMLInputElement>,
     students: StudentDetail[]
@@ -185,5 +200,9 @@ export const usePayment = (academyId: string) => {
     handleSelectAllStudents,
     handleSelectStudent,
     handlePaymentRequest,
+    totalMonthlyFee,
+    searchQuery,
+    setSearchQuery,
+    filteredClassList,
   };
 };

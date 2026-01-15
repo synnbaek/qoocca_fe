@@ -5,6 +5,7 @@ import styles from './PaymentPage.module.css';
 import CustomModal from '@/components/common/CustomModal';
 import PaymentDateController from './components/PaymentDateController';
 import PaymentRow from './components/PaymentRow';
+import { SearchIcon } from '@/components/icons/BasicIcons';
 import { usePayment } from '@/hooks/usePayment';
 
 export default function PaymentPage() {
@@ -28,6 +29,10 @@ export default function PaymentPage() {
     handleSelectAllStudents,
     handleSelectStudent,
     handlePaymentRequest,
+    totalMonthlyFee,
+    searchQuery,
+    setSearchQuery,
+    filteredClassList,
   } = usePayment(academyId as string);
 
   const handleAddClass = () => {
@@ -35,7 +40,8 @@ export default function PaymentPage() {
   };
 
   const isAllSelected =
-    classList.length > 0 && selectedIds.length === classList.length;
+    filteredClassList.length > 0 &&
+    filteredClassList.every((cls) => selectedIds.includes(cls.classId));
 
   return (
     <div className={styles.container}>
@@ -46,8 +52,31 @@ export default function PaymentPage() {
         onAddClass={handleAddClass}
       />
 
+      <div className={styles.summarySection}>
+        <div className={styles.totalAmountWrapper}>
+          <span className={styles.totalLabel}>이번달 수납 금액</span>
+          <span className={styles.totalAmount}>
+            {totalMonthlyFee.toLocaleString()}원
+          </span>
+        </div>
+        <div className={styles.searchBarWrapper}>
+          <div className={styles.searchIcon}>
+            <SearchIcon />
+          </div>
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="클래스명을 입력해주세요"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </div>
+
       <div className={styles.tableSection}>
-        <div className={styles.totalInfo}>전체 클래스 {classList.length}</div>
+        <div className={styles.totalInfo}>
+          전체 클래스 {filteredClassList.length}
+        </div>
 
         <table className={styles.paymentTable}>
           <thead>
@@ -66,8 +95,8 @@ export default function PaymentPage() {
             </tr>
           </thead>
           <tbody>
-            {classList.length > 0 ? (
-              classList.map((cls) => (
+            {filteredClassList.length > 0 ? (
+              filteredClassList.map((cls) => (
                 <PaymentRow
                   key={cls.classId}
                   cls={cls}

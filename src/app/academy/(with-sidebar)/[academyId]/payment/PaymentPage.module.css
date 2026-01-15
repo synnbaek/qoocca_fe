@@ -1,5 +1,5 @@
 .container {
-  width: 100%;
+  max-width: 1060px;
   display: flex;
   flex-direction: column;
 }
@@ -197,4 +197,69 @@
   background-color: white;
   border: 1px solid #eee;
   color: #aaa;
+}
+
+.summarySection {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.totalAmountWrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.totalLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.totalAmount {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.searchBarWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background-color: white;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.searchBarWrapper:focus-within {
+  border-color: var(--primary-color);
+}
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  color: #999;
+}
+
+.searchIcon svg path {
+  stroke: currentColor;
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  width: 100%;
+  color: #333;
+}
+
+.searchInput::placeholder {
+  color: #ccc;
 }
