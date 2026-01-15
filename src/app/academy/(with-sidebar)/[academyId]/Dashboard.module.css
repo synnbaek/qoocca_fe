@@ -129,10 +129,18 @@
   margin-bottom: 25px;
 }
 
+.reportArrow {
+  cursor: pointer;
+}
+
 .reportHeader {
   display: flex;
   justify-content: space-between;
   margin-bottom: 15px;
+}
+
+.reportHeader .reportItem {
+  opacity: 0.4;
 }
 
 .reportItem {
@@ -140,7 +148,29 @@
   text-align: center;
   font-size: 14px;
   color: #000000;
-  opacity: 0.4;
+}
+
+.reportRowContent {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.statusPAID {
+  color: #28a745;
+}
+
+.statusISSUED {
+  color: var(--primary-color);
+}
+
+.statusBEFORE_REQUEST {
+  color: #999;
+}
+
+.amountText {
+  font-weight: bold;
+  color: black;
 }
 
 .divider {

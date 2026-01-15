@@ -3,9 +3,20 @@ import styles from '../Dashboard.module.css';
 interface Props {
   isRegistered: boolean;
   studentCount: number;
+  presentCount: number;
+  totalTodayCount: number;
+  noCardCount: number;
+  totalMonthlyFee: number;
 }
 
-export default function DashboardStats({ isRegistered, studentCount }: Props) {
+export default function DashboardStats({
+  isRegistered,
+  studentCount,
+  presentCount,
+  totalTodayCount,
+  noCardCount,
+  totalMonthlyFee,
+}: Props) {
   const today = new Date().toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: '2-digit',
@@ -32,11 +43,11 @@ export default function DashboardStats({ isRegistered, studentCount }: Props) {
           <br />
           <p>
             <span className={styles.statNum}>
-              {isRegistered ? `${studentCount} ` : '0'}
+              {isRegistered ? `${presentCount} ` : '0'}
             </span>
             /
             <span className={styles.statNum}>
-              {isRegistered ? ` ${studentCount}` : '0'}
+              {isRegistered ? ` ${totalTodayCount}` : '0'}
             </span>
           </p>
         </div>
@@ -46,7 +57,7 @@ export default function DashboardStats({ isRegistered, studentCount }: Props) {
           <p>
             <span className={styles.statLabelText}>미등록</span>
             <span className={styles.statNum}>
-              {isRegistered ? ` ${studentCount} ` : '0'}
+              {isRegistered ? ` ${noCardCount} ` : '0'}
             </span>
             명
           </p>
@@ -56,7 +67,7 @@ export default function DashboardStats({ isRegistered, studentCount }: Props) {
           <br />
           <p>
             <span className={styles.statNum}>
-              {isRegistered ? `${studentCount} ` : '0'}
+              {isRegistered ? `${totalMonthlyFee.toLocaleString()} ` : '0'}
             </span>
             원
           </p>

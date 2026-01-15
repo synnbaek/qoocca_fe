@@ -6,7 +6,7 @@ import AcademyTitle from './components/AcademyTitle';
 import TextInput from './components/TextInput';
 import MultiFileInput from './components/MultiFileInput';
 import styles from './academy.module.css';
-import Button from '../../../components/common/Button';
+import Button from '@/components/common/Button';
 
 export default function AcademyRegisterPage() {
   const router = useRouter();

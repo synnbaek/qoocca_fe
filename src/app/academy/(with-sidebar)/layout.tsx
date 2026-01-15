@@ -8,11 +8,14 @@ export default async function AcademyLayout({
   children: React.ReactNode;
   params: Promise<{ academyId: string }>;
 }) {
-  const { academyId } = await params;
+  const resolvedParams = await params;
+  const academyId = resolvedParams?.academyId;
+
+  const safeAcademyId = academyId && academyId !== 'undefined' ? academyId : '';
 
   return (
     <div className={styles.container}>
-      <Sidebar academyId={academyId} />
+      <Sidebar academyId={safeAcademyId} />
       <main className={styles.mainContent}>{children}</main>
     </div>
   );

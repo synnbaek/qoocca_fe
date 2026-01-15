@@ -86,3 +86,41 @@
   background-color: var(--primary-color);
   color: white;
 }
+
+.selectedTagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.tag {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--primary-color);
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 14px;
+}
+
+.tagName {
+  color: var(--primary-color);
+}
+
+.removeTagBtn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  margin-left: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.removeTagBtn:hover {
+  color: #ff4d4f;
+}
+
+.placeholder {
+  color: #999;
+}

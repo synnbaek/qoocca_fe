@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
 import style from './Sidebar.module.css';
 
@@ -9,20 +9,23 @@ interface SidebarProps {
   academyId: string;
 }
 
-export default function Sidebar({ academyId }: SidebarProps) {
+export default function Sidebar({ academyId: propsId }: SidebarProps) {
   const pathname = usePathname();
+
+  const params = useParams();
+  const academyId = (params.academyId as string) || propsId;
 
   const [isManagementOpen, setIsManagementOpen] = useState(
     pathname.includes('/attendance') || pathname.includes('/payment')
   );
 
   const getMenuClass = (path: string) => {
-    const fullPath = `/${academyId}${path === '/' ? '' : path}`;
+    const fullPath = `/academy/${academyId}${path === '/' ? '' : path}`;
     return `${style.menuLink} ${pathname === fullPath ? style.active : ''}`;
   };
 
   const getSubMenuClass = (path: string) => {
-    const fullPath = `/${academyId}${path}`;
+    const fullPath = `/academy/${academyId}${path}`;
     return `${style.subLinkItem} ${pathname === fullPath ? style.active : ''}`;
   };
 
@@ -31,14 +34,14 @@ export default function Sidebar({ academyId }: SidebarProps) {
       <ul className={style.menuList}>
         <div className={style.menuGroupTitle}>학원</div>
         <li className={style.menuItem}>
-          <Link href={`/${academyId}/dashboard`} className={getMenuClass('/')}>
+          <Link href={`/academy/${academyId}`} className={getMenuClass('/')}>
             홈
           </Link>
         </li>
         <li className={style.menuItem}>
           <Link
-            href={`/${academyId}/academy`}
-            className={getMenuClass('/academy')}
+            href={`/academy/${academyId}/modify`}
+            className={getMenuClass('/modify')}
           >
             학원 정보
           </Link>
@@ -47,7 +50,7 @@ export default function Sidebar({ academyId }: SidebarProps) {
         <div className={style.menuGroupTitle}>운영</div>
         <li className={style.menuItem}>
           <Link
-            href={`/${academyId}/student`}
+            href={`/academy/${academyId}/student`}
             className={getMenuClass('/student')}
           >
             원생 관리
@@ -72,7 +75,7 @@ export default function Sidebar({ academyId }: SidebarProps) {
             <ul className={style.subList}>
               <li className={style.subItem}>
                 <Link
-                  href={`/${academyId}/attendance`}
+                  href={`/academy/${academyId}/attendance`}
                   className={getSubMenuClass('/attendance')}
                 >
                   출결
@@ -80,7 +83,7 @@ export default function Sidebar({ academyId }: SidebarProps) {
               </li>
               <li className={style.subItem}>
                 <Link
-                  href={`/${academyId}/payment`}
+                  href={`/academy/${academyId}/payment`}
                   className={getSubMenuClass('/payment')}
                 >
                   수납
@@ -93,7 +96,7 @@ export default function Sidebar({ academyId }: SidebarProps) {
         <div className={style.menuGroupTitle}>기타</div>
         <li className={style.menuItem}>
           <Link
-            href={`/${academyId}/settings`}
+            href={`/academy/${academyId}/settings`}
             className={getMenuClass('/settings')}
           >
             설정

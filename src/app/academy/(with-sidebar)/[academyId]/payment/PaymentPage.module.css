@@ -1,0 +1,265 @@
+.container {
+  max-width: 1060px;
+  display: flex;
+  flex-direction: column;
+}
+
+.headerBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.dateController {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.currentDate {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.arrowBtn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #666;
+  padding: 5px 10px;
+}
+
+.addClassBtn {
+  position: absolute;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: white;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addClassBtn:hover,
+.requestBtn:hover {
+  background-color: #f0faff;
+}
+
+.requestBtn {
+  background-color: white;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: 20px;
+}
+
+.totalInfo {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.paymentTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.paymentTable th {
+  text-align: center;
+  vertical-align: middle;
+  padding: 15px 10px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #999;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.paymentTable td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 20px 10px;
+  border-bottom: 1px solid var(--divider-color);
+  font-size: 1rem;
+  color: #444;
+}
+
+.classNameCol,
+.completedCount {
+  color: #222;
+}
+
+.emptyRow {
+  text-align: center;
+  color: #aaa;
+  padding: 50px !important;
+}
+
+.paymentTable input[type='checkbox'] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+}
+
+.mainRow {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.mainRow.expanded {
+  background-color: #f8faff;
+}
+
+.detailActionRow td,
+.studentRow td {
+  background-color: #fcfcfc;
+  border: none;
+}
+
+.detailActionRow td {
+  padding: 15px 0 10px 0;
+  background-color: #fcfcfc;
+  border: none;
+}
+
+.checkboxWrapper {
+  text-align: center;
+}
+
+.detailActionContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.selectAllLabel {
+  font-size: 0.9rem;
+  color: #555;
+  cursor: pointer;}
+
+.subArrow {
+  color: #ccc;
+  font-size: 1.1rem;
+  margin-right: 10px;
+}
+
+.subIconCol {
+  text-align: right !important;
+  padding-right: 15px !important;
+}
+
+.studentInfoWrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-align: left;
+}
+
+.studentAmount {
+  color: #666;
+  flex: 1;
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  min-width: 90px;
+  display: inline-block;
+  text-align: center;
+}
+
+.BEFORE_REQUEST {
+  color: #888;
+}
+.ISSUED {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+.PAID {
+  background-color: white;
+  border: 1px solid #eee;
+  color: #aaa;
+}
+
+.summarySection {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.totalAmountWrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.totalLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.totalAmount {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.searchBarWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background-color: white;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.searchBarWrapper:focus-within {
+  border-color: var(--primary-color);
+}
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  color: #999;
+}
+
+.searchIcon svg path {
+  stroke: currentColor;
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  width: 100%;
+  color: #333;
+}
+
+.searchInput::placeholder {
+  color: #ccc;
+}

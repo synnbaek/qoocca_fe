@@ -15,11 +15,32 @@ interface Props {
   academyId?: string;
 }
 
+interface DashboardStatsData {
+  studentCount: number;
+  presentCount: number;
+  totalTodayCount: number;
+  noCardCount: number;
+  totalMonthlyFee: number;
+}
+
+interface ReceiptSummary {
+  className: string;
+  classTime: string;
+  status: 'BEFORE_REQUEST' | 'ISSUED' | 'PAID';
+  statusLabel: string;
+  totalAmount: number;
+}
+
 export default function Dashboard({ academyId }: Props) {
+  const router = useRouter();
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const [approvalStatus, setApprovalStatus] = useState<
-    'REJECTED' | 'PENDING' | 'APPROVED'
-  >('PENDING');
+    'REJECTED' | 'PENDING' | 'APPROVED' | null
+  >(null);
+
+  const isRegistered = !!academyId && academyId !== 'undefined';
+
   const [classes, setClasses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,34 +50,57 @@ export default function Dashboard({ academyId }: Props) {
     description: '',
   });
 
-  const [studentCount, setStudentCount] = useState(0);
+  const [stats, setStats] = useState<DashboardStatsData>({
+    studentCount: 0,
+    presentCount: 0,
+    totalTodayCount: 0,
+    noCardCount: 0,
+    totalMonthlyFee: 0,
+  });
 
-  const router = useRouter();
-
-  const isRegistered = !!academyId && academyId !== 'undefined';
-
+  const [receipts, setReceipts] = useState<ReceiptSummary[]>([]);
+  
   useEffect(() => {
     const fetchData = async () => {
-      if (!academyId) return;
+      if (!isRegistered) {
+        setIsLoading(false);
+        return;
+      }
 
       try {
         setIsLoading(true);
 
-        const [academyRes, countRes] = await Promise.all([
+        const [academyRes] = await Promise.all([
           axiosInstance.get(`/api/academy/${academyId}`),
-          axiosInstance.get(`/api/academy/${academyId}/student/cnt`),
         ]);
 
         const status = academyRes.data.approvalStatus;
         setApprovalStatus(status);
 
-        setStudentCount(countRes.data);
-
         if (status === 'APPROVED') {
-          const classRes = await axiosInstance.get(
-            `/api/academy/${academyId}/class`
-          );
+
+          const [classRes, statsRes] = await Promise.all([
+            axiosInstance.get(`/api/academy/${academyId}/class/summary`),
+            axiosInstance.get(`/api/academy/${academyId}/stats`),
+          ]);
+
           setClasses(classRes.data || []);
+          setStats(statsRes.data);
+
+          try {
+            const receiptRes = await axiosInstance.get(
+              `/api/academy/${academyId}/receipt/dashboard-main`,
+              {
+                params: {
+                  year: new Date().getFullYear(),
+                  month: new Date().getMonth() + 1,
+                },
+              }
+            );
+            setReceipts(receiptRes.data || []);
+          } catch (e) {
+            setReceipts([]);
+          }
         }
       } catch (err: any) {
         console.error('데이터 로딩 실패:', err.response?.data || err.message);
@@ -66,7 +110,7 @@ export default function Dashboard({ academyId }: Props) {
     };
 
     fetchData();
-  }, [academyId]);
+  }, [academyId, isRegistered]);
 
   const handleFeatureClick = (path?: string) => {
     if (!isRegistered) {
@@ -103,16 +147,17 @@ export default function Dashboard({ academyId }: Props) {
   return (
     <div className={styles.container}>
       {!isRegistered && (
-        <DashboardBanner
-          isRegistered={isRegistered}
-          approvalStatus={approvalStatus}
-        />
+        <DashboardBanner isRegistered={isRegistered} approvalStatus={''} />
       )}
 
       <div onClick={() => handleFeatureClick()}>
         <DashboardStats
           isRegistered={isRegistered}
-          studentCount={isRegistered ? studentCount : 0}
+          studentCount={isRegistered ? stats.studentCount : 0}
+          presentCount={stats.presentCount}
+          totalTodayCount={stats.totalTodayCount}
+          noCardCount={stats.noCardCount}
+          totalMonthlyFee={stats.totalMonthlyFee}
         />
       </div>
 
@@ -124,20 +169,26 @@ export default function Dashboard({ academyId }: Props) {
               <ClassCard
                 key={cls.classId}
                 name={cls.className}
-                count={cls.maxCount ? `0/${cls.maxCount}` : '0/0'}
-                late={0}
-                absent={0}
+                count={`${cls.presentCount + cls.lateCount}/${
+                  cls.currentCount
+                }`}
+                late={cls.lateCount}
+                absent={cls.absentCount}
                 bgColor={
                   index % 2 === 0 ? 'var(--tertiary-color)' : 'var(--perple)'
                 }
                 onClick={() =>
-                  handleFeatureClick(`/${academyId}/class/${cls.classId}`)
+                  handleFeatureClick(
+                    `/academy/${academyId}/class/${cls.classId}`
+                  )
                 }
               />
             ))}
           <ClassCard
             isEmpty
-            onClick={() => handleFeatureClick(`/${academyId}/class/register`)}
+            onClick={() =>
+              handleFeatureClick(`/academy/${academyId}/class/register`)
+            }
           />
         </section>
       </div>
@@ -149,13 +200,33 @@ export default function Dashboard({ academyId }: Props) {
         <DashboardReport
           title="오늘의 보상"
           headers={['클래스', '수업 시간', '미지급', '지급완료']}
-          isRegistered={isRegistered}
+          isRegistered={isRegistered} 
+          onClick={() => handleFeatureClick(`/academy/${academyId}/reward`)}
         />
         <DashboardReport
           title="이번 달 수납"
           headers={['클래스', '수업 시간', '수납 상태', '월 수납 금액']}
           isRegistered={isRegistered}
-        />
+          onClick={() => handleFeatureClick(`/academy/${academyId}/payment`)}
+        >
+          {receipts.length > 0 &&
+            receipts.map((item, index) => (
+              <div key={index} className={styles.reportRowContent}>
+                <div className={styles.reportItem}>{item.className}</div>
+                <div className={styles.reportItem}>{item.classTime}</div>
+                <div
+                  className={`${styles.reportItem} ${
+                    styles[`status${item.status}`]
+                  }`}
+                >
+                  ● {item.statusLabel}
+                </div>
+                <div className={`${styles.reportItem} ${styles.amountText}`}>
+                  {item.totalAmount.toLocaleString()}원
+                </div>
+              </div>
+            ))}
+        </DashboardReport>
       </section>
 
       <CustomModal

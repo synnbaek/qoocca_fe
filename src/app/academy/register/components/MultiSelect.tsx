@@ -9,27 +9,39 @@ type Props = {
   onChange: (value: string[]) => void;
 };
 
-export default function MultiSelect({ label, options, selected, onChange }: Props) {
+export default function MultiSelect({
+  label,
+  options,
+  selected,
+  onChange,
+}: Props) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const toggleOption = (value: string) => {
     if (selected.includes(value)) {
-      onChange(selected.filter(v => v !== value));
+      onChange(selected.filter((v) => v !== value));
     } else {
       onChange([...selected, value]);
     }
   };
 
+  const removeOption = (value: string) => {
+    onChange(selected.filter((v) => v !== value));
+  };
+
   // 바깥 클릭 감지
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
         setOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
@@ -39,27 +51,46 @@ export default function MultiSelect({ label, options, selected, onChange }: Prop
       {/* 선택 박스 (전역 Input 스타일 재사용) */}
       <div
         className={`${inputStyles.input} ${styles.multiSelectBox}`}
-        onClick={() => setOpen(prev => !prev)}
+        onClick={() => setOpen((prev) => !prev)}
       >
-        {selected.length > 0 ? selected.join(", ") : "선택"}
-        <span className={styles.arrow}>{open ? "▲" : "▼"}</span>
+        <span className={styles.placeholder}>
+          {selected.length > 0 ? `${selected.length}개 선택됨` : '선택하세요'}
+        </span>
+        <span className={styles.arrow}>{open ? '▲' : '▼'}</span>
       </div>
 
       {/* 옵션 리스트 */}
       {open && (
         <div className={styles.multiSelectOptionsDropdown}>
-          {options.map(opt => (
+          {options.map((opt) => (
             <div
               key={opt}
               className={`${styles.multiSelectOption} ${
-                selected.includes(opt) ? styles.selected : ""
+                selected.includes(opt) ? styles.selected : ''
               }`}
-              onClick={e => {
+              onClick={(e) => {
                 e.stopPropagation();
                 toggleOption(opt);
               }}
             >
               {opt}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {selected.length > 0 && (
+        <div className={styles.selectedTagsContainer}>
+          {selected.map((val) => (
+            <div key={val} className={styles.tag}>
+              <span className={styles.tagName}>{val}</span>
+              <button
+                type="button"
+                className={styles.removeTagBtn}
+                onClick={() => removeOption(val)}
+              >
+                ×
+              </button>
             </div>
           ))}
         </div>
