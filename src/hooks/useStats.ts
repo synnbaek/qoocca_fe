@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { fetchClassStats, ClassStatsApiResponse } from '@/api/statsApi';
-import { StudentClassRow } from '@/app/academy/(with-sidebar)/[academyId]/student/components/StudentCell';
+import { StudentClassRowType } from '@/app/academy/(with-sidebar)/[academyId]/student/components/StudentCell';
 
 export const useStats = (academyId: number) => {
-  const [data, setData] = useState<StudentClassRow[]>([]);
+  const [data, setData] = useState<StudentClassRowType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,7 +19,7 @@ export const useStats = (academyId: number) => {
         const res: ClassStatsApiResponse[] =
           await fetchClassStats(academyId);
 
-        const mapped: StudentClassRow[] = res.map((item) => ({
+        const mapped: StudentClassRowType[] = res.map((item) => ({
           id: item.classId,
           className: item.className,
           totalStudents: item.totalStudents,
