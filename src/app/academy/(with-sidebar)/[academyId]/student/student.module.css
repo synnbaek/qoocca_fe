@@ -1,0 +1,93 @@
+.studentContainer {
+padding: 24px;
+}
+
+
+.sectionBox {
+margin-top: 24px;
+}
+
+
+.tableWrapper {
+margin-top: 16px;
+}
+
+
+.table {
+width: 100%;
+border-collapse: collapse;
+}
+
+
+.th {
+padding: 10px;
+text-align: center;
+border-bottom: 2px solid #d1d5db;
+background: #f9fafb;
+}
+
+
+.td {
+padding: 10px;
+text-align: center;
+border-bottom: 1px solid #e5e7eb;
+}
+
+
+.classNameCell {
+cursor: pointer;
+font-weight: 600;
+color: #2563eb;
+}
+
+
+.selectedRow {
+background-color: #f3f4f6;
+}
+
+
+.statusActive {
+background-color: #22c55e;
+color: white;
+border: none;
+padding: 6px 10px;
+border-radius: 4px;
+cursor: pointer;
+}
+
+
+.statusInactive {
+background-color: #ef4444;
+color: white;
+border: none;
+padding: 6px 10px;
+border-radius: 4px;
+cursor: pointer;
+}
+
+
+.detailRow td {
+background: #f9fafb;
+padding: 12px;
+}
+
+
+.innerTable {
+width: 100%;
+border-collapse: collapse;
+}
+
+
+.innerTable th,
+.innerTable td {
+border: 1px solid #e5e7eb;
+padding: 6px;
+text-align: center;
+}
+
+
+.noStudents {
+padding: 12px;
+color: #6b7280;
+text-align: center;
+}
