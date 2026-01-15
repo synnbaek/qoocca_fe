@@ -23,6 +23,14 @@ interface DashboardStatsData {
   totalMonthlyFee: number;
 }
 
+interface ReceiptSummary {
+  className: string;
+  classTime: string;
+  status: 'BEFORE_REQUEST' | 'ISSUED' | 'PAID';
+  statusLabel: string;
+  totalAmount: number;
+}
+
 export default function Dashboard({ academyId }: Props) {
   const router = useRouter();
 
@@ -50,6 +58,8 @@ export default function Dashboard({ academyId }: Props) {
     totalMonthlyFee: 0,
   });
 
+  const [receipts, setReceipts] = useState<ReceiptSummary[]>([]);
+  
   useEffect(() => {
     const fetchData = async () => {
       if (!isRegistered) {
@@ -68,6 +78,7 @@ export default function Dashboard({ academyId }: Props) {
         setApprovalStatus(status);
 
         if (status === 'APPROVED') {
+
           const [classRes, statsRes] = await Promise.all([
             axiosInstance.get(`/api/academy/${academyId}/class/summary`),
             axiosInstance.get(`/api/academy/${academyId}/stats`),
@@ -75,6 +86,21 @@ export default function Dashboard({ academyId }: Props) {
 
           setClasses(classRes.data || []);
           setStats(statsRes.data);
+
+          try {
+            const receiptRes = await axiosInstance.get(
+              `/api/academy/${academyId}/receipt/dashboard-main`,
+              {
+                params: {
+                  year: new Date().getFullYear(),
+                  month: new Date().getMonth() + 1,
+                },
+              }
+            );
+            setReceipts(receiptRes.data || []);
+          } catch (e) {
+            setReceipts([]);
+          }
         }
       } catch (err: any) {
         console.error('데이터 로딩 실패:', err.response?.data || err.message);
@@ -152,7 +178,9 @@ export default function Dashboard({ academyId }: Props) {
                   index % 2 === 0 ? 'var(--tertiary-color)' : 'var(--perple)'
                 }
                 onClick={() =>
-                  handleFeatureClick(`/${academyId}/class/${cls.classId}`)
+                  handleFeatureClick(
+                    `/academy/${academyId}/class/${cls.classId}`
+                  )
                 }
               />
             ))}
@@ -172,13 +200,33 @@ export default function Dashboard({ academyId }: Props) {
         <DashboardReport
           title="오늘의 보상"
           headers={['클래스', '수업 시간', '미지급', '지급완료']}
-          isRegistered={isRegistered}
+          isRegistered={isRegistered} 
+          onClick={() => handleFeatureClick(`/academy/${academyId}/reward`)}
         />
         <DashboardReport
           title="이번 달 수납"
           headers={['클래스', '수업 시간', '수납 상태', '월 수납 금액']}
           isRegistered={isRegistered}
-        />
+          onClick={() => handleFeatureClick(`/academy/${academyId}/payment`)}
+        >
+          {receipts.length > 0 &&
+            receipts.map((item, index) => (
+              <div key={index} className={styles.reportRowContent}>
+                <div className={styles.reportItem}>{item.className}</div>
+                <div className={styles.reportItem}>{item.classTime}</div>
+                <div
+                  className={`${styles.reportItem} ${
+                    styles[`status${item.status}`]
+                  }`}
+                >
+                  ● {item.statusLabel}
+                </div>
+                <div className={`${styles.reportItem} ${styles.amountText}`}>
+                  {item.totalAmount.toLocaleString()}원
+                </div>
+              </div>
+            ))}
+        </DashboardReport>
       </section>
 
       <CustomModal

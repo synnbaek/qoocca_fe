@@ -4,18 +4,24 @@ interface Props {
   title: string;
   headers: string[];
   isRegistered: boolean;
+  onClick?: () => void;
+  children?: React.ReactNode;
 }
 
 export default function DashboardReport({
   title,
   headers,
   isRegistered,
+  onClick,
+  children,
 }: Props) {
   return (
     <div className={styles.reportRow}>
       <div className={styles.reportTitle}>
         {title}
-        <span>&gt;</span>
+        <span className={styles.reportArrow} onClick={onClick}>
+          &gt;
+        </span>
       </div>
       <div className={styles.reportHeader}>
         {headers.map((h) => (
@@ -25,11 +31,15 @@ export default function DashboardReport({
         ))}
       </div>
       <hr className={styles.divider} />
-      <div style={{ textAlign: 'center', padding: '20px', color: '#ccc' }}>
-        {isRegistered
-          ? '데이터를 불러오는 중입니다.'
-          : '학원 등록 후 이용 가능합니다.'}
-      </div>
+      {children ? (
+        children
+      ) : (
+        <div style={{ textAlign: 'center', padding: '20px', color: '#ccc' }}>
+          {isRegistered
+            ? '데이터를 불러오는 중입니다.'
+            : '학원 등록 후 이용 가능합니다.'}
+        </div>
+      )}
     </div>
   );
 }

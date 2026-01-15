@@ -2,9 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, use } from 'react';
-import AcademyTitle from '../register/components/AcademyTitle';
-import TextInput from '../register/components/TextInput';
-import Button from '../../../components/common/Button';
+import AcademyTitle from '@/app/academy/register/components/AcademyTitle';
+import TextInput from '@/app/academy/register/components/TextInput';
+import Button from '@/components/common/Button';
 import axiosInstance from '@/api/axiosInstance';
 import { toast } from 'sonner';
 import MultiSelect from '@/app/academy/register/components/MultiSelect';
@@ -52,22 +52,13 @@ export default function AcademyEditPage({
         setInstagram(data.instagramUrl || '');
         setBlog(data.blogUrl || '');
 
-        if (data.ages && ageOptions.length > 0) {
-          const ageLabels = data.ages
-            .map(
-              (id: number) => ageOptions.find((opt) => opt.value === id)?.label
-            )
-            .filter((label: any): label is string => !!label);
+        if (data.ages && data.ages.length > 0) {
+          const ageLabels = data.ages.map((a: any) => a.ageCode);
           setAges(ageLabels);
         }
 
-        if (data.subjects && subjectOptions.length > 0) {
-          const subjectLabels = data.subjects
-            .map(
-              (id: number) =>
-                subjectOptions.find((opt) => opt.value === id)?.label
-            )
-            .filter((label: any): label is string => !!label);
+        if (data.subjects && data.subjects.length > 0) {
+          const subjectLabels = data.subjects.map((s: any) => s.detailSubject);
           setSubjects(subjectLabels);
         }
       } catch (err) {
@@ -170,7 +161,7 @@ export default function AcademyEditPage({
         />
         <TextInput label="네이버 블로그" value={blog} onChange={setBlog} />
 
-        <Button onClick={handleUpdate}>수정 완료</Button>
+        <Button onClick={handleUpdate}>수정하기</Button>
       </form>
     </div>
   );

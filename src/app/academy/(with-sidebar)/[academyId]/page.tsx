@@ -8,10 +8,11 @@ interface PageProps {
 }
 
 export default async function Page({ params }: PageProps) {
-  const { academyId } = await params;
+  const resolvedParams = await params;
+  const academyId = resolvedParams?.academyId;
 
   if (!academyId || academyId === 'undefined') {
-    redirect('/academy');
+    redirect('/academy/register');
   }
 
   return <Dashboard academyId={academyId} />;

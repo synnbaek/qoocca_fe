@@ -35,7 +35,11 @@ export default function ClassCard({
   }
 
   return (
-    <div className={styles.card} style={{ backgroundColor: bgColor }}>
+    <div
+      className={styles.card}
+      style={{ backgroundColor: bgColor }}
+      onClick={onClick}
+    >
       <div className={styles.cardHeader}>
         <div className={styles.titleGroup}>
           <AcademicCap />

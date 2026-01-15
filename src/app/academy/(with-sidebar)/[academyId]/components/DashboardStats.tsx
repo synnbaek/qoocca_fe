@@ -67,7 +67,7 @@ export default function DashboardStats({
           <br />
           <p>
             <span className={styles.statNum}>
-              {isRegistered ? `${totalMonthlyFee} ` : '0'}
+              {isRegistered ? `${totalMonthlyFee.toLocaleString()} ` : '0'}
             </span>
             원
           </p>

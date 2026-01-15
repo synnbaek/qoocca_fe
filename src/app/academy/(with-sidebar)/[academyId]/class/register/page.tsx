@@ -1,176 +1,202 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState, useEffect, use } from 'react';
-import AcademyTitle from '../../modify/register/components/AcademyTitle';
-import TextInput from '../../modify/register/components/TextInput';
-import Button from '../../../components/common/Button';
 import axiosInstance from '@/api/axiosInstance';
+import Input from '@/components/common/Input';
+import { useRouter, useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import styles from './ClassRegisterPage.module.css';
+import Button from '@/components/common/Button';
 import MultiSelect from '@/app/academy/register/components/MultiSelect';
-import { useSubjects } from '@/hooks/useSubjects';
-import { useAges } from '@/hooks/useAges';
-import styles from './AcademyEditPage.module.css';
 
-export default function AcademyEditPage({
-  params,
-}: {
-  params: Promise<{ academyId: string }>;
-}) {
-  const unwrappedParams = use(params);
-  const academyId = unwrappedParams.academyId;
+const DAYS = [
+  { id: 'monday', label: '월' },
+  { id: 'tuesday', label: '화' },
+  { id: 'wednesday', label: '수' },
+  { id: 'thursday', label: '목' },
+  { id: 'friday', label: '금' },
+  { id: 'saturday', label: '토' },
+  { id: 'sunday', label: '일' },
+];
+
+export default function ClassRegisterPage() {
   const router = useRouter();
+  const { academyId } = useParams();
 
-  const { subjectOptions, loading: subjectLoading } = useSubjects();
-  const { ageOptions, loading: ageLoading } = useAges();
+  const [ageOptions, setAgeOptions] = useState<
+    { id: number; ageCode: string }[]
+  >([]);
+  const [subjectOptions, setSubjectOptions] = useState<
+    { id: number; detailSubject: string }[]
+  >([]);
 
-  const [baseAddress, setBaseAddress] = useState('');
-  const [detailAddress, setDetailAddress] = useState('');
-  const [phone, setPhone] = useState('');
-  const [ages, setAges] = useState<string[]>([]);
-  const [subjects, setSubjects] = useState<string[]>([]);
-  const [intro, setIntro] = useState('');
-  const [operatingHours, setOperatingHours] = useState('');
-  const [tuition, setTuition] = useState('');
-  const [levelTest, setLevelTest] = useState('');
-  const [website, setWebsite] = useState('');
-  const [instagram, setInstagram] = useState('');
-  const [blog, setBlog] = useState('');
+  const [selectedAge, setSelectedAge] = useState<string[]>([]);
+  const [selectedSubject, setSelectedSubject] = useState<string[]>([]);
+
+  const [formData, setFormData] = useState({
+    className: '',
+    startTime: '09:00',
+    endTime: '18:00',
+    monday: false,
+    tuesday: false,
+    wednesday: false,
+    thursday: false,
+    friday: false,
+    saturday: false,
+    sunday: false,
+    price: '',
+    ageId: '',
+    subjectId: '',
+  });
 
   useEffect(() => {
-    const fetchAcademyData = async () => {
+    const fetchAgesSubjects = async () => {
       try {
-        const res = await axiosInstance.get(`/api/academy/${academyId}`);
-        const data = res.data;
-
-        setBaseAddress(data.baseAddress || '');
-        setDetailAddress(data.detailAddress || '');
-        setPhone(data.phoneNumber || '');
-        setIntro(data.briefInfo || '');
-        setOperatingHours(data.operatingHours || '');
-        setWebsite(data.websiteUrl || '');
-        setInstagram(data.instagramUrl || '');
-        setBlog(data.blogUrl || '');
-
-        if (data.ages && ageOptions.length > 0) {
-          const ageLabels = data.ages
-            .map(
-              (id: number) => ageOptions.find((opt) => opt.value === id)?.label
-            )
-            .filter((label: any): label is string => !!label);
-          setAges(ageLabels);
-        }
-
-        if (data.subjects && subjectOptions.length > 0) {
-          const subjectLabels = data.subjects
-            .map(
-              (id: number) =>
-                subjectOptions.find((opt) => opt.value === id)?.label
-            )
-            .filter((label: any): label is string => !!label);
-          setSubjects(subjectLabels);
-        }
+        const [subRes, ageRes] = await Promise.all([
+          axiosInstance.get(`/api/academy/${academyId}/subjects`),
+          axiosInstance.get(`/api/academy/${academyId}/ages`),
+        ]);
+        setSubjectOptions(subRes.data || []);
+        setAgeOptions(ageRes.data || []);
       } catch (err) {
-        console.error('정보를 불러오는데 실패했습니다.', err);
+        console.error('과목 로딩 실패:', err);
       }
     };
 
-    if (academyId && ageOptions.length > 0 && subjectOptions.length > 0) {
-      fetchAcademyData();
+    if (academyId) fetchAgesSubjects();
+  }, [academyId]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type } = e.target;
+
+    if (type === 'checkbox') {
+      const { checked } = e.target as HTMLInputElement;
+      setFormData((prev) => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
-  }, [academyId, ageOptions, subjectOptions]);
+  };
 
-  const handleUpdate = async () => {
-    const selectedAgeIds = ages
-      .map((label: string) => ageOptions.find((a) => a.label === label)?.value)
-      .filter((v): v is number => v !== undefined);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    const selectedSubjectIds = subjects
-      .map(
-        (label: string) => subjectOptions.find((s) => s.label === label)?.value
-      )
-      .filter((v): v is number => v !== undefined);
+    // 1. 요일 체크
+    const hasDay = DAYS.some((day) => (formData as any)[day.id]);
+    if (!hasDay) {
+      toast.error('수업 요일을 최소 하나 이상 선택해주세요.');
+      return;
+    }
+
+    const ageId = ageOptions.find((a) => a.ageCode === selectedAge[0])?.id;
+    const subjectId = subjectOptions.find(
+      (s) => s.detailSubject === selectedSubject[0]
+    )?.id;
+
+    if (!ageId || !subjectId) {
+      toast.error('학년과 과목을 선택해주세요.');
+      return;
+    }
 
     try {
-      await axiosInstance.put(`/api/academy/${academyId}`, {
-        baseAddress,
-        detailAddress,
-        phoneNumber: phone,
-        briefInfo: intro,
-        operatingHours,
-        websiteUrl: website,
-        instagramUrl: instagram,
-        blogUrl: blog,
-        ageIds: selectedAgeIds,
-        subjects: selectedSubjectIds,
+      await axiosInstance.post(`/api/academy/${academyId}/class`, {
+        ...formData,
+        ageId,
+        subjectId,
       });
-      toast.info('수정이 완료되었습니다. 다시 승인 절차가 진행됩니다.');
+      toast.success('클래스가 성공적으로 등록되었습니다.');
       router.push(`/${academyId}/dashboard`);
     } catch (err) {
-      toast.error('수정 중 오류가 발생했습니다.');
+      toast.error('등록 중 오류가 발생했습니다.');
     }
   };
 
   return (
     <div className={styles.container}>
-      <form className={styles.form}>
-        <AcademyTitle title="학원 정보 수정" />
+      <header className={styles.header}>
+        <button onClick={() => router.back()} className={styles.backBtn}>
+          &lt; 이전
+        </button>
+        <h1>신규 클래스 등록</h1>
+      </header>
 
-        <TextInput
-          label="기본 주소"
-          value={baseAddress}
-          onChange={setBaseAddress}
-        />
-        <TextInput
-          label="상세 주소"
-          value={detailAddress}
-          onChange={setDetailAddress}
-        />
-        <TextInput label="전화번호" value={phone} onChange={setPhone} />
-
-        <MultiSelect
-          label="학원생 나이"
-          options={ageOptions.map((a) => a.label)}
-          selected={ages}
-          onChange={setAges}
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <Input
+          label="클래스 명"
+          name="className"
+          value={formData.className}
+          onChange={handleChange}
+          placeholder="ex) 초등 수학 심화반"
+          required
         />
 
-        <MultiSelect
-          label="과목"
-          options={subjectOptions.map((s) => s.label)}
-          selected={subjects}
-          onChange={setSubjects}
+        <div className={styles.inputGroup}>
+          <MultiSelect
+            label="학년 구분"
+            options={ageOptions.map((a) => a.ageCode)}
+            selected={selectedAge}
+            onChange={(val) => setSelectedAge(val.slice(-1))}
+          />
+        </div>
+
+        <div className={styles.inputGroup}>
+          <MultiSelect
+            label="과목"
+            options={subjectOptions.map((s) => s.detailSubject)}
+            selected={selectedSubject}
+            onChange={(val) => setSelectedSubject(val.slice(-1))}
+          />
+        </div>
+
+        <div className={styles.inputGroup}>
+          <label className={styles.customLabel}>수업 요일</label>
+          <div className={styles.dayContainer}>
+            {DAYS.map((day) => (
+              <label key={day.id} className={styles.dayItem}>
+                <input
+                  type="checkbox"
+                  name={day.id}
+                  checked={(formData as any)[day.id]}
+                  onChange={handleChange}
+                />
+                <span>{day.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.row}>
+          <Input
+            label="시작 시간"
+            type="time"
+            name="startTime"
+            value={formData.startTime}
+            onChange={handleChange}
+          />
+          <Input
+            label="종료 시간"
+            type="time"
+            name="endTime"
+            value={formData.endTime}
+            onChange={handleChange}
+          />
+        </div>
+
+        <Input
+          label="월 수업비"
+          type="number"
+          name="price"
+          value={formData.price}
+          onChange={handleChange}
+          placeholder="ex) 200000"
         />
 
-        <TextInput
-          label="학원 소개글(선택)"
-          value={intro}
-          onChange={setIntro}
-        />
-        <TextInput
-          label="운영 시간(선택)"
-          value={operatingHours}
-          onChange={setOperatingHours}
-        />
-        <TextInput
-          label="수업 비용(선택)"
-          value={tuition}
-          onChange={setTuition}
-        />
-        <TextInput
-          label="레벨 테스트(선택)"
-          value={levelTest}
-          onChange={setLevelTest}
-        />
-        <TextInput label="홈페이지" value={website} onChange={setWebsite} />
-        <TextInput
-          label="인스타그램"
-          value={instagram}
-          onChange={setInstagram}
-        />
-        <TextInput label="네이버 블로그" value={blog} onChange={setBlog} />
-
-        <Button onClick={handleUpdate}>수정 완료</Button>
+        <div className={styles.buttonWrapper}>
+          <Button variant="primary" type="submit">
+            등록하기
+          </Button>
+        </div>
       </form>
     </div>
   );

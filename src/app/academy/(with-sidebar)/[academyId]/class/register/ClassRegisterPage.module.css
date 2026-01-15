@@ -1,0 +1,109 @@
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 18px;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--primary-color);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.backBtn:hover {
+  opacity: 0.7;
+}
+
+.backBtn:active {
+  transform: translateY(1px);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+.label,
+.customLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.select {
+  width: 100%;
+  height: var(--input-height);
+  border-radius: var(--radius-md);
+  border: 1px solid #eee;
+  padding: 0 16px;
+  font-size: 16px;
+  background-color: white;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.select:focus {
+  border-color: #a1ccff;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.dayContainer {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: var(--radius-md);
+}
+
+.dayItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.dayItem:hover {
+  background-color: #f1f3f5;
+}
+
+.dayItem span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+}
+
+.dayItem input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.buttonWrapper {
+  margin-top: 20px;
+}

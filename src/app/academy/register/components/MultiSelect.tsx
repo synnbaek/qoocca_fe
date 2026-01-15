@@ -26,6 +26,10 @@ export default function MultiSelect({
     }
   };
 
+  const removeOption = (value: string) => {
+    onChange(selected.filter((v) => v !== value));
+  };
+
   // 바깥 클릭 감지
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -49,7 +53,9 @@ export default function MultiSelect({
         className={`${inputStyles.input} ${styles.multiSelectBox}`}
         onClick={() => setOpen((prev) => !prev)}
       >
-        {selected.length > 0 ? selected.join(', ') : '선택'}
+        <span className={styles.placeholder}>
+          {selected.length > 0 ? `${selected.length}개 선택됨` : '선택하세요'}
+        </span>
         <span className={styles.arrow}>{open ? '▲' : '▼'}</span>
       </div>
 
@@ -68,6 +74,23 @@ export default function MultiSelect({
               }}
             >
               {opt}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {selected.length > 0 && (
+        <div className={styles.selectedTagsContainer}>
+          {selected.map((val) => (
+            <div key={val} className={styles.tag}>
+              <span className={styles.tagName}>{val}</span>
+              <button
+                type="button"
+                className={styles.removeTagBtn}
+                onClick={() => removeOption(val)}
+              >
+                ×
+              </button>
             </div>
           ))}
         </div>
