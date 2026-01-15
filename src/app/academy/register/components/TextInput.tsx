@@ -5,6 +5,8 @@ type Props = {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;   // 추가
+  readOnly?: boolean;
+  disabled?: boolean;
 };
 
 export default function TextInput({
@@ -12,6 +14,8 @@ export default function TextInput({
   value,
   onChange,
   placeholder,
+  readOnly,
+  disabled,
 }: Props) {
   return (
     <Input
@@ -19,6 +23,8 @@ export default function TextInput({
       value={value}
       placeholder={placeholder}
       onChange={(e) => onChange(e.target.value)}
+      readOnly={readOnly}
+      disabled={disabled}
     />
   );
 }

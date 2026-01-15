@@ -26,19 +26,19 @@ export default function StudentPage() {
         parent?.students.flatMap(s =>
           s.parents.length === 0
             ? [
-                {
-                  id: s.studentId,
-                  name: s.studentName,
-                  parentName: '-',
-                  cardNumber: '-',
-                },
-              ]
-            : s.parents.map(p => ({
-                id: s.studentId * 1000 + p.parentId,
+              {
+                id: s.studentId,
                 name: s.studentName,
-                parentName: p.parentRelationship,
-                cardNumber: p.cardNum,
-              }))
+                parentName: '-',
+                cardNumber: '-',
+              },
+            ]
+            : s.parents.map(p => ({
+              id: s.studentId * 1000 + p.parentId,
+              name: s.studentName,
+              parentName: p.parentRelationship,
+              cardNumber: p.cardNum,
+            }))
         ) ?? [];
 
       return {
@@ -51,6 +51,16 @@ export default function StudentPage() {
       };
     });
   }, [statsData, parentStats]);
+
+  const filteredData = useMemo(() => {
+    if (!keyword.trim()) return mergedData;
+    const lowerKeyword = keyword.toLowerCase();
+    return mergedData.filter(
+      cls =>
+        cls.className.toLowerCase().includes(lowerKeyword) ||
+        cls.students.some(s => s.name.toLowerCase().includes(lowerKeyword))
+    );
+  }, [mergedData, keyword]);
 
   return (
     <div className={styles.studentContainer}>
@@ -65,7 +75,7 @@ export default function StudentPage() {
       <div className={styles.sectionBox}>
         {loading && <p>로딩중...</p>}
         {error && <p>{error}</p>}
-        {!loading && !error && <StudentCell data={mergedData} />}
+        {!loading && !error && <StudentCell data={filteredData} />}
       </div>
     </div>
   );
