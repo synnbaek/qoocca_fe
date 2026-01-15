@@ -1,0 +1,30 @@
+.academyWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    /* padding-top: 160px;  <-- Removed/Reduced because it's inside sidebar layout */
+    box-sizing: border-box;
+}
+
+.academyContainer {
+    width: 100%;
+    max-width: var(--container-width);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 공통 텍스트 스타일 */
+.academyContainer h2 {
+    text-align: center;
+    font-size: 32px;
+    margin: 0;
+    font-weight: bold;
+}
+
+.academyContainer p {
+    text-align: center;
+    color: #666;
+    margin: 18px 0;
+}

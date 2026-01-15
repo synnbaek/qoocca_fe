@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "../form/form.module.css";
-import inputStyles from "../../../components/common/Input.module.css";
+import inputStyles from '../../../../components/common/Input.module.css';
 
 type Props = {
   label: string;

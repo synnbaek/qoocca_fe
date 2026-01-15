@@ -36,7 +36,7 @@ export default function AcademyRegisterPage() {
       <div className={styles.sectionBox}>
         <Button
           disabled={!academyName || businessFiles.length === 0}
-          onClick={() => router.push('/academy/form')}
+          onClick={() => router.push('/academy/register/form')}
         >
           다음
         </Button>
