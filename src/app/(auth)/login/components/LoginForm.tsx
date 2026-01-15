@@ -39,7 +39,7 @@ export default function LoginForm() {
       if (academyId) {
         router.push(`/academy/${academyId}`);
       } else {
-        router.push('/academy');
+        router.push('/academy/register');
       }
     } catch (err: any) {
       const errorMessage =
