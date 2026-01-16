@@ -81,17 +81,17 @@ export default function PaymentPage() {
         <table className={styles.paymentTable}>
           <thead>
             <tr>
-              <th>
+              <th className={styles.checkboxCol}>
                 <input
                   type="checkbox"
                   onChange={handleSelectAll}
                   checked={isAllSelected}
                 />
               </th>
-              <th>클래스명</th>
-              <th>결제 요청 전</th>
-              <th>결제 대기</th>
-              <th>수납 완료</th>
+              <th className={styles.classNameColHeader}>클래스명</th>
+              <th className={styles.statCol}>결제 요청 전</th>
+              <th className={styles.statCol}>결제 대기</th>
+              <th className={styles.statCol}>수납 완료</th>
             </tr>
           </thead>
           <tbody>

@@ -99,6 +99,20 @@
   color: #444;
 }
 
+.checkboxCol {
+  width: 5%;
+  min-width: 50px;
+}
+
+.classNameColHeader {
+  width: 35%;
+  text-align: center;
+}
+
+.statCol {
+  width: 20%;
+}
+
 .classNameCol,
 .completedCount {
   color: #222;

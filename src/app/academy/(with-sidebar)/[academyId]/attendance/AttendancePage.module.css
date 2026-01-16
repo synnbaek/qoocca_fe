@@ -1,0 +1,113 @@
+.container {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.headerBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.dateController {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.currentDate {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.arrowBtn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #666;
+  padding: 5px 10px;
+}
+
+.searchBarWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background-color: white;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+  margin-bottom: 24px;
+}
+
+.searchBarWrapper:focus-within {
+  border-color: var(--primary-color);
+}
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  color: #999;
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  width: 100%;
+  color: #333;
+}
+
+.searchInput::placeholder {
+  color: #ccc;
+}
+
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.classCount {
+    color: #666;
+    font-size: 14px;
+}
+
+.addClassBtn {
+  background-color: white;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addClassBtn:hover {
+  background-color: #f0faff;
+}
+
+.classGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 1024px) {
+    .classGrid {
+        grid-template-columns: 1fr;
+    }
+}

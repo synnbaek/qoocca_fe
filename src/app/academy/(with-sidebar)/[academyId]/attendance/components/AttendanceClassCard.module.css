@@ -1,0 +1,55 @@
+.card {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.className {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.time {
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 8px;
+}
+
+.statsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.statRow {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.statValue {
+  color: #333; /* Or bold if needed, visually it looks distinct but standard text weight in mockup? hard to see, assuming standard color shift */
+  font-weight: 500;
+}
