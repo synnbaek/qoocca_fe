@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import axiosInstance from '@/api/axiosInstance';
-import { createReceipt } from '@/api/receiptApi';
+import { paymentService } from '@/services/paymentService';
 import { ClassSummary, StudentDetail } from '@/types/payment';
 
 interface ModalConfig {
@@ -28,22 +27,19 @@ export const usePayment = (academyId: string) => {
     onAction: () => {},
   });
 
-  // Reset student selection when expanded class changes
+  // 확장된 클래스가 변경되면 학생 선택 초기화
   useEffect(() => {
     setSelectedStudentIds([]);
   }, [expandedClassId]);
 
-  // Fetch Data
+  // 데이터 조회
   const fetchSummary = async () => {
     if (!academyId) return;
     try {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth() + 1;
-      const res = await axiosInstance.get(
-        `/api/academy/${academyId}/receipt/class-summary`,
-        { params: { year, month } }
-      );
-      setClassList(res.data || []);
+      const data = await paymentService.getClassSummary(academyId, year, month);
+      setClassList(data || []);
     } catch (err) {
       console.error('수납 요약 로딩 실패:', err);
     }
@@ -57,8 +53,8 @@ export const usePayment = (academyId: string) => {
     const fetchStats = async () => {
       if (!academyId) return;
       try {
-        const res = await axiosInstance.get(`/api/academy/${academyId}/stats`);
-        setTotalMonthlyFee(res.data.totalMonthlyFee);
+        const data = await paymentService.getPaymentStats(academyId);
+        setTotalMonthlyFee(data.totalMonthlyFee);
       } catch (err) {
         console.error('스탯 로딩 실패:', err);
       }
@@ -70,7 +66,7 @@ export const usePayment = (academyId: string) => {
     cls.className.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Date Handlers
+  // 날짜 핸들러
   const handlePrevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
   };
@@ -119,7 +115,7 @@ export const usePayment = (academyId: string) => {
     );
   };
 
-  // Payment Request Logic
+  // 수납 요청 로직
   const executePaymentRequest = async (cls: ClassSummary) => {
     setIsModalOpen(false);
 
@@ -129,7 +125,7 @@ export const usePayment = (academyId: string) => {
         if (!student) return;
         if (student.status === 'PAID') return;
 
-        await createReceipt(studentId, {
+        await paymentService.createReceipt(studentId, {
           classId: cls.classId,
           amount: student.amount,
         });

@@ -4,16 +4,11 @@ import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import styles from './ClassAttendancePage.module.css';
 import { SearchIcon } from '@/components/icons/BasicIcons';
-import axiosInstance from '@/api/axiosInstance';
 import StudentAttendanceRow from './components/StudentAttendanceRow';
-
-interface StudentMonthlyStat {
-    studentId: number;
-    studentName: string;
-    presentCount: number;
-    lateCount: number;
-    absentCount: number;
-}
+import { formatYearMonth } from '@/utils/dateUtils';
+import { attendanceService } from '@/services/attendanceService';
+import { DateController } from '@/components/common/DateController';
+import { StudentMonthlyStat } from '@/types/attendance';
 
 export default function ClassAttendancePage() {
     const { academyId, classId } = useParams();
@@ -37,16 +32,8 @@ export default function ClassAttendancePage() {
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth() + 1;
 
-                const response = await axiosInstance.get<StudentMonthlyStat[]>(
-                    `/api/attendance/class/${classId}/monthly-stats`,
-                    {
-                        params: {
-                            year,
-                            month
-                        }
-                    }
-                );
-                setStudents(response.data);
+                const data = await attendanceService.getClassMonthlyStats(classId as string, year, month);
+                setStudents(data);
             } catch (error) {
                 console.error('월별 출결 현황 로딩 실패:', error);
             } finally {
@@ -56,10 +43,6 @@ export default function ClassAttendancePage() {
 
         fetchStats();
     }, [classId, currentDate]);
-
-    const formatYearMonth = (date: Date) => {
-        return `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
-    };
 
     const handlePrevMonth = () => {
         const newDate = new Date(currentDate);
@@ -83,11 +66,14 @@ export default function ClassAttendancePage() {
                 <button onClick={() => router.back()} className={styles.backBtn}>
                     &lt; 뒤로
                 </button>
-                <div className={styles.dateController}>
-                    <button onClick={handlePrevMonth} className={styles.arrowBtn}>&lt;</button>
-                    <span className={styles.currentDate}>{formatYearMonth(currentDate)}</span>
-                    <button onClick={handleNextMonth} className={styles.arrowBtn}>&gt;</button>
-                </div>
+                <DateController 
+                    currentDateText={formatYearMonth(currentDate)}
+                    onPrev={handlePrevMonth}
+                    onNext={handleNextMonth}
+                    className={styles.dateController}
+                    buttonClassName={styles.arrowBtn}
+                    textClassName={styles.currentDate}
+                />
             </div>
 
             <div className={styles.summarySection}>

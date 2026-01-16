@@ -5,18 +5,10 @@ import { useParams, useRouter } from 'next/navigation';
 import styles from './AttendancePage.module.css';
 import { SearchIcon } from '@/components/icons/BasicIcons';
 import AttendanceClassCard from './components/AttendanceClassCard';
-import axiosInstance from '@/api/axiosInstance';
-
-interface ClassAttendanceSummary {
-    classId: number;
-    className: string;
-    classTime: string;
-    currentCount: number;
-    presentCount: number;
-    lateCount: number;
-    absentCount: number;
-    notPresentCount: number;
-}
+import { formatFullDate } from '@/utils/dateUtils';
+import { attendanceService } from '@/services/attendanceService';
+import { DateController } from '@/components/common/DateController';
+import { ClassAttendanceSummary } from '@/types/attendance';
 
 export default function AttendancePage() {
     const { academyId } = useParams();
@@ -38,15 +30,8 @@ export default function AttendancePage() {
                 const day = String(currentDate.getDate()).padStart(2, '0');
                 const formattedDate = `${year}-${month}-${day}`;
 
-                const response = await axiosInstance.get<ClassAttendanceSummary[]>(
-                    `/api/attendance/academy/${academyId}/summary`,
-                    {
-                        params: {
-                            date: formattedDate
-                        }
-                    }
-                );
-                setClasses(response.data);
+                const data = await attendanceService.getAcademySummary(Number(academyId), formattedDate);
+                setClasses(data);
             } catch (error) {
                 console.error('클래스 출결 현황 로딩 실패:', error);
             } finally {
@@ -56,11 +41,6 @@ export default function AttendancePage() {
 
         fetchClasses();
     }, [academyId, currentDate]);
-
-    const formatDate = (date: Date) => {
-        const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
-        return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 (${weekDays[date.getDay()]})`;
-    };
 
     const handlePrevDay = () => {
         const newDate = new Date(currentDate);
@@ -81,11 +61,14 @@ export default function AttendancePage() {
     return (
         <div className={styles.container}>
             <div className={styles.headerBar}>
-                <div className={styles.dateController}>
-                    <button onClick={handlePrevDay} className={styles.arrowBtn}>&lt;</button>
-                    <span className={styles.currentDate}>{formatDate(currentDate)}</span>
-                    <button onClick={handleNextDay} className={styles.arrowBtn}>&gt;</button>
-                </div>
+                <DateController 
+                    currentDateText={formatFullDate(currentDate)}
+                    onPrev={handlePrevDay}
+                    onNext={handleNextDay}
+                    className={styles.dateController}
+                    buttonClassName={styles.arrowBtn}
+                    textClassName={styles.currentDate}
+                />
             </div>
 
             <div className={styles.searchBarWrapper}>

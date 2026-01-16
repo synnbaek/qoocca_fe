@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { setUserFromToken } from '@/store/userSlice';
-import axiosInstance from '@/api/axiosInstance';
+import { authService } from '@/services/authService';
 import styles from './LoginForm.module.css';
 import { toast } from 'sonner';
 
@@ -25,15 +25,15 @@ export default function LoginForm() {
     setIsLoading(true);
 
     try {
-      const res = await axiosInstance.post('/api/auth/login', {
+      const data = await authService.login({
         email,
-        password,
+        password
       });
 
-      const { accessToken, academyId } = res.data;
+      const { accessToken, academyId } = data;
 
       if (accessToken) {
-        dispatch(setUserFromToken(res.data.accessToken));
+        dispatch(setUserFromToken(accessToken));
       }
 
       if (academyId) {
@@ -43,7 +43,7 @@ export default function LoginForm() {
       }
     } catch (err: any) {
       const errorMessage =
-        err.response?.data?.message || '로그인 정보를 확인해주세요.';
+        err.response?.data?.message || '로그인을 실패했습니다.';
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
-import axiosInstance from '@/api/axiosInstance';
+import { authService } from '@/services/authService';
 import { setUserFromToken } from '@/store/userSlice';
 import {
   validateEmail,
@@ -66,7 +66,7 @@ export function useSignup() {
     setIsLoading(true);
 
     try {
-      const res = await axiosInstance.post('/api/auth/signup', {
+      const data = await authService.signup({
         username,
         email,
         password,
@@ -75,7 +75,7 @@ export function useSignup() {
         agreements: isExistingUser ? null : agreements,
       });
 
-      dispatch(setUserFromToken(res.data.accessToken));
+      dispatch(setUserFromToken(data.accessToken));
       toast.success(isExistingUser ? '계정 연동 성공!' : '회원가입 성공!');
       router.push('/');
     } catch (err: any) {
