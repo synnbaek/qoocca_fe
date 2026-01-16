@@ -34,6 +34,19 @@
   padding: 5px 10px;
 }
 
+.backBtn {
+  position: absolute;
+  left: 0;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .summarySection {
   display: flex;
   flex-direction: column;

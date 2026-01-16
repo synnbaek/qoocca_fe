@@ -80,6 +80,9 @@ export default function ClassAttendancePage() {
     return (
         <div className={styles.container}>
             <div className={styles.headerBar}>
+                <button onClick={() => router.back()} className={styles.backBtn}>
+                    &lt; 뒤로
+                </button>
                 <div className={styles.dateController}>
                     <button onClick={handlePrevMonth} className={styles.arrowBtn}>&lt;</button>
                     <span className={styles.currentDate}>{formatYearMonth(currentDate)}</span>

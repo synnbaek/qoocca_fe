@@ -1,0 +1,217 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.headerBar {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: 20px;
+  width: 100%;
+  justify-content: center;
+}
+
+.backBtn {
+  position: absolute;
+  left: 0;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dateController {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.currentDate {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.arrowBtn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #666;
+  padding: 5px 10px;
+}
+
+.contentCard {
+  background-color: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.studentInfoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.studentInfoLeft {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 30px;
+}
+
+.studentName {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111;
+  line-height: 1;
+}
+
+.editBtn {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  background: white;
+  padding: 6px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.editBtn:hover {
+  background-color: #f0faff;
+}
+
+.classTags {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.classTag {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 6px 14px;
+  border-radius: 20px;
+  background-color: #f8fbff;
+  font-weight: 500;
+}
+
+.calendarSection {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+}
+
+.calendarGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.legendArea {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding-top: 60px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid;
+  cursor: default;
+}
+
+.dayHeader {
+  text-align: center;
+  padding: 15px 0;
+  background-color: #fcfcfc;
+  color: #888;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #eee;
+  border-right: 1px solid #eee;
+}
+
+.dayHeader:last-child {
+  border-right: none;
+}
+
+.dayCell {
+  height: 120px;
+  border-right: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.dayCell:nth-child(7n) {
+  border-right: none;
+}
+
+.dateNumber {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.otherMonth {
+  background-color: #fcfcfc;
+}
+
+.otherMonth .dateNumber {
+  color: #ccc;
+}
+
+.statusBadge {
+  align-self: flex-start;
+  margin-top: 10px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.statusBadge.present {
+  color: #00C853;
+  border-color: #00C853;
+  background-color: #fff;
+}
+
+.statusBadge.late {
+  color: #AA00FF;
+  border-color: #AA00FF;
+  background-color: #fff;
+}
+
+.statusBadge.absent {
+  color: #FF1744;
+  border-color: #FF1744;
+  background-color: #fff;
+}
