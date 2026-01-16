@@ -10,6 +10,7 @@ import DashboardBanner from './components/DashboardBanner';
 import DashboardStats from './components/DashboardStats';
 import DashboardReport from './components/DashboardReport';
 import CustomModal from '@/components/common/CustomModal';
+import AttendanceRightSidebar from './components/AttendanceRightSidebar';
 
 interface Props {
   academyId?: string;
@@ -41,7 +42,7 @@ export default function Dashboard({ academyId }: Props) {
 
   const isRegistered = !!academyId && academyId !== 'undefined';
 
-  const [classes, setClasses] = useState([]);
+  const [classes, setClasses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,6 +60,9 @@ export default function Dashboard({ academyId }: Props) {
   });
 
   const [receipts, setReceipts] = useState<ReceiptSummary[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+  const selectedClassName = classes.find((c: any) => c.classId === selectedClassId)?.className;
+
   
   useEffect(() => {
     const fetchData = async () => {
@@ -85,6 +89,9 @@ export default function Dashboard({ academyId }: Props) {
           ]);
 
           setClasses(classRes.data || []);
+          if (classRes.data && classRes.data.length > 0) {
+            setSelectedClassId(classRes.data[0].classId);
+          }
           setStats(statsRes.data);
 
           try {
@@ -145,7 +152,9 @@ export default function Dashboard({ academyId }: Props) {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.pageLayout}>
+      <div className={styles.mainContent}>
+
       {!isRegistered && (
         <DashboardBanner isRegistered={isRegistered} approvalStatus={''} />
       )}
@@ -242,6 +251,13 @@ export default function Dashboard({ academyId }: Props) {
           }
         }}
       />
+      </div>
+      {isRegistered && (
+        <AttendanceRightSidebar 
+          academyId={Number(academyId)} 
+          classTitle={selectedClassName}
+        />
+      )}
     </div>
   );
 }

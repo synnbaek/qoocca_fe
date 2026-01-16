@@ -1,11 +1,20 @@
-.container {
+.pageLayout {
+  display: flex;
   width: 100%;
+  height: 100vh; /* Or adjust based on your layout needs */
+  overflow: hidden;
+}
+
+.mainContent {
+  flex: 1;
   max-width: 1400px;
   margin-top: 0;
   margin-left: 0;
   margin-right: auto;
   display: flex;
   flex-direction: column;
+  padding: 24px; /* Move padding here if needed, or keep existing margins */
+  overflow-y: auto;
 }
 
 .promoBanner > p,
