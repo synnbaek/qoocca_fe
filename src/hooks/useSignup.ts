@@ -77,7 +77,12 @@ export function useSignup() {
 
       dispatch(setUserFromToken(data.accessToken));
       toast.success(isExistingUser ? '계정 연동 성공!' : '회원가입 성공!');
-      router.push('/');
+      
+      if (data.academyId) {
+        router.push(`/academy/${data.academyId}`);
+      } else {
+        router.push('/academy/register');
+      }
     } catch (err: any) {
       toast.error('가입 실패: ' + (err.response?.data?.message || '오류 발생'));
     } finally {
