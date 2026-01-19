@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation'; // ✅ useRouter 추가
 import StudentCell from './components/StudentCell';
 import styles from './student.module.css';
 import TextInput from '../../../register/components/TextInput';
@@ -12,6 +12,7 @@ export default function StudentPage() {
   const [keyword, setKeyword] = useState('');
   const params = useParams();
   const academyId = Number(params.academyId);
+  const router = useRouter(); // ✅ 추가
 
   const { data: statsData, loading, error } = useStats(academyId);
   const { data: parentStats } = useParentStats(academyId);
@@ -28,30 +29,25 @@ export default function StudentPage() {
             return {
               id: s.studentId,
               name: s.studentName,
-              parentName: '-',
-              cardNumber: '-',
+              parentName: '보호자 연결',
+              cardNumber: '+ 카드를 등록해주세요',
             };
           }
 
-          // 1. 카드가 있는 부모 우선 검색
           const cardParent = s.parents.find(p => p.cardNum && p.cardNum.length > 0);
-
-          // 2. 카드가 없다면 첫 번째 부모 선택
           const selectedParent = cardParent || s.parents[0];
 
           let displayCardNumber = '';
           if (selectedParent.cardNum && selectedParent.cardNum.length > 0) {
-            // 카드 번호 4자리만 표시
             displayCardNumber = `카드번호 뒷자리 ${selectedParent.cardNum.slice(-4)}`;
           } else {
-            // 카드 미등록 시 메시지
             displayCardNumber = '+ 카드를 등록해주세요';
           }
 
           return {
-            id: s.studentId * 1000 + selectedParent.parentId, // 고유키 유지를 위해 조합
+            id: s.studentId * 1000 + selectedParent.parentId,
             name: s.studentName,
-            parentName: selectedParent.parentRelationship,
+            parentName: selectedParent.parentName,
             cardNumber: displayCardNumber,
           };
         }) ?? [];
@@ -79,6 +75,28 @@ export default function StudentPage() {
 
   return (
     <div className={styles.studentContainer}>
+
+      <div className={styles.topBar}>
+        <div />
+
+        <div className={styles.buttonGroup}>
+          <button
+            className={styles.addStudentBtn}
+            onClick={() => router.push(`/academy/${academyId}/student/form`)}
+          >
+            + 원생 등록
+          </button>
+
+          <button
+            className={styles.addStudentBtn}
+            onClick={() => router.push(`/academy/${academyId}/class/register`)}
+          >
+            + 신규 클래스 추가
+          </button>
+        </div>
+      </div>
+
+
       <div className={styles.sectionBox}>
         <TextInput
           value={keyword}
