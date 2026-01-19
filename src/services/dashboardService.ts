@@ -11,9 +11,7 @@ export const dashboardService = {
      * 승인 상태를 포함한 학원 정보 조회
      */
     getAcademyInfo: async (academyId: string | number): Promise<AcademyInfo> => {
-        const response = await axiosInstance.get<AcademyInfo>(`/api/academy/${academyId}`, {
-            params: { _t: Date.now() }
-        });
+        const response = await axiosInstance.get<AcademyInfo>(`/api/academy/${academyId}`);
         return response.data;
     },
 

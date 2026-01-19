@@ -1,7 +1,7 @@
 export type AttendanceStatus = 'PRESENT' | 'LATE' | 'ABSENT';
 
 export interface AttendanceRecord {
-    date: string;
+    attendanceDate: string;
     classId: number;
     className: string;
     status: AttendanceStatus;

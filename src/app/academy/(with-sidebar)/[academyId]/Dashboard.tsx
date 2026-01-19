@@ -93,6 +93,8 @@ export default function Dashboard({ academyId }: Props) {
         }
       } catch (err: any) {
         console.error('데이터 로딩 실패:', err.response?.data || err.message);
+        // If API fails (e.g. 403 Forbidden), default to PENDING to show appropriate modal
+        setApprovalStatus('PENDING');
       } finally {
         setIsLoading(false);
       }
@@ -101,7 +103,27 @@ export default function Dashboard({ academyId }: Props) {
     fetchData();
   }, [academyId, isRegistered]);
 
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  
+  useEffect(() => {
+    if (searchParams?.get('alert') === 'access_denied') {
+        // Handle null/error status by defaulting to 'PENDING' or generic message
+        const status = approvalStatus || 'PENDING'; 
+        const title = status === 'PENDING' ? '승인 대기 중이에요' : '승인이 거절되었어요';
+        const desc = status === 'PENDING' ? '학원 승인이 완료된 후에 사용할 수 있는 기능입니다.\n조금만 기다려 주세요!' : '등록 정보를 다시 확인해 주세요.';
+        
+        setModalConfig({
+            title: title,
+            description: desc
+        });
+        setIsModalOpen(true);
+        
+        router.replace(`/academy/${academyId}`)
+    }
+  }, [searchParams, approvalStatus, router, academyId]);
+
   const handleFeatureClick = (path?: string) => {
+    // console.log('handleFeatureClick called. status:', approvalStatus);
     if (!isRegistered) {
       setModalConfig({
         title: '학원 등록이 필요해요',
@@ -111,20 +133,17 @@ export default function Dashboard({ academyId }: Props) {
       return;
     }
 
-    if (approvalStatus === 'PENDING') {
-      setModalConfig({
-        title: '승인 대기 중이에요',
-        description:
-          '학원 승인이 완료된 후에 사용할 수 있는 기능입니다.\n조금만 기다려 주세요!',
-      });
-      setIsModalOpen(true);
-      return;
-    }
+    if (approvalStatus !== 'APPROVED') {
+       // Catch all non-approved states (including null/error)
+       const status = approvalStatus || 'PENDING';
+       const title = status === 'PENDING' ? '승인 대기 중이에요' : '승인이 거절되었어요';
+       const desc = status === 'PENDING' 
+        ? '학원 승인이 완료된 후에 사용할 수 있는 기능입니다.\n조금만 기다려 주세요!' 
+        : '등록 정보를 다시 확인해 주세요.';
 
-    if (approvalStatus === 'REJECTED') {
       setModalConfig({
-        title: '승인이 거절되었어요',
-        description: '등록 정보를 다시 확인해 주세요.',
+        title,
+        description: desc,
       });
       setIsModalOpen(true);
       return;
@@ -141,7 +160,18 @@ export default function Dashboard({ academyId }: Props) {
         <DashboardBanner isRegistered={isRegistered} approvalStatus={''} />
       )}
 
-      <div onClick={() => handleFeatureClick()}>
+      {/* Wrap main interactive area to catch clicks on non-button elements if needed, 
+          but handleFeatureClick on specific elements is better UX. 
+          However, user asked to "show modal when clicking ANYTHING". 
+          Let's wrap the interactive parts with a capture handler if not approved. */}
+      <div onClickCapture={(e) => {
+          if (approvalStatus !== 'APPROVED') {
+              // Prevent default action and stop propagation to prevent navigation
+              e.preventDefault();
+              e.stopPropagation();
+              handleFeatureClick(); 
+          }
+      }}>
         <DashboardStats
           isRegistered={isRegistered}
           studentCount={isRegistered ? stats.studentCount : 0}
@@ -150,7 +180,6 @@ export default function Dashboard({ academyId }: Props) {
           noCardCount={stats.noCardCount}
           totalMonthlyFee={stats.totalMonthlyFee}
         />
-      </div>
 
       <h3 className={styles.sectionTitle}>수업 목록</h3>
       <div className={styles.scrollSection} ref={scrollRef}>
@@ -220,6 +249,8 @@ export default function Dashboard({ academyId }: Props) {
         </DashboardReport>
       </section>
 
+      </div>
+      
       <CustomModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -234,7 +265,7 @@ export default function Dashboard({ academyId }: Props) {
         }}
       />
       </div>
-      {isRegistered && (
+      {isRegistered && approvalStatus === 'APPROVED' && (
         <AttendanceRightSidebar 
           academyId={Number(academyId)} 
           classTitle={selectedClassName}
