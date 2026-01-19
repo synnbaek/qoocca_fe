@@ -19,7 +19,9 @@ export const dashboardService = {
      * 대시보드용 클래스 요약 조회
      */
     getClassSummary: async (academyId: string | number): Promise<ClassSummary[]> => {
-        const response = await axiosInstance.get<ClassSummary[]>(`/api/academy/${academyId}/class/summary`);
+        const response = await axiosInstance.get<ClassSummary[]>(`/api/academy/${academyId}/class/summary`, {
+            params: { _t: Date.now() }
+        });
         return response.data;
     },
 
@@ -27,7 +29,9 @@ export const dashboardService = {
      * 대시보드 통계 조회
      */
     getStats: async (academyId: string | number): Promise<DashboardStatsData> => {
-        const response = await axiosInstance.get<DashboardStatsData>(`/api/academy/${academyId}/stats`);
+        const response = await axiosInstance.get<DashboardStatsData>(`/api/academy/${academyId}/stats`, {
+            params: { _t: Date.now() }
+        });
         return response.data;
     },
 
@@ -41,7 +45,8 @@ export const dashboardService = {
                 params: {
                     year,
                     month,
-                },
+                    _t: Date.now()
+                }
             }
         );
         return response.data;

@@ -24,6 +24,7 @@ export interface SignupRequest {
 
 export interface SignupResponse {
     accessToken: string;
+    academyId?: number;
 }
 
 export interface SendCodeRequest {

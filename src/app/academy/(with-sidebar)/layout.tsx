@@ -1,5 +1,6 @@
 import Sidebar from '@/components/layout/Sidebar';
 import styles from './AcademyLayout.module.css';
+import AcademyGuard from '@/components/auth/AcademyGuard';
 
 export default async function AcademyLayout({
   children,
@@ -16,7 +17,11 @@ export default async function AcademyLayout({
   return (
     <div className={styles.container}>
       <Sidebar academyId={safeAcademyId} />
-      <main className={styles.mainContent}>{children}</main>
+      <main className={styles.mainContent}>
+        <AcademyGuard academyId={safeAcademyId}>
+          {children}
+        </AcademyGuard>
+      </main>
     </div>
   );
 }

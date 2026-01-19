@@ -1,6 +1,6 @@
 import styles from '../StudentDetailPage.module.css';
 import { CalendarDay } from '@/utils/dateUtils';
-import { AttendanceRecord, AttendanceStatus } from '@/types/attendance';
+import { AttendanceRecord } from '@/types/attendance';
 import { AttendanceBadge } from '@/components/common/AttendanceBadge';
 
 interface AttendanceCalendarProps {
@@ -11,7 +11,8 @@ interface AttendanceCalendarProps {
 export default function AttendanceCalendar({ calendarDays, attendanceRecords }: AttendanceCalendarProps) {
     const getStatusForDate = (dateStr: string) => {
         if (!attendanceRecords) return null;
-        const records = attendanceRecords.filter(r => r.date === dateStr);
+
+        const records = attendanceRecords.filter(r => r.attendanceDate === dateStr);
         if (records.length === 0) return null;
         return records[0].status; 
     };

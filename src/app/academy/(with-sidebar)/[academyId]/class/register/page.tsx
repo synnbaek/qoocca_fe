@@ -106,7 +106,7 @@ export default function ClassRegisterPage() {
         subjectId,
       });
       toast.success('클래스가 성공적으로 등록되었습니다.');
-      router.push(`/${academyId}/dashboard`);
+      router.push(`/academy/${academyId}`);
     } catch (err) {
       toast.error('등록 중 오류가 발생했습니다.');
     }

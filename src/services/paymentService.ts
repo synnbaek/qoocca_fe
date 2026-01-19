@@ -10,7 +10,9 @@ export const paymentService = {
      * 월 수납 금액을 포함한 통계 조회
      */
     getPaymentStats: async (academyId: string) => {
-        const response = await axiosInstance.get(`/api/academy/${academyId}/stats`);
+        const response = await axiosInstance.get(`/api/academy/${academyId}/stats`, {
+            params: { _t: Date.now() }
+        });
         return response.data;
     },
 
@@ -20,7 +22,9 @@ export const paymentService = {
     getClassSummary: async (academyId: string, year: number, month: number): Promise<ClassSummary[]> => {
         const response = await axiosInstance.get<ClassSummary[]>(
             `/api/academy/${academyId}/receipt/class-summary`,
-            { params: { year, month } }
+            { 
+                params: { year, month, _t: Date.now() }
+            }
         );
         return response.data;
     },
