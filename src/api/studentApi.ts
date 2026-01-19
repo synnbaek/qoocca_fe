@@ -102,3 +102,8 @@ export const moveStudentToClass = async (
     await axiosInstance.put(`/api/academy/${academyId}/class/${classId}/student/${studentId}/move`, data);
 };
 
+// 8. Delete Student from Class
+export const deleteStudentFromClass = async (classId: number, studentId: number): Promise<void> => {
+    await axiosInstance.delete(`/api/class/${classId}/student/${studentId}`);
+};
+

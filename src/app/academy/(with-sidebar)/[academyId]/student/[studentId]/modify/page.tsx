@@ -1,11 +1,12 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import AcademyTitle from '@/app/academy/register/components/AcademyTitle';
 import TextInput from '@/app/academy/register/components/TextInput';
 import SingleSelect from '../../form/components/SingleSelect';
 import CardRegistrationModal from '../../form/components/CardRegistrationModal';
+import DeleteConfirmationModal from '../../form/components/DeleteConfirmationModal';
 import styles from '../../form/form.module.css';
 import { useParentStats } from '@/hooks/useParentStats';
 import { getClasses, ClassGetResponse } from '@/api/classApi';
@@ -14,12 +15,12 @@ import {
     updateParent,
     updateStudentStatus,
     moveStudentToClass,
+    deleteStudentFromClass,
     AcademyStudentModifyRequest,
     ParentUpdateRequest,
     ClassInfoStudentModifyRequest,
-    ClassInfoStudentMoveRequest
+    ClassInfoStudentMoveRequest,
 } from '@/api/studentApi';
-import { useEffect } from 'react';
 
 export default function StudentModifyPage() {
     const params = useParams();
@@ -29,27 +30,26 @@ export default function StudentModifyPage() {
 
     const { data: parentStats, loading } = useParentStats(academyId);
 
-    // Find student from the nested structure
+    // Find student from nested structure
     const studentData = useMemo(() => {
         if (!parentStats) return null;
 
         for (const cls of parentStats) {
-            const foundStudent = cls.students.find(s => s.studentId === studentId);
+            const foundStudent = cls.students.find((s) => s.studentId === studentId);
             if (foundStudent) {
                 return {
                     ...foundStudent,
                     className: cls.className,
-                    classId: cls.classId
+                    classId: cls.classId,
                 };
             }
         }
         return null;
     }, [parentStats, studentId]);
 
-    // Initialize state with student data
+    // Student state
     const [studentName, setStudentName] = useState('');
     const [studentPhone, setStudentPhone] = useState('');
-    const [className, setClassName] = useState('');
     const [classId, setClassId] = useState<number | null>(null);
     const [classes, setClasses] = useState<ClassGetResponse[]>([]);
     const [status, setStatus] = useState<'ENROLLED' | 'PAUSED' | 'WITHDRAWN'>('ENROLLED');
@@ -58,39 +58,42 @@ export default function StudentModifyPage() {
     const [isCardModalOpen, setIsCardModalOpen] = useState(false);
     const [selectedParentIndex, setSelectedParentIndex] = useState<number | null>(null);
 
-    // Initialize parent states
-    const [parentsData, setParentsData] = useState<Array<{
-        parentId: number;
-        parentName: string;
-        parentPhone: string;
-        relationship: string;
-        cardNum: string;
-        cardState: boolean;
-        isPay: boolean;
-        alarm: boolean;
-        expiry?: string;
-        cvc?: string;
-    }>>([]);
+    // Delete modal state
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    // Parents state
+    const [parentsData, setParentsData] = useState<
+        Array<{
+            parentId: number;
+            parentName: string;
+            parentPhone: string;
+            relationship: string;
+            cardNum: string;
+            cardState: boolean;
+            isPay: boolean;
+            alarm: boolean;
+            expiry?: string;
+            cvc?: string;
+        }>
+    >([]);
 
     // Fetch classes
     useEffect(() => {
         getClasses(academyId).then(setClasses).catch(console.error);
     }, [academyId]);
 
-    // Update state when studentData is loaded
-    useMemo(() => {
-        if (studentData) {
-            setStudentName(studentData.studentName);
-            setStudentPhone(studentData.studentPhone || '');
-            setClassName(studentData.className);
-            setClassId(studentData.classId);
+    // Initialize data when loaded
+    useEffect(() => {
+        if (!studentData) return;
 
-            // Map backend status to frontend display labels if needed
-            // Based on backend: ENROLLED, PAUSED, WITHDRAWN
-            setStatus(studentData.status || 'ENROLLED');
+        setStudentName(studentData.studentName);
+        setStudentPhone(studentData.studentPhone || '');
+        setClassId(studentData.classId);
+        setStatus(studentData.status || 'ENROLLED');
 
-            const parents = studentData.parents || [];
-            setParentsData(parents.map(p => ({
+        const parents = studentData.parents || [];
+        setParentsData(
+            parents.map((p) => ({
                 parentId: p.parentId,
                 parentName: p.parentName || '',
                 parentPhone: p.parentPhone || '',
@@ -98,9 +101,9 @@ export default function StudentModifyPage() {
                 cardNum: p.cardNum || '',
                 cardState: p.cardState || false,
                 isPay: p.isPay || false,
-                alarm: p.alarm || false
-            })));
-        }
+                alarm: p.alarm || false,
+            }))
+        );
     }, [studentData]);
 
     const handleCancel = () => {
@@ -109,14 +112,14 @@ export default function StudentModifyPage() {
 
     const handleSave = async () => {
         try {
-            // 1. Update Student Basic Info
+            // 1. Update student
             const studentUpdate: AcademyStudentModifyRequest = {
                 studentName,
-                studentPhone
+                studentPhone,
             };
             await updateStudent(academyId, studentId, studentUpdate);
 
-            // 2. Update Parents Info
+            // 2. Update parents
             for (const parent of parentsData) {
                 const parentUpdate: ParentUpdateRequest = {
                     parentName: parent.parentName,
@@ -125,18 +128,18 @@ export default function StudentModifyPage() {
                     cardNum: parent.cardNum,
                     cardState: parent.cardState || false,
                     isPay: parent.isPay || false,
-                    alarm: parent.alarm || false
+                    alarm: parent.alarm || false,
                 };
                 await updateParent(studentId, parent.parentId, parentUpdate);
             }
 
-            // 3. Update Status
+            // 3. Update status
             if (status !== studentData?.status) {
                 const statusUpdate: ClassInfoStudentModifyRequest = { status };
                 await updateStudentStatus(studentData!.classId, studentId, statusUpdate);
             }
 
-            // 4. Move Class if changed
+            // 4. Move class if changed
             if (studentData && classId !== studentData.classId && classId !== null) {
                 const moveRequest: ClassInfoStudentMoveRequest = { targetClassId: classId };
                 await moveStudentToClass(academyId, studentData.classId, studentId, moveRequest);
@@ -150,8 +153,26 @@ export default function StudentModifyPage() {
         }
     };
 
+    const handleDelete = () => {
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!studentData) return;
+        setIsDeleteModalOpen(false);
+
+        try {
+            await deleteStudentFromClass(studentData.classId, studentId);
+            alert('원생이 성공적으로 삭제되었습니다.');
+            router.push(`/academy/${academyId}/student`);
+        } catch (error) {
+            console.error('Failed to delete student:', error);
+            alert('원생 삭제 중 오류가 발생했습니다.');
+        }
+    };
+
     const updateParentField = (index: number, field: string, value: any) => {
-        setParentsData(prev => {
+        setParentsData((prev) => {
             const updated = [...prev];
             updated[index] = { ...updated[index], [field]: value };
             return updated;
@@ -165,7 +186,7 @@ export default function StudentModifyPage() {
 
     const handleCardRegister = (cardInfo: { cardNumber: string; expiry: string; cvc: string }) => {
         if (selectedParentIndex !== null) {
-            setParentsData(prev => {
+            setParentsData((prev) => {
                 const updated = [...prev];
                 updated[selectedParentIndex] = {
                     ...updated[selectedParentIndex],
@@ -187,16 +208,17 @@ export default function StudentModifyPage() {
 
     return (
         <div className={styles.formContainer}>
-            <AcademyTitle title="원생 정보 수정" />
+            <div className={styles.titleRow}>
+                <div className={styles.sectionTitle}>{studentData.studentName}</div>
+                <button onClick={handleDelete} className={styles.deleteStudentBtn}>
+                    원생삭제
+                </button>
+            </div>
 
-            {/* 소제목 1: 기본 정보 */}
             <div className={styles.sectionTitle}>기본 정보</div>
-            <TextInput
-                label="원생 이름"
-                value={studentName}
-                onChange={setStudentName}
-                readOnly={false}
-            />
+
+            <TextInput label="원생 이름" value={studentName} onChange={setStudentName} readOnly={false} />
+
             <TextInput
                 label="원생 전화번호"
                 value={studentPhone}
@@ -204,12 +226,14 @@ export default function StudentModifyPage() {
                 onChange={setStudentPhone}
                 readOnly={false}
             />
+
             <SingleSelect
                 label="클래스"
-                options={classes.map(c => ({ label: c.className, value: c.classId.toString() }))}
+                options={classes.map((c) => ({ label: c.className, value: c.classId.toString() }))}
                 value={classId?.toString() || ''}
                 onChange={(value) => setClassId(Number(value))}
             />
+
             <SingleSelect
                 label="상태"
                 options={[
@@ -218,101 +242,101 @@ export default function StudentModifyPage() {
                     { label: '퇴원', value: 'WITHDRAWN' },
                 ]}
                 value={status}
-                onChange={(value) => setStatus(value as 'ENROLLED' | 'PAUSED' | 'WITHDRAWN')}
+                onChange={(value) => setStatus(value as any)}
             />
 
-            {/* Display all parents */}
             {parents.length === 0 ? (
                 <>
                     <div className={styles.sectionTitle} style={{ marginTop: '24px' }}>
                         보호자
                     </div>
-                    <div style={{ padding: '16px', color: '#999' }}>
-                        등록된 보호자가 없습니다.
-                    </div>
+                    <div style={{ padding: '16px', color: '#999' }}>등록된 보호자가 없습니다.</div>
                 </>
             ) : (
-                parents.map((parent, index) => {
-                    // Prepare card display for this parent
-                    let displayCardNumber = '미등록';
-                    let hasCard = false;
+                <>
+                    <div className={styles.sectionTitle} style={{ marginTop: '24px' }}>
+                        보호자 정보 (최대 2명)
+                    </div>
 
-                    if (parent.cardNum && parent.cardNum.length > 0) {
-                        hasCard = true;
-                        displayCardNumber = `카드번호 뒷자리 ${parent.cardNum.slice(-4)}`;
-                    }
+                    {parents.map((parent, index) => {
+                        let displayCardNumber = '미등록';
+                        let hasCard = false;
 
-                    return (
-                        <div key={parent.parentId || index}>
-                            <div className={styles.sectionTitle} style={{ marginTop: '24px' }}>
-                                보호자 {parents.length > 1 ? `${index + 1}` : ''}
-                            </div>
-                            <TextInput
-                                label="보호자 성함"
-                                value={parent.parentName}
-                                onChange={(value) => updateParentField(index, 'parentName', value)}
-                                readOnly={false}
-                            />
-                            <TextInput
-                                label="보호자 연락처"
-                                value={parent.parentPhone}
-                                onChange={(value) => updateParentField(index, 'parentPhone', value)}
-                                readOnly={false}
-                            />
-                            <TextInput
-                                label="원생과의 관계"
-                                value={parent.relationship}
-                                onChange={(value) => updateParentField(index, 'relationship', value)}
-                                readOnly={false}
-                            />
+                        if (parent.cardNum && parent.cardNum.length > 0) {
+                            hasCard = true;
+                            displayCardNumber = `카드번호 뒷자리 ${parent.cardNum.slice(-4)}`;
+                        }
 
-                            {/* 카드 정보 */}
-                            <div className={styles.sectionTitle} style={{ marginTop: '24px' }}>
-                                카드 정보 {parents.length > 1 ? `${index + 1}` : ''}
-                            </div>
+                        return (
+                            <div key={parent.parentId || index}>
+                                <div className={styles.parentSubTitle}>보호자 {parents.length > 1 ? index + 1 : ''}</div>
 
-                            {hasCard ? (
-                                <div className={styles.registeredContainer}>
-                                    <div className={styles.cardNumberBox}>
-                                        <span>{displayCardNumber}</span>
-                                        <button
-                                            className={styles.changeButton}
-                                            onClick={() => handleOpenCardModal(index)}
-                                        >
-                                            변경
-                                        </button>
-                                    </div>
+                                <div className={styles.inputGroup}>
+                                    <TextInput
+                                        label="보호자 성함"
+                                        value={parent.parentName}
+                                        onChange={(value) => updateParentField(index, 'parentName', value)}
+                                        readOnly={false}
+                                    />
 
-                                    <div className={styles.cardImageWrapper}>
-                                        <img
-                                            src="/images/card_placeholder.png"
-                                            alt="Registered Card"
-                                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                                        />
-                                    </div>
+                                    <TextInput
+                                        label="보호자 연락처"
+                                        value={parent.parentPhone}
+                                        onChange={(value) => updateParentField(index, 'parentPhone', value)}
+                                        readOnly={false}
+                                    />
+
+                                    <TextInput
+                                        label="원생과의 관계"
+                                        value={parent.relationship}
+                                        onChange={(value) => updateParentField(index, 'relationship', value)}
+                                        readOnly={false}
+                                    />
                                 </div>
-                            ) : (
-                                <div
-                                    className={styles.cardBox}
-                                    onClick={() => handleOpenCardModal(index)}
-                                >
-                                    <span className={styles.addCardText}>+ 카드를 등록해주세요</span>
+
+
+                                <div className={styles.sectionTitle} style={{ marginTop: '24px' }}>
+                                    카드 정보 {parents.length > 1 ? index + 1 : ''}
                                 </div>
-                            )}
-                        </div>
-                    );
-                })
+
+                                {hasCard ? (
+                                    <div className={styles.registeredContainer}>
+                                        <div className={styles.cardNumberBox}>
+                                            <span>{displayCardNumber}</span>
+                                            <button className={styles.changeButton} onClick={() => handleOpenCardModal(index)}>
+                                                변경
+                                            </button>
+                                        </div>
+
+                                        <div className={styles.cardImageWrapper}>
+                                            <img
+                                                src="/images/card_placeholder.png"
+                                                alt="Registered Card"
+                                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                            />
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className={styles.cardBox} onClick={() => handleOpenCardModal(index)}>
+                                        <span className={styles.addCardText}>+ 카드를 등록해주세요</span>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </>
             )}
 
-            {/* Action buttons */}
-            <div style={{
-                display: 'flex',
-                gap: '12px',
-                justifyContent: 'flex-end',
-                marginTop: '32px',
-                paddingTop: '24px',
-                borderTop: '1px solid #e5e7eb'
-            }}>
+            <div
+                style={{
+                    display: 'flex',
+                    gap: '12px',
+                    justifyContent: 'flex-end',
+                    marginTop: '32px',
+                    paddingTop: '24px',
+                    borderTop: '1px solid #e5e7eb',
+                }}
+            >
                 <button
                     onClick={handleCancel}
                     style={{
@@ -324,17 +348,11 @@ export default function StudentModifyPage() {
                         border: '1px solid #ddd',
                         borderRadius: '6px',
                         cursor: 'pointer',
-                        transition: 'all 0.2s',
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#f5f5f5';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'white';
                     }}
                 >
                     취소
                 </button>
+
                 <button
                     onClick={handleSave}
                     style={{
@@ -346,20 +364,12 @@ export default function StudentModifyPage() {
                         border: 'none',
                         borderRadius: '6px',
                         cursor: 'pointer',
-                        transition: 'all 0.2s',
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.opacity = '0.9';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.opacity = '1';
                     }}
                 >
                     저장
                 </button>
             </div>
 
-            {/* Card Registration Modal */}
             <CardRegistrationModal
                 isOpen={isCardModalOpen}
                 onClose={() => {
@@ -377,6 +387,14 @@ export default function StudentModifyPage() {
                         : undefined
                 }
             />
+
+            {/* Delete Confirmation Modal */}
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={confirmDelete}
+            />
         </div>
     );
 }
+
