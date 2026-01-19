@@ -4,31 +4,22 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './Dashboard.module.css';
 import ClassCard from '@/components/common/ClassCard';
-import axiosInstance from '@/api/axiosInstance';
 
 import DashboardBanner from './components/DashboardBanner';
 import DashboardStats from './components/DashboardStats';
 import DashboardReport from './components/DashboardReport';
 import CustomModal from '@/components/common/CustomModal';
+import AttendanceRightSidebar from './components/AttendanceRightSidebar';
+
+import { dashboardService } from '@/services/dashboardService';
+import { 
+  DashboardStatsData, 
+  ReceiptSummary, 
+  ClassSummary 
+} from '@/types/dashboard';
 
 interface Props {
   academyId?: string;
-}
-
-interface DashboardStatsData {
-  studentCount: number;
-  presentCount: number;
-  totalTodayCount: number;
-  noCardCount: number;
-  totalMonthlyFee: number;
-}
-
-interface ReceiptSummary {
-  className: string;
-  classTime: string;
-  status: 'BEFORE_REQUEST' | 'ISSUED' | 'PAID';
-  statusLabel: string;
-  totalAmount: number;
 }
 
 export default function Dashboard({ academyId }: Props) {
@@ -41,7 +32,7 @@ export default function Dashboard({ academyId }: Props) {
 
   const isRegistered = !!academyId && academyId !== 'undefined';
 
-  const [classes, setClasses] = useState([]);
+  const [classes, setClasses] = useState<ClassSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,6 +50,9 @@ export default function Dashboard({ academyId }: Props) {
   });
 
   const [receipts, setReceipts] = useState<ReceiptSummary[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+  const selectedClassName = classes.find((c: ClassSummary) => c.classId === selectedClassId)?.className;
+
   
   useEffect(() => {
     const fetchData = async () => {
@@ -70,34 +64,29 @@ export default function Dashboard({ academyId }: Props) {
       try {
         setIsLoading(true);
 
-        const [academyRes] = await Promise.all([
-          axiosInstance.get(`/api/academy/${academyId}`),
-        ]);
-
-        const status = academyRes.data.approvalStatus;
+        const academyInfo = await dashboardService.getAcademyInfo(academyId);
+        const status = academyInfo.approvalStatus;
         setApprovalStatus(status);
 
         if (status === 'APPROVED') {
-
-          const [classRes, statsRes] = await Promise.all([
-            axiosInstance.get(`/api/academy/${academyId}/class/summary`),
-            axiosInstance.get(`/api/academy/${academyId}/stats`),
+          const [classData, statsData] = await Promise.all([
+            dashboardService.getClassSummary(academyId),
+            dashboardService.getStats(academyId),
           ]);
 
-          setClasses(classRes.data || []);
-          setStats(statsRes.data);
+          setClasses(classData || []);
+          if (classData && classData.length > 0) {
+            setSelectedClassId(classData[0].classId);
+          }
+          setStats(statsData);
 
           try {
-            const receiptRes = await axiosInstance.get(
-              `/api/academy/${academyId}/receipt/dashboard-main`,
-              {
-                params: {
-                  year: new Date().getFullYear(),
-                  month: new Date().getMonth() + 1,
-                },
-              }
+            const receiptData = await dashboardService.getReceiptSummary(
+              academyId, 
+              new Date().getFullYear(), 
+              new Date().getMonth() + 1
             );
-            setReceipts(receiptRes.data || []);
+            setReceipts(receiptData || []);
           } catch (e) {
             setReceipts([]);
           }
@@ -145,7 +134,9 @@ export default function Dashboard({ academyId }: Props) {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.pageLayout}>
+      <div className={styles.mainContent}>
+
       {!isRegistered && (
         <DashboardBanner isRegistered={isRegistered} approvalStatus={''} />
       )}
@@ -242,6 +233,13 @@ export default function Dashboard({ academyId }: Props) {
           }
         }}
       />
+      </div>
+      {isRegistered && (
+        <AttendanceRightSidebar 
+          academyId={Number(academyId)} 
+          classTitle={selectedClassName}
+        />
+      )}
     </div>
   );
 }

@@ -1,0 +1,210 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.headerBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.dateController {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.currentDate {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.arrowBtn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #666;
+  padding: 5px 10px;
+}
+
+.backBtn {
+  position: absolute;
+  left: 0;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.summarySection {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.searchBarWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background-color: white;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.searchBarWrapper:focus-within {
+  border-color: var(--primary-color);
+}
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  color: #999;
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  width: 100%;
+  color: #333;
+}
+
+.searchInput::placeholder {
+  color: #ccc;
+}
+
+.classInfoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-items: center;
+}
+
+.classTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.classTime {
+  font-weight: 400;
+  color: #666;
+  font-size: 1rem;
+}
+
+.addStudentBtn {
+  background-color: white;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addStudentBtn:hover {
+  background-color: #f0faff;
+}
+
+.totalCount {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.tableSection {
+  width: 100%;
+}
+
+.studentTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.studentTable th {
+  text-align: center;
+  vertical-align: middle;
+  padding: 15px 10px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #999;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.checkboxCol {
+  width: 5%;
+  min-width: 50px;
+}
+
+.nameCol {
+  width: 35%;
+  text-align: center;
+}
+
+.statCol {
+  width: 20%;
+}
+
+.studentTable td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 20px 10px;
+  border-bottom: 1px solid var(--divider-color);
+  font-size: 1rem;
+  color: #444;
+}
+
+.studentRow {
+  transition: background-color 0.2s;
+}
+
+.studentRow:hover {
+  background-color: #f8faff;
+}
+
+/* Specific Column Styles */
+.studentName {
+  font-weight: 500;
+  color: #333;
+}
+
+.present {
+  color: #333;
+}
+
+.late {
+  color: #333;
+}
+
+.absent {
+  font-weight: 600;
+  color: #333;
+}
+
+.studentTable input[type='checkbox'] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+}

@@ -26,7 +26,8 @@ export default function Sidebar({ academyId: propsId }: SidebarProps) {
 
   const getSubMenuClass = (path: string) => {
     const fullPath = `/academy/${academyId}${path}`;
-    return `${style.subLinkItem} ${pathname === fullPath ? style.active : ''}`;
+    const isActive = pathname === fullPath || pathname.startsWith(`${fullPath}/`);
+    return `${style.subLinkItem} ${isActive ? style.active : ''}`;
   };
 
   return (

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import axiosInstance from "@/api/axiosInstance";
+import { authService } from "@/services/authService";
 import { toast } from "sonner";
 
 interface UsePhoneAuthProps {
@@ -56,9 +56,9 @@ export function usePhoneAuth({
 
     setIsLoading(true);
     try {
-      await axiosInstance.post("/api/auth/send-code", {
+      await authService.sendPhoneCode({
         phone,
-        ...(isSocial && { isSocial }),
+        isSocial
       });
       toast.info("인증번호가 발송되었습니다.");
       setIsCodeSent(true);
@@ -83,12 +83,12 @@ export function usePhoneAuth({
 
     setIsLoading(true);
     try {
-      const res = await axiosInstance.post("/api/auth/verify-code", {
+      const data = await authService.verifyPhoneCode({
         phone,
-        code,
+        code
       });
       toast.success("인증에 성공했습니다.");
-      if (setIsExistingUser) setIsExistingUser(res.data.isExistingUser);
+      if (setIsExistingUser) setIsExistingUser(data.isExistingUser);
       setIsPhoneVerified(true);
       setIsTimerActive(false);
     } catch (err: any) {

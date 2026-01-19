@@ -13,3 +13,10 @@ export interface ClassSummary {
   paymentCompleted: number;
   students?: StudentDetail[];
 }
+
+export interface ReceiptCreateRequest {
+  classId: number;
+  amount: number;
+  receiptDate?: string;
+  receiptStatus?: 'BEFORE_REQUEST' | 'ISSUED' | 'PAID';
+}
