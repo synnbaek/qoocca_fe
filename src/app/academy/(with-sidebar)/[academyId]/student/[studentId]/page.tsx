@@ -42,6 +42,12 @@ export default function StudentDetailPage() {
 
     return (
         <div className={styles.formContainer}>
+            <button
+                className={styles.backButton}
+                onClick={() => router.push(`/academy/${academyId}/student`)}
+            >
+                &lt;
+            </button>
             {/* 상단 타이틀 + 수정 버튼 */}
             <div className={styles.titleRow}>
                 <div className={styles.sectionTitle}>{studentData.studentName}</div>

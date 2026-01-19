@@ -28,6 +28,7 @@ export default function StudentPage() {
           if (s.parents.length === 0) {
             return {
               id: s.studentId,
+              studentId: s.studentId,
               name: s.studentName,
               parentName: '보호자 연결',
               cardNumber: '+ 카드를 등록해주세요',
@@ -46,6 +47,7 @@ export default function StudentPage() {
 
           return {
             id: s.studentId * 1000 + selectedParent.parentId,
+            studentId: s.studentId,
             name: s.studentName,
             parentName: selectedParent.parentName,
             cardNumber: displayCardNumber,

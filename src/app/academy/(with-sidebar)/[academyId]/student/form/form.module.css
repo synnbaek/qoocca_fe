@@ -254,6 +254,10 @@
   color: white;
 }
 
+.backButton:hover {
+  color: #38bdf8;
+}
+
 .titleRow {
   display: flex;
   align-items: center;
