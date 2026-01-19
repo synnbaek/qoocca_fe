@@ -143,6 +143,7 @@
     padding: 8px 0;
     align-items: center;
     margin-bottom: 6px;
+    cursor: pointer;
 
     background: #f3f4f6;
     /* ⭐ 연한 회색 */

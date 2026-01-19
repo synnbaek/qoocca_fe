@@ -2,6 +2,7 @@
 
 
 import { useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import styles from '../student.module.css';
 import { StudentClassRowType } from './StudentCell';
 
@@ -14,6 +15,10 @@ interface Props {
 
 
 export default function StudentClassRow({ row, checked, onCheck }: Props) {
+    const params = useParams();
+    const router = useRouter();
+    const academyId = params.academyId;
+
     const [open, setOpen] = useState(false);
     const [active, setActive] = useState(row.isActive);
 
@@ -61,7 +66,11 @@ export default function StudentClassRow({ row, checked, onCheck }: Props) {
                         ) : (
                             <div className={styles.fakeTable}>
                                 {students.map(student => (
-                                    <div key={student.id} className={styles.fakeRow}>
+                                    <div
+                                        key={student.id}
+                                        className={styles.fakeRow}
+                                        onClick={() => router.push(`/academy/${academyId}/student/${student.studentId}`)}
+                                    >
                                         <div></div> {/* 체크박스 자리 */}
 
                                         <div>{student.name}</div>

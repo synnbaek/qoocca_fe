@@ -6,6 +6,7 @@ import StudentClassRow from './StudentClassRow';
 
 export interface StudentInfo {
     id: number;
+    studentId: number;
     name: string;
     parentName: string;
     cardNumber: string;
