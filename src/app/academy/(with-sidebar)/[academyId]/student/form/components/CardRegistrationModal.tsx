@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './cardModal.module.css';
 
 interface CardRegistrationModalProps {
@@ -11,17 +11,47 @@ interface CardRegistrationModalProps {
         expiry: string;
         cvc: string;
     }) => void;
+    initialCardData?: {
+        cardNumber?: string;
+        expiry?: string;
+        cvc?: string;
+    };
 }
 
 export default function CardRegistrationModal({
     isOpen,
     onClose,
     onRegister,
+    initialCardData,
 }: CardRegistrationModalProps) {
     const [cardNumber, setCardNumber] = useState('');
     const [expiryMonth, setExpiryMonth] = useState('');
     const [expiryYear, setExpiryYear] = useState('');
     const [cvc, setCvc] = useState('');
+
+    // Update state when initialCardData changes
+    useEffect(() => {
+        if (isOpen && initialCardData) {
+            setCardNumber(initialCardData.cardNumber || '');
+
+            if (initialCardData.expiry) {
+                const [month, year] = initialCardData.expiry.split('/');
+                setExpiryMonth(month || '');
+                setExpiryYear(year || '');
+            } else {
+                setExpiryMonth('');
+                setExpiryYear('');
+            }
+
+            setCvc(initialCardData.cvc || '');
+        } else if (isOpen && !initialCardData) {
+            // Reset to empty when opening without initial data
+            setCardNumber('');
+            setExpiryMonth('');
+            setExpiryYear('');
+            setCvc('');
+        }
+    }, [isOpen, initialCardData]);
 
     if (!isOpen) return null;
 

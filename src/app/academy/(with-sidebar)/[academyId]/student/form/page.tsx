@@ -82,7 +82,7 @@ export default function StudentFormPage() {
                 parentPhone,
                 parentRelationship: relationship,
                 cardNum: cardInfo ? cardInfo.cardNumber.replace(/-/g, '') : '', // 하이픈 제거
-                cardState: true, // 기본값 true
+                cardState: !!cardInfo, // 카드 정보 유무에 따라 설정
                 isPay: true,     // 기본값 true
                 alarm: true,     // 기본값 true
             };
