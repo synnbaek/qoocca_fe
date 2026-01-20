@@ -33,7 +33,7 @@ export default function DashboardStats({
           <br />
           <p>
             <span className={styles.statNum}>
-              {isRegistered ? `${studentCount} ` : '0'}
+              {isRegistered ? `${studentCount} ` : '0 '}
             </span>
             명
           </p>
@@ -43,11 +43,11 @@ export default function DashboardStats({
           <br />
           <p>
             <span className={styles.statNum}>
-              {isRegistered ? `${presentCount} ` : '0'}
+              {isRegistered ? `${presentCount} ` : '0 '}
             </span>
             /
             <span className={styles.statNum}>
-              {isRegistered ? ` ${totalTodayCount}` : '0'}
+              {isRegistered ? ` ${totalTodayCount}` : ' 0'}
             </span>
           </p>
         </div>
@@ -57,7 +57,7 @@ export default function DashboardStats({
           <p>
             <span className={styles.statLabelText}>미등록</span>
             <span className={styles.statNum}>
-              {isRegistered ? ` ${noCardCount} ` : '0'}
+              {isRegistered ? ` ${noCardCount} ` : ' 0 '}
             </span>
             명
           </p>
@@ -67,7 +67,7 @@ export default function DashboardStats({
           <br />
           <p>
             <span className={styles.statNum}>
-              {isRegistered ? `${totalMonthlyFee.toLocaleString()} ` : '0'}
+              {isRegistered ? `${totalMonthlyFee.toLocaleString()} ` : '0 '}
             </span>
             원
           </p>

@@ -114,7 +114,6 @@ export default function Dashboard({ academyId }: Props) {
         }
       } catch (err: any) {
         console.error('데이터 로딩 실패:', err.response?.data || err.message);
-        // If API fails (e.g. 403 Forbidden), default to PENDING to show appropriate modal
         setApprovalStatus('PENDING');
       } finally {
         setIsLoading(false);
@@ -128,7 +127,6 @@ export default function Dashboard({ academyId }: Props) {
 
   useEffect(() => {
     if (searchParams?.get('alert') === 'access_denied') {
-      // Handle null/error status by defaulting to 'PENDING' or generic message
       const status = approvalStatus || 'PENDING';
       const title = status === 'PENDING' ? '승인 대기 중이에요' : '승인이 거절되었어요';
       const desc = status === 'PENDING' ? '학원 승인이 완료된 후에 사용할 수 있는 기능입니다.\n조금만 기다려 주세요!' : '등록 정보를 다시 확인해 주세요.';
@@ -144,7 +142,6 @@ export default function Dashboard({ academyId }: Props) {
   }, [searchParams, approvalStatus, router, academyId]);
 
   const handleFeatureClick = (path?: string) => {
-    // console.log('handleFeatureClick called. status:', approvalStatus);
     if (!isRegistered) {
       setModalConfig({
         title: '학원 등록이 필요해요',
@@ -155,7 +152,6 @@ export default function Dashboard({ academyId }: Props) {
     }
 
     if (approvalStatus !== 'APPROVED') {
-      // Catch all non-approved states (including null/error)
       const status = approvalStatus || 'PENDING';
       const title = status === 'PENDING' ? '승인 대기 중이에요' : '승인이 거절되었어요';
       const desc = status === 'PENDING'
@@ -181,13 +177,8 @@ export default function Dashboard({ academyId }: Props) {
           <DashboardBanner isRegistered={isRegistered} approvalStatus={''} />
         )}
 
-        {/* Wrap main interactive area to catch clicks on non-button elements if needed, 
-          but handleFeatureClick on specific elements is better UX. 
-          However, user asked to "show modal when clicking ANYTHING". 
-          Let's wrap the interactive parts with a capture handler if not approved. */}
         <div onClickCapture={(e) => {
           if (approvalStatus !== 'APPROVED') {
-            // Prevent default action and stop propagation to prevent navigation
             e.preventDefault();
             e.stopPropagation();
             handleFeatureClick();
@@ -219,7 +210,7 @@ export default function Dashboard({ academyId }: Props) {
                     }
                     onClick={() =>
                       handleFeatureClick(
-                        `/academy/${academyId}/class/${cls.classId}`
+                        `/academy/${academyId}/attendance/${cls.classId}?className=${encodeURIComponent(cls.className)}`
                       )
                     }
                   />

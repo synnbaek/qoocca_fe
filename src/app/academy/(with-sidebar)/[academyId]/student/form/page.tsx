@@ -7,6 +7,7 @@ import TextInput from '@/app/academy/register/components/TextInput';
 import Button from '@/components/common/Button';
 import styles from './form.module.css';
 import SingleSelect from './components/SingleSelect';
+import MultiSelect from '../../../../register/components/MultiSelect';
 import { useClasses } from '@/hooks/useClasses';
 import CardRegistrationModal from './components/CardRegistrationModal';
 import RegistrationCompleteModal from './components/RegistrationCompleteModal';
@@ -22,7 +23,7 @@ export default function StudentFormPage() {
     // --- 기본 정보 ---
     const [studentName, setStudentName] = useState('');
     const [studentPhone, setStudentPhone] = useState('');
-    const [classId, setClassId] = useState<number | undefined>(undefined);
+    const [selectedClassNames, setSelectedClassNames] = useState<string[]>([]);
     const [status, setStatus] = useState<string>('재원'); // 기본값 재원
 
     // --- 보호자 정보 ---
@@ -58,7 +59,7 @@ export default function StudentFormPage() {
     }));
 
     const handleRegister = async () => {
-        if (!studentName || !studentPhone || !classId || !parentName || !parentPhone) {
+        if (!studentName || !studentPhone || selectedClassNames.length === 0 || !parentName || !parentPhone) {
             alert('모든 필수 정보를 입력해주세요.');
             return;
         }
@@ -89,9 +90,12 @@ export default function StudentFormPage() {
             await addParent(studentId, parentData);
 
             // 3. 클래스 배정
-            if (classId) {
-                await assignStudentToClass(classId, studentId);
-            }
+            const selectedClassIds = selectedClassNames
+                .map(name => classes.find(c => c.className === name)?.classId)
+                .filter((id): id is number => id !== undefined);
+
+            // Promise.all로 병렬 처리 권장
+            await Promise.all(selectedClassIds.map(id => assignStudentToClass(id, studentId)));
 
             console.log('Registration successful');
             setIsCompleteModalOpen(true);
@@ -129,12 +133,11 @@ export default function StudentFormPage() {
                 value={studentPhone}
                 onChange={setStudentPhone}
             />
-            <SingleSelect
+            <MultiSelect
                 label="클래스 선택"
-                options={classOptions}
-                value={classId}
-                onChange={setClassId}
-                placeholder="클래스를 선택하세요"
+                options={classes.map(c => c.className)}
+                selected={selectedClassNames}
+                onChange={setSelectedClassNames}
             />
             <TextInput
                 label="상태"
@@ -214,7 +217,7 @@ export default function StudentFormPage() {
             <div className={styles.sectionBox}>
                 <Button
                     onClick={handleRegister}
-                    disabled={!studentName || !studentPhone || !classId || !parentName || !parentPhone}
+                    disabled={!studentName || !studentPhone || selectedClassNames.length === 0 || !parentName || !parentPhone}
                 >
                     등록하기
                 </Button>

@@ -254,6 +254,18 @@
   color: white;
 }
 
+.backButton {
+  background: none;
+  border: none;
+  font-size: 15px;
+  color: #9ca3af;
+  cursor: pointer;
+  align-self: flex-start;
+  padding: 0;
+  margin-bottom: -20px;
+  z-index: 10;
+}
+
 .backButton:hover {
   color: #38bdf8;
 }

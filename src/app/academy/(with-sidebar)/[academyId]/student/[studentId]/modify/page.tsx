@@ -8,6 +8,7 @@ import SingleSelect from '../../form/components/SingleSelect';
 import CardRegistrationModal from '../../form/components/CardRegistrationModal';
 import DeleteConfirmationModal from '../../form/components/DeleteConfirmationModal';
 import styles from '../../form/form.module.css';
+import modifyStyles from './modify.module.css';
 import { useParentStats } from '@/hooks/useParentStats';
 import { getClasses, ClassGetResponse } from '@/api/classApi';
 import {
@@ -21,6 +22,7 @@ import {
     ClassInfoStudentModifyRequest,
     ClassInfoStudentMoveRequest,
 } from '@/api/studentApi';
+import { toast } from 'sonner';
 
 export default function StudentModifyPage() {
     const params = useParams();
@@ -30,7 +32,6 @@ export default function StudentModifyPage() {
 
     const { data: parentStats, loading } = useParentStats(academyId);
 
-    // Find student from nested structure
     const studentData = useMemo(() => {
         if (!parentStats) return null;
 
@@ -47,7 +48,6 @@ export default function StudentModifyPage() {
         return null;
     }, [parentStats, studentId]);
 
-    // Student state
     const [studentName, setStudentName] = useState('');
     const [studentPhone, setStudentPhone] = useState('');
     const [classId, setClassId] = useState<number | null>(null);
@@ -58,10 +58,8 @@ export default function StudentModifyPage() {
     const [isCardModalOpen, setIsCardModalOpen] = useState(false);
     const [selectedParentIndex, setSelectedParentIndex] = useState<number | null>(null);
 
-    // Delete modal state
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-    // Parents state
     const [parentsData, setParentsData] = useState<
         Array<{
             parentId: number;
@@ -77,12 +75,10 @@ export default function StudentModifyPage() {
         }>
     >([]);
 
-    // Fetch classes
     useEffect(() => {
         getClasses(academyId).then(setClasses).catch(console.error);
     }, [academyId]);
 
-    // Initialize data when loaded
     useEffect(() => {
         if (!studentData) return;
 
@@ -112,14 +108,12 @@ export default function StudentModifyPage() {
 
     const handleSave = async () => {
         try {
-            // 1. Update student
             const studentUpdate: AcademyStudentModifyRequest = {
                 studentName,
                 studentPhone,
             };
             await updateStudent(academyId, studentId, studentUpdate);
 
-            // 2. Update parents
             for (const parent of parentsData) {
                 const parentUpdate: ParentUpdateRequest = {
                     parentName: parent.parentName,
@@ -133,23 +127,21 @@ export default function StudentModifyPage() {
                 await updateParent(studentId, parent.parentId, parentUpdate);
             }
 
-            // 3. Update status
             if (status !== studentData?.status) {
                 const statusUpdate: ClassInfoStudentModifyRequest = { status };
                 await updateStudentStatus(studentData!.classId, studentId, statusUpdate);
             }
 
-            // 4. Move class if changed
             if (studentData && classId !== studentData.classId && classId !== null) {
                 const moveRequest: ClassInfoStudentMoveRequest = { targetClassId: classId };
                 await moveStudentToClass(academyId, studentData.classId, studentId, moveRequest);
             }
 
-            alert('정보가 성공적으로 수정되었습니다.');
+            toast.success('정보가 성공적으로 수정되었습니다.');
             router.back();
         } catch (error) {
             console.error('Failed to save student data:', error);
-            alert('정보 수정 중 오류가 발생했습니다.');
+            toast.error('정보 수정 중 오류가 발생했습니다.');
         }
     };
 
@@ -163,11 +155,11 @@ export default function StudentModifyPage() {
 
         try {
             await deleteStudentFromClass(studentData.classId, studentId);
-            alert('원생이 성공적으로 삭제되었습니다.');
+            toast.success('원생이 성공적으로 삭제되었습니다.');
             router.push(`/academy/${academyId}/student`);
         } catch (error) {
             console.error('Failed to delete student:', error);
-            alert('원생 삭제 중 오류가 발생했습니다.');
+            toast.error('원생 삭제 중 오류가 발생했습니다.');
         }
     };
 
@@ -247,14 +239,14 @@ export default function StudentModifyPage() {
 
             {parents.length === 0 ? (
                 <>
-                    <div className={styles.sectionTitle} style={{ marginTop: '24px' }}>
+                    <div className={`${styles.sectionTitle} ${modifyStyles.marginTop24}`}>
                         보호자
                     </div>
-                    <div style={{ padding: '16px', color: '#999' }}>등록된 보호자가 없습니다.</div>
+                    <div className={modifyStyles.noParentsText}>등록된 보호자가 없습니다.</div>
                 </>
             ) : (
                 <>
-                    <div className={styles.sectionTitle} style={{ marginTop: '24px' }}>
+                    <div className={`${styles.sectionTitle} ${modifyStyles.marginTop24}`}>
                         보호자 정보 (최대 2명)
                     </div>
 
@@ -295,7 +287,7 @@ export default function StudentModifyPage() {
                                 </div>
 
 
-                                <div className={styles.sectionTitle} style={{ marginTop: '24px' }}>
+                                <div className={`${styles.sectionTitle} ${modifyStyles.marginTop24}`}>
                                     카드 정보 {parents.length > 1 ? index + 1 : ''}
                                 </div>
 
@@ -312,7 +304,7 @@ export default function StudentModifyPage() {
                                             <img
                                                 src="/images/card_placeholder.png"
                                                 alt="Registered Card"
-                                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                                className={modifyStyles.cardImage}
                                             />
                                         </div>
                                     </div>
@@ -327,44 +319,17 @@ export default function StudentModifyPage() {
                 </>
             )}
 
-            <div
-                style={{
-                    display: 'flex',
-                    gap: '12px',
-                    justifyContent: 'flex-end',
-                    marginTop: '32px',
-                    paddingTop: '24px',
-                    borderTop: '1px solid #e5e7eb',
-                }}
-            >
+            <div className={modifyStyles.buttonGroup}>
                 <button
                     onClick={handleCancel}
-                    style={{
-                        padding: '10px 24px',
-                        fontSize: '15px',
-                        fontWeight: '500',
-                        color: '#666',
-                        backgroundColor: 'white',
-                        border: '1px solid #ddd',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                    }}
+                    className={modifyStyles.cancelButton}
                 >
                     취소
                 </button>
 
                 <button
                     onClick={handleSave}
-                    style={{
-                        padding: '10px 24px',
-                        fontSize: '15px',
-                        fontWeight: '500',
-                        color: 'white',
-                        backgroundColor: 'var(--primary-color)',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                    }}
+                    className={modifyStyles.saveButton}
                 >
                     저장
                 </button>

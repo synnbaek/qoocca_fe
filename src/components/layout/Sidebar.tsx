@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
 import style from './Sidebar.module.css';
+import Select from '@/components/common/Select';
 import { dashboardService } from '@/services/dashboardService';
 import { getMyAcademyList, AcademyListResponse } from '@/api/academyApi';
 
@@ -70,25 +71,22 @@ export default function Sidebar({ academyId: propsId }: SidebarProps) {
     }
   };
 
-  const handleAcademyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newAcademyId = e.target.value;
-    window.location.href = `/academy/${newAcademyId}`;
-  };
+
 
   return (
     <nav className={style.sidebar}>
       <div className={style.academySwitcher}>
-        <select 
-          value={academyId} 
-          onChange={handleAcademyChange}
-          className={style.academySelect}
-        >
-          {academies.map((academy) => (
-            <option key={academy.academyId} value={academy.academyId}>
-              {academy.name} {getStatusLabel(academy.approvalStatus)}
-            </option>
-          ))}
-        </select>
+        <Select
+          options={academies.map((academy) => ({
+            value: academy.academyId,
+            label: `${academy.name} ${getStatusLabel(academy.approvalStatus)}`
+          }))}
+          value={Number(academyId) || null}
+          onChange={(val) => {
+            window.location.href = `/academy/${val}`;
+          }}
+          placeholder="학원 선택"
+        />
       </div>
       <ul className={`${style.menuList} ${approvalStatus === 'PENDING' ? style.disabled : ''}`}>
         <div className={style.menuGroupTitle}>학원</div>
