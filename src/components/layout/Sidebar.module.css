@@ -1,8 +1,8 @@
 .sidebar {
-  width: 212px;
+  width: 240px;
   background-color: #ffffff;
   border-right: 1px solid var(--divider-color);
-  padding: 20px;
+  padding: 80px 20px 20px 20px;
   box-sizing: border-box;
   position: fixed;
   top: 0;
@@ -122,4 +122,33 @@
   color: #adb5bd;
   margin: 16px 0 8px 16px;
   text-transform: uppercase;
+}
+
+.academySwitcher {
+  padding: 0 0 20px 0;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.academySelect {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background-color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.academySelect:hover {
+  border-color: #d1d5db;
+}
+
+.academySelect:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }

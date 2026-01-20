@@ -40,3 +40,14 @@ export const createAcademy = async (payload: AcademyCreatePayload) => {
   });
   return response.data; // 등록된 학원 ID 반환
 };
+
+export interface AcademyListResponse {
+  academyId: number;
+  name: string;
+  approvalStatus: 'PENDING' | 'APPROVED' | 'REJECTED';
+}
+
+export const getMyAcademyList = async () => {
+  const response = await axios.get<AcademyListResponse[]>("/api/academy/academy-list");
+  return response.data;
+};

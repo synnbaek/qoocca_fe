@@ -68,12 +68,17 @@ export default function SocialAuthPage() {
             },
       });
 
-      const { accessToken } = res.data;
+      const { accessToken, academyId } = res.data;
       Cookies.set('accessToken', accessToken, { expires: 1, path: '/' });
       dispatch(setUserFromToken(accessToken));
 
       toast.success(isExistingUser ? '계정 연결 성공!' : '회원가입 성공!');
-      router.replace('/');
+      
+      if (academyId) {
+        router.replace(`/academy/${academyId}`);
+      } else {
+        router.replace('/academy/register');
+      }
     } catch (err: any) {
       toast.error(err.response?.data?.message || '처리에 실패했습니다.');
     } finally {

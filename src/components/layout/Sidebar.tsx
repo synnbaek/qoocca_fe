@@ -5,6 +5,7 @@ import { usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
 import style from './Sidebar.module.css';
 import { dashboardService } from '@/services/dashboardService';
+import { getMyAcademyList, AcademyListResponse } from '@/api/academyApi';
 
 interface SidebarProps {
   academyId: string;
@@ -29,6 +30,7 @@ export default function Sidebar({ academyId: propsId }: SidebarProps) {
         setApprovalStatus(data.approvalStatus);
       } catch (error) {
         console.error('Failed to fetch academy status:', error);
+        setApprovalStatus('PENDING');
       }
     };
     fetchStatus();
@@ -45,9 +47,50 @@ export default function Sidebar({ academyId: propsId }: SidebarProps) {
     return `${style.subLinkItem} ${isActive ? style.active : ''}`;
   };
 
+  const [academies, setAcademies] = useState<AcademyListResponse[]>([]);
+
+  useEffect(() => {
+    const fetchAcademies = async () => {
+      try {
+        const data = await getMyAcademyList();
+        setAcademies(data);
+      } catch (error) {
+        console.error('Failed to fetch academy list:', error);
+      }
+    };
+    fetchAcademies();
+  }, []);
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'APPROVED': return '';
+      case 'PENDING': return '(승인 대기)';
+      case 'REJECTED': return '(승인 거절)';
+      default: return '';
+    }
+  };
+
+  const handleAcademyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newAcademyId = e.target.value;
+    window.location.href = `/academy/${newAcademyId}`;
+  };
+
   return (
-    <nav className={`${style.sidebar} ${approvalStatus === 'PENDING' ? style.disabled : ''}`}>
-      <ul className={style.menuList}>
+    <nav className={style.sidebar}>
+      <div className={style.academySwitcher}>
+        <select 
+          value={academyId} 
+          onChange={handleAcademyChange}
+          className={style.academySelect}
+        >
+          {academies.map((academy) => (
+            <option key={academy.academyId} value={academy.academyId}>
+              {academy.name} {getStatusLabel(academy.approvalStatus)}
+            </option>
+          ))}
+        </select>
+      </div>
+      <ul className={`${style.menuList} ${approvalStatus === 'PENDING' ? style.disabled : ''}`}>
         <div className={style.menuGroupTitle}>학원</div>
         <li className={style.menuItem}>
           <Link href={`/academy/${academyId}`} className={getMenuClass('/')}>
