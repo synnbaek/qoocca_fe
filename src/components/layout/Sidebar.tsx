@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
 import style from './Sidebar.module.css';
+import { dashboardService } from '@/services/dashboardService';
 
 interface SidebarProps {
   academyId: string;
@@ -18,6 +19,20 @@ export default function Sidebar({ academyId: propsId }: SidebarProps) {
   const [isManagementOpen, setIsManagementOpen] = useState(
     pathname.includes('/attendance') || pathname.includes('/payment')
   );
+  const [approvalStatus, setApprovalStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      if (!academyId) return;
+      try {
+        const data = await dashboardService.getAcademyInfo(academyId);
+        setApprovalStatus(data.approvalStatus);
+      } catch (error) {
+        console.error('Failed to fetch academy status:', error);
+      }
+    };
+    fetchStatus();
+  }, [academyId]);
 
   const getMenuClass = (path: string) => {
     const fullPath = `/academy/${academyId}${path === '/' ? '' : path}`;
@@ -31,7 +46,7 @@ export default function Sidebar({ academyId: propsId }: SidebarProps) {
   };
 
   return (
-    <nav className={style.sidebar}>
+    <nav className={`${style.sidebar} ${approvalStatus === 'PENDING' ? style.disabled : ''}`}>
       <ul className={style.menuList}>
         <div className={style.menuGroupTitle}>학원</div>
         <li className={style.menuItem}>
