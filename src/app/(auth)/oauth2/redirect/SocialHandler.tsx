@@ -7,6 +7,8 @@ import { setUserFromToken } from '@/store/userSlice';
 import { toast } from 'sonner';
 import Loading from '@/components/common/Loading';
 import axiosInstance from '@/api/axiosInstance';
+import { AcademyInfo } from '@/types/dashboard';
+import { useState } from 'react';
 
 interface SocialHandlerProps {
   provider: 'kakao' | 'naver';
@@ -17,6 +19,8 @@ export default function SocialHandler({ provider }: SocialHandlerProps) {
   const code = searchParams.get('code');
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const [hasFetchedToken, setHasFetchedToken] = useState(false);
 
   const hasFetched = useRef(false); // useEffect가 두 번 실행되는 것을 방지
 
@@ -29,7 +33,7 @@ export default function SocialHandler({ provider }: SocialHandlerProps) {
       try {
         const res = await axiosInstance.post(`/api/auth/${provider}`, { code });
 
-        const { accessToken, socialId, academyId } = res.data;
+        const { accessToken, socialId, academyId, academies } = res.data;
 
         if (accessToken === 'NEED_PHONE_AUTH') {
           toast.info('추가 휴대폰 인증이 필요합니다.');
@@ -41,11 +45,7 @@ export default function SocialHandler({ provider }: SocialHandlerProps) {
         } else {
           dispatch(setUserFromToken(accessToken));
           toast.success('로그인 성공!');
-          if (academyId) {
-            router.push(`/academy/${academyId}`);
-          } else {
-            router.push('/academy/register');
-          }
+          router.replace('/academy');
         }
       } catch (err: any) {
         toast.error(
@@ -58,5 +58,10 @@ export default function SocialHandler({ provider }: SocialHandlerProps) {
     getToken();
   }, [code, provider, dispatch, router]);
 
-  return <Loading provider={provider} />;
+
+  return (
+    <>
+      <Loading provider={provider} />
+    </>
+  );
 }

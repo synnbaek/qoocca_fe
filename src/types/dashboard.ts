@@ -5,7 +5,7 @@ export interface DashboardStatsData {
     noCardCount: number;
     totalMonthlyFee: number;
 }
-  
+
 export interface ReceiptSummary {
     className: string;
     classTime: string;
@@ -24,7 +24,7 @@ export interface ClassSummary {
 }
 
 export interface AcademyInfo {
-    academyId: number;
+    id: number;
     name: string;
     approvalStatus: 'REJECTED' | 'PENDING' | 'APPROVED';
 }
