@@ -48,7 +48,7 @@ export default function AcademyFormPage() {
     }
 
     try {
-      await createAcademy({
+      const academyId = await createAcademy({
         name: academyName,
         baseAddress,
         detailAddress,
@@ -61,7 +61,7 @@ export default function AcademyFormPage() {
         ageIds: selectedAgeIds,
         subjects: selectedSubjectIds,
       });
-      router.push('/academy/complete');
+      router.push(`/academy/register/complete?academyId=${academyId}`);
     } catch (err) {
       console.error(err);
       alert('학원 등록 중 오류가 발생했습니다.');

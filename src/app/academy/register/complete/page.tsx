@@ -1,12 +1,22 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './complete.module.css';
 import AcademyTitle from '../components/AcademyTitle';
 import Button from '../../../../components/common/Button';
 
 export default function AcademyCompletePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const academyId = searchParams.get('academyId');
+
+  const handleConfirm = () => {
+    if (academyId) {
+      router.push(`/academy/${academyId}`);
+    } else {
+      router.push('/');
+    }
+  };
 
   return (
     <div className={styles.completeContainer}>
@@ -28,7 +38,7 @@ export default function AcademyCompletePage() {
       </div>
 
       <div className={styles.sectionBox}>
-        <Button onClick={() => router.push('/')}>확인</Button>
+        <Button onClick={handleConfirm}>확인</Button>
       </div>
     </div>
   );

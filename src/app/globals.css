@@ -50,7 +50,7 @@ body {
 }
 
 .layoutWrapper:has(nav) .mainContent {
-  margin-left: 212px;
+  margin-left: 240px;
 }
 
 .mainContent {

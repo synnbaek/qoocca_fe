@@ -36,7 +36,6 @@ export default function AttendanceRightSidebar({ academyId, classTitle }: Props)
           `/api/attendance/academy/${academyId}/today`
         );
         
-        console.log("전체 출결 데이터:", response.data);
         setAttendances(response.data);
       } catch (error) {
         console.error('전체 출석 현황 로딩 실패:', error);
