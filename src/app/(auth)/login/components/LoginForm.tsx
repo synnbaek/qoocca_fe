@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import Loading from '@/components/common/Loading';
+import { AcademyInfo } from '@/types/dashboard';
 
 export default function LoginForm() {
   const dispatch = useDispatch();
@@ -27,19 +28,15 @@ export default function LoginForm() {
     try {
       const data = await authService.login({
         email,
-        password
+        password,
       });
 
-      const { accessToken, academyId } = data;
+      const { accessToken, academyId, academies } = data;
 
       if (accessToken) {
         dispatch(setUserFromToken(accessToken));
-      }
-
-      if (academyId) {
-        router.push(`/academy/${academyId}`);
-      } else {
-        router.push('/academy/register');
+        toast.success('로그인 성공!');
+        router.push('/academy');
       }
     } catch (err: any) {
       const errorMessage =
@@ -49,6 +46,7 @@ export default function LoginForm() {
       setIsLoading(false);
     }
   };
+
 
   return (
     <form onSubmit={handleLogin} className={styles.form}>
@@ -85,6 +83,7 @@ export default function LoginForm() {
           '로그인'
         )}
       </Button>
-    </form>
+
+    </form >
   );
 }

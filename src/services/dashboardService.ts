@@ -1,9 +1,9 @@
 import axiosInstance from '@/api/axiosInstance';
-import { 
-    DashboardStatsData, 
-    ReceiptSummary, 
-    ClassSummary, 
-    AcademyInfo 
+import {
+    DashboardStatsData,
+    ReceiptSummary,
+    ClassSummary,
+    AcademyInfo
 } from '@/types/dashboard';
 
 export const dashboardService = {
@@ -12,6 +12,14 @@ export const dashboardService = {
      */
     getAcademyInfo: async (academyId: string | number): Promise<AcademyInfo> => {
         const response = await axiosInstance.get<AcademyInfo>(`/api/academy/${academyId}`);
+        return response.data;
+    },
+
+    /**
+     * 사용자의 모든 학원 목록 조회
+     */
+    getMyAcademies: async (): Promise<AcademyInfo[]> => {
+        const response = await axiosInstance.get<AcademyInfo[]>('/api/academy');
         return response.data;
     },
 

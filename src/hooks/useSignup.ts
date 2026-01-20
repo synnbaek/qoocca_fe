@@ -9,6 +9,7 @@ import {
   validateName,
 } from '../utils/validation';
 import { toast } from 'sonner';
+import { AcademyInfo } from '@/types/dashboard';
 
 export function useSignup() {
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ export function useSignup() {
   const [isExistingUser, setIsExistingUser] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [agreements, setAgreements] = useState({
+    // ... (skipping some unchanged state lines if possible, but replace_file_content needs exact match)
     service: false,
     privacy: false,
     thirdParty: false,
@@ -77,18 +79,14 @@ export function useSignup() {
 
       dispatch(setUserFromToken(data.accessToken));
       toast.success(isExistingUser ? '계정 연동 성공!' : '회원가입 성공!');
-      
-      if (data.academyId) {
-        router.push(`/academy/${data.academyId}`);
-      } else {
-        router.push('/academy/register');
-      }
+      router.push('/academy');
     } catch (err: any) {
       toast.error('가입 실패: ' + (err.response?.data?.message || '오류 발생'));
     } finally {
       setIsLoading(false);
     }
   };
+
 
   return {
     fields: { username, email, password, phone, code },

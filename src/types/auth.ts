@@ -1,3 +1,5 @@
+import { AcademyInfo } from './dashboard';
+
 export interface LoginRequest {
     email: string;
     password: string;
@@ -6,6 +8,7 @@ export interface LoginRequest {
 export interface LoginResponse {
     accessToken: string;
     academyId?: number;
+    academies?: AcademyInfo[];
 }
 
 export interface SignupRequest {
@@ -25,6 +28,7 @@ export interface SignupRequest {
 export interface SignupResponse {
     accessToken: string;
     academyId?: number;
+    academies?: AcademyInfo[];
 }
 
 export interface SendCodeRequest {
