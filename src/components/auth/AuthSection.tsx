@@ -54,6 +54,7 @@ export default function AuthSection() {
 
       <button type="button">알림</button>
       <button type="button">프로필</button>
+      <Link href="/academy/register">학원 등록</Link>
       <button type="button" onClick={handleLogout}>
         로그아웃
       </button>
