@@ -70,7 +70,7 @@ export default function Dashboard({ academyId }: Props) {
 
           if (academies.length === 1) {
             // 학원이 1개만 있으면 바로 해당 학원으로 이동
-            router.replace(`/academy/${academies[0].id}`);
+            router.replace(`/academy/${academies[0].academyId}`);
           } else if (academies.length > 1) {
             // 학원이 여러 개면 모달 오픈
             setIsSelectionModalOpen(true);

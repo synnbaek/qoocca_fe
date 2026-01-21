@@ -2,7 +2,6 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import AcademyTitle from '@/app/academy/register/components/AcademyTitle';
 import TextInput from '@/app/academy/register/components/TextInput';
 import SingleSelect from '../../form/components/SingleSelect';
 import CardRegistrationModal from '../../form/components/CardRegistrationModal';
