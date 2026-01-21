@@ -1,6 +1,7 @@
 import Sidebar from '@/components/layout/Sidebar';
 import styles from './AcademyLayout.module.css';
 import AcademyGuard from '@/components/auth/AcademyGuard';
+import AttendanceRightSidebar from './[academyId]/components/AttendanceRightSidebar';
 
 export default async function AcademyLayout({
   children,
@@ -22,6 +23,7 @@ export default async function AcademyLayout({
           {children}
         </AcademyGuard>
       </main>
+      <AttendanceRightSidebar />
     </div>
   );
 }

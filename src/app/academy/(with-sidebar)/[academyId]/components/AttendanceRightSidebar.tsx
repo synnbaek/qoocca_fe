@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname, useParams } from 'next/navigation';
 import styles from './AttendanceRightSidebar.module.css';
 import axiosInstance from '@/api/axiosInstance';
 
@@ -14,17 +15,18 @@ interface ClassAttendanceResponse {
   statusLabel: string;
 }
 
-interface Props {
-  academyId: number;
-  classTitle?: string;
-}
-
-export default function AttendanceRightSidebar({ academyId, classTitle }: Props) {
+export default function AttendanceRightSidebar() {
   const [attendances, setAttendances] = useState<ClassAttendanceResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const pathname = usePathname();
+  const params = useParams();
+  const academyId = Number(params?.academyId);
+
+  // 대시보드 메인 페이지(/academy/[id])에서만 노출
+  const isDashboardMain = pathname === `/academy/${academyId}`;
 
   useEffect(() => {
-    if (!academyId) {
+    if (!academyId || !isDashboardMain) {
       setIsLoading(false);
       return;
     }
@@ -45,9 +47,9 @@ export default function AttendanceRightSidebar({ academyId, classTitle }: Props)
     };
 
     fetchAllAttendance();
-  }, [academyId]);
+  }, [academyId, isDashboardMain]);
 
-  if (!academyId) return null;
+  if (!academyId || !isDashboardMain) return null;
 
   const groupedAttendances = attendances.reduce((acc, student) => {
     const { className } = student;
