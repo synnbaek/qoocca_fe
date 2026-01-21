@@ -9,6 +9,7 @@ import { formatYearMonth } from '@/utils/dateUtils';
 import { attendanceService } from '@/services/attendanceService';
 import { DateController } from '@/components/common/DateController';
 import { StudentMonthlyStat } from '@/types/attendance';
+import { getClasses } from '@/api/classApi'; // Import API
 
 export default function ClassAttendancePage() {
     const { academyId, classId } = useParams();
@@ -18,10 +19,33 @@ export default function ClassAttendancePage() {
     const [students, setStudents] = useState<StudentMonthlyStat[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const className = searchParams.get('className') || '클래스명';
-    const classTime = searchParams.get('classTime') || '00:00~00:00';
+    const [classInfo, setClassInfo] = useState<{ name: string; time: string | null }>({
+        name: searchParams.get('className') || '',
+        time: searchParams.get('classTime') || null,
+    });
 
     const router = useRouter();
+
+    useEffect(() => {
+        const loadClassInfo = async () => {
+            if (!academyId) return;
+            try {
+                const classes = await getClasses(Number(academyId));
+                const currentClass = classes.find(c => c.classId === Number(classId));
+                if (currentClass) {
+                    const startTime = currentClass.startTime ? currentClass.startTime.substring(0, 5) : '';
+                    const endTime = currentClass.endTime ? currentClass.endTime.substring(0, 5) : '';
+                    setClassInfo({
+                        name: currentClass.className,
+                        time: startTime && endTime ? `${startTime}~${endTime}` : '',
+                    });
+                }
+            } catch (err) {
+                console.error('Failed to fetch class info:', err);
+            }
+        };
+        loadClassInfo();
+    }, [academyId, classId]);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -92,7 +116,7 @@ export default function ClassAttendancePage() {
 
                 <div className={styles.classInfoRow}>
                     <div className={styles.classTitle}>
-                        {className} <span className={styles.classTime}>{classTime}</span>
+                        {classInfo.name || '클래스명'} <span className={styles.classTime}>{classInfo.time || ''}</span>
                     </div>
                     <button className={styles.addStudentBtn} onClick={() => router.push(`/academy/${academyId}/student/form`)}>+ 학생 추가</button>
                 </div>

@@ -1,0 +1,45 @@
+.marginTop24 {
+  margin-top: 24px;
+}
+
+.noParentsText {
+  padding: 16px;
+  color: #999;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.cancelButton {
+  padding: 10px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #666;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.saveButton {
+  padding: 10px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  color: white;
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

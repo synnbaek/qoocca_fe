@@ -46,7 +46,7 @@ export default function StudentDetailPage() {
                 className={styles.backButton}
                 onClick={() => router.push(`/academy/${academyId}/student`)}
             >
-                &lt;
+                &lt; 뒤로
             </button>
             {/* 상단 타이틀 + 수정 버튼 */}
             <div className={styles.titleRow}>

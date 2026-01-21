@@ -19,7 +19,7 @@ export const dashboardService = {
      * 사용자의 모든 학원 목록 조회
      */
     getMyAcademies: async (): Promise<AcademyInfo[]> => {
-        const response = await axiosInstance.get<AcademyInfo[]>('/api/academy');
+        const response = await axiosInstance.get<AcademyInfo[]>('/api/academy/academy-list');
         return response.data;
     },
 

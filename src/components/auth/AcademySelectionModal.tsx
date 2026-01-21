@@ -31,9 +31,9 @@ export default function AcademySelectionModal({
                 <div className={styles.academyList}>
                     {academies.map((academy) => (
                         <button
-                            key={academy.id}
+                            key={academy.academyId}
                             className={styles.academyItem}
-                            onClick={() => onSelect(academy.id)}
+                            onClick={() => onSelect(academy.academyId)}
                         >
                             <div className={styles.academyName}>{academy.name}</div>
                             <div className={styles.academyStatus}>

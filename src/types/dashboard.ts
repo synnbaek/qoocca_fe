@@ -24,7 +24,7 @@ export interface ClassSummary {
 }
 
 export interface AcademyInfo {
-    id: number;
+    academyId: number;
     name: string;
     approvalStatus: 'REJECTED' | 'PENDING' | 'APPROVED';
 }
