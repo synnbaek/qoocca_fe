@@ -34,3 +34,14 @@ export interface StudentCalendarResponse {
     enrolledClasses: string[];
     attendanceRecords: AttendanceRecord[];
 }
+
+// Added for AttendanceRightSidebar
+export interface ClassAttendanceResponse {
+  studentId: number;
+  studentName: string;
+  className: string;
+  checkIn: string | null;
+  checkOut: string | null;
+  status: string;
+  statusLabel: string;
+}

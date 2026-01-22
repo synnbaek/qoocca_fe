@@ -10,9 +10,10 @@ import { getMyAcademyList, AcademyListResponse } from '@/api/academyApi';
 
 interface SidebarProps {
   academyId: string;
+  approvalStatus: string | null;
 }
 
-export default function Sidebar({ academyId: propsId }: SidebarProps) {
+export default function Sidebar({ academyId: propsId, approvalStatus }: SidebarProps) {
   const pathname = usePathname();
 
   const params = useParams();
@@ -21,21 +22,8 @@ export default function Sidebar({ academyId: propsId }: SidebarProps) {
   const [isManagementOpen, setIsManagementOpen] = useState(
     pathname.includes('/attendance') || pathname.includes('/payment')
   );
-  const [approvalStatus, setApprovalStatus] = useState<string | null>(null);
+  // approvalStatus is now passed as prop, no need for internal state or effect
 
-  useEffect(() => {
-    const fetchStatus = async () => {
-      if (!academyId) return;
-      try {
-        const data = await dashboardService.getAcademyInfo(academyId);
-        setApprovalStatus(data.approvalStatus);
-      } catch (error) {
-        console.error('Failed to fetch academy status:', error);
-        setApprovalStatus('PENDING');
-      }
-    };
-    fetchStatus();
-  }, [academyId]);
 
   const getMenuClass = (path: string) => {
     const fullPath = `/academy/${academyId}${path === '/' ? '' : path}`;
