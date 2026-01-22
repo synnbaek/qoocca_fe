@@ -5,7 +5,6 @@ import { usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
 import style from './Sidebar.module.css';
 import Select from '@/components/common/Select';
-import { dashboardService } from '@/services/dashboardService';
 import { getMyAcademyList, AcademyListResponse } from '@/api/academyApi';
 
 interface SidebarProps {
@@ -22,8 +21,6 @@ export default function Sidebar({ academyId: propsId, approvalStatus }: SidebarP
   const [isManagementOpen, setIsManagementOpen] = useState(
     pathname.includes('/attendance') || pathname.includes('/payment')
   );
-  // approvalStatus is now passed as prop, no need for internal state or effect
-
 
   const getMenuClass = (path: string) => {
     const fullPath = `/academy/${academyId}${path === '/' ? '' : path}`;
@@ -50,6 +47,11 @@ export default function Sidebar({ academyId: propsId, approvalStatus }: SidebarP
     fetchAcademies();
   }, []);
 
+  const currentAcademy = academies.find(a => String(a.academyId) === String(academyId));
+  
+  const activeStatus = currentAcademy ? currentAcademy.approvalStatus : approvalStatus;
+  const isDisabled = activeStatus !== 'APPROVED';
+
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'APPROVED': return '';
@@ -58,8 +60,6 @@ export default function Sidebar({ academyId: propsId, approvalStatus }: SidebarP
       default: return '';
     }
   };
-
-
 
   return (
     <nav className={style.sidebar}>
@@ -76,7 +76,7 @@ export default function Sidebar({ academyId: propsId, approvalStatus }: SidebarP
           placeholder="학원 선택"
         />
       </div>
-      <ul className={`${style.menuList} ${approvalStatus === 'PENDING' ? style.disabled : ''}`}>
+      <ul className={`${style.menuList} ${isDisabled ? style.disabled : ''}`}>
         <div className={style.menuGroupTitle}>학원</div>
         <li className={style.menuItem}>
           <Link href={`/academy/${academyId}`} className={getMenuClass('/')}>
