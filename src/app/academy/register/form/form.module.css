@@ -1,8 +1,5 @@
 .formContainer {
-  background-color: var(--white);
-  padding: 2rem 3rem;
-  width: 100%;
-  min-width: var(--container-width);
+  width: var(--container-width);
   margin: 0 auto;
   border-radius: var(--radius-sm);
   box-sizing: border-box;
@@ -12,6 +9,7 @@
   gap: 24px;
 
   overflow-y: visible;
+  padding: 40px 0;
 }
 
 .titleWrapper {

@@ -5,14 +5,14 @@ import { usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
 import style from './Sidebar.module.css';
 import Select from '@/components/common/Select';
-import { dashboardService } from '@/services/dashboardService';
 import { getMyAcademyList, AcademyListResponse } from '@/api/academyApi';
 
 interface SidebarProps {
   academyId: string;
+  approvalStatus: string | null;
 }
 
-export default function Sidebar({ academyId: propsId }: SidebarProps) {
+export default function Sidebar({ academyId: propsId, approvalStatus }: SidebarProps) {
   const pathname = usePathname();
 
   const params = useParams();
@@ -21,21 +21,6 @@ export default function Sidebar({ academyId: propsId }: SidebarProps) {
   const [isManagementOpen, setIsManagementOpen] = useState(
     pathname.includes('/attendance') || pathname.includes('/payment')
   );
-  const [approvalStatus, setApprovalStatus] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchStatus = async () => {
-      if (!academyId) return;
-      try {
-        const data = await dashboardService.getAcademyInfo(academyId);
-        setApprovalStatus(data.approvalStatus);
-      } catch (error) {
-        console.error('Failed to fetch academy status:', error);
-        setApprovalStatus('PENDING');
-      }
-    };
-    fetchStatus();
-  }, [academyId]);
 
   const getMenuClass = (path: string) => {
     const fullPath = `/academy/${academyId}${path === '/' ? '' : path}`;
@@ -62,6 +47,11 @@ export default function Sidebar({ academyId: propsId }: SidebarProps) {
     fetchAcademies();
   }, []);
 
+  const currentAcademy = academies.find(a => String(a.academyId) === String(academyId));
+  
+  const activeStatus = currentAcademy ? currentAcademy.approvalStatus : approvalStatus;
+  const isDisabled = activeStatus !== 'APPROVED';
+
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'APPROVED': return '';
@@ -70,8 +60,6 @@ export default function Sidebar({ academyId: propsId }: SidebarProps) {
       default: return '';
     }
   };
-
-
 
   return (
     <nav className={style.sidebar}>
@@ -88,7 +76,7 @@ export default function Sidebar({ academyId: propsId }: SidebarProps) {
           placeholder="학원 선택"
         />
       </div>
-      <ul className={`${style.menuList} ${approvalStatus === 'PENDING' ? style.disabled : ''}`}>
+      <ul className={`${style.menuList} ${isDisabled ? style.disabled : ''}`}>
         <div className={style.menuGroupTitle}>학원</div>
         <li className={style.menuItem}>
           <Link href={`/academy/${academyId}`} className={getMenuClass('/')}>

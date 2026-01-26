@@ -53,17 +53,17 @@ export default function StudentCell({ data }: Props) {
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th className={styles.th}>
+                        <th className={styles.checkboxCol}>
                             <input
                                 type="checkbox"
                                 checked={checkedRows.length === data.length && data.length > 0}
                                 onChange={toggleAll}
                             />
                         </th>
-                        <th className={styles.th}>클래스명</th>
-                        <th className={styles.th}>전체학생</th>
-                        <th className={styles.th}>비활성화</th>
-                        <th className={styles.th}></th>
+                        <th className={styles.classNameColHeader}>클래스명</th>
+                        <th className={styles.statCol}>전체학생</th>
+                        <th className={styles.statCol}>비활성화</th>
+                        <th className={styles.statCol}>운영여부</th>
                     </tr>
                 </thead>
 

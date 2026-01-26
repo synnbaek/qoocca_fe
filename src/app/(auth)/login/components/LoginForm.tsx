@@ -36,7 +36,13 @@ export default function LoginForm() {
       if (accessToken) {
         dispatch(setUserFromToken(accessToken));
         toast.success('로그인 성공!');
-        router.push('/academy');
+
+        // Smart Redirect: 학원이 하나만 있으면 바로 대시보드로 이동
+        if (academies && academies.length === 1) {
+          router.push(`/academy/${academies[0].academyId}`);
+        } else {
+          router.push('/academy');
+        }
       }
     } catch (err: any) {
       const errorMessage =

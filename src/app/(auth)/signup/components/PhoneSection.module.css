@@ -52,3 +52,10 @@
   font-weight: bold;
   margin-right: 10px;
 }
+
+.verifiedText {
+  color: var(--primary-color);
+  font-weight: bold;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
