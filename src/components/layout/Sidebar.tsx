@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usePathname, useParams } from 'next/navigation';
+import { usePathname, useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import style from './Sidebar.module.css';
 import Select from '@/components/common/Select';
@@ -10,10 +10,12 @@ import { getMyAcademyList, AcademyListResponse } from '@/api/academyApi';
 interface SidebarProps {
   academyId: string;
   approvalStatus: string | null;
+  initialAcademies?: AcademyListResponse[];
 }
 
-export default function Sidebar({ academyId: propsId, approvalStatus }: SidebarProps) {
+export default function Sidebar({ academyId: propsId, approvalStatus, initialAcademies = [] }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
 
   const params = useParams();
   const academyId = (params.academyId as string) || propsId;
@@ -33,9 +35,11 @@ export default function Sidebar({ academyId: propsId, approvalStatus }: SidebarP
     return `${style.subLinkItem} ${isActive ? style.active : ''}`;
   };
 
-  const [academies, setAcademies] = useState<AcademyListResponse[]>([]);
+  const [academies, setAcademies] = useState<AcademyListResponse[]>(initialAcademies);
 
   useEffect(() => {
+    if (initialAcademies.length > 0) return;
+
     const fetchAcademies = async () => {
       try {
         const data = await getMyAcademyList();
@@ -45,7 +49,7 @@ export default function Sidebar({ academyId: propsId, approvalStatus }: SidebarP
       }
     };
     fetchAcademies();
-  }, []);
+  }, [initialAcademies]);
 
   const currentAcademy = academies.find(a => String(a.academyId) === String(academyId));
   
@@ -71,7 +75,7 @@ export default function Sidebar({ academyId: propsId, approvalStatus }: SidebarP
           }))}
           value={Number(academyId) || null}
           onChange={(val) => {
-            window.location.href = `/academy/${val}`;
+            router.push(`/academy/${val}`);
           }}
           placeholder="학원 선택"
         />

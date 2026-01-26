@@ -107,3 +107,38 @@ export const deleteStudentFromClass = async (classId: number, studentId: number)
     await axiosInstance.delete(`/api/class/${classId}/student/${studentId}`);
 };
 
+export interface AcademyStudentUploadResponse {
+    success: boolean;
+    message: string;
+    // Add other fields based on backend response structure
+    totalCount?: number;
+    successCount?: number;
+    failureCount?: number;
+}
+
+// 9. Upload Student Excel
+export const uploadStudentExcel = async (
+    academyId: number,
+    file: File,
+    classId?: number,
+    useAi: boolean = true,
+    dryRun: boolean = false
+): Promise<AcademyStudentUploadResponse> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (classId) formData.append("classId", classId.toString());
+    formData.append("useAi", useAi.toString());
+    formData.append("dryRun", dryRun.toString());
+
+    const response = await axiosInstance.post<AcademyStudentUploadResponse>(
+        `/api/academy/${academyId}/student/upload`,
+        formData,
+        {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        }
+    );
+    return response.data;
+};
+
