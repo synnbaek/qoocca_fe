@@ -10,6 +10,7 @@ interface ModalProps {
   description: string;
   actionText: string;
   onAction: () => void;
+  cancelText?: string;
 }
 
 export default function CustomModal({
@@ -19,6 +20,7 @@ export default function CustomModal({
   description,
   actionText,
   onAction,
+  cancelText = '다음에',
 }: ModalProps) {
   if (!isOpen) return null;
 
@@ -34,7 +36,7 @@ export default function CustomModal({
 
         <div className={styles.footer}>
           <Button variant="gray" onClick={onClose}>
-            다음에
+            {cancelText}
           </Button>
           <Button variant="secondary" onClick={onAction}>
             {actionText}
