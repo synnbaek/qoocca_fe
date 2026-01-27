@@ -17,33 +17,46 @@ export default function AdminPage() {
   const [academies, setAcademies] = useState<AcademyListResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
+  // 탭 상태 (PENDING/REJECTED)
+  const [activeTab, setActiveTab] = useState<'PENDING' | 'REJECTED'>('PENDING');
+
   // 상세 모달 상태
   const [selectedAcademyId, setSelectedAcademyId] = useState<number | null>(null);
   const [detailData, setDetailData] = useState<AcademyResponse | null>(null);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
+  // 승인 모달 상태
+  const [isApproveOpen, setIsApproveOpen] = useState(false);
+  
   // 반려 모달 상태
   const [isRejectOpen, setIsRejectOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // 이미지 미리보기(라이트박스) 상태
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState('');
+
   const fetchList = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await adminService.getPendingAcademies(0, 50); // 일단 첫 페이지만 50개
+      const response = 
+        activeTab === 'PENDING' 
+          ? await adminService.getPendingAcademies(0, 50)
+          : await adminService.getRejectedAcademies(0, 50);
       setAcademies(response.content);
     } catch (error) {
       console.error('목록 로딩 실패:', error);
-      toast.error('대기 목록을 불러오지 못했습니다.');
+      toast.error('목록을 불러오지 못했습니다.');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [activeTab]);
 
   useEffect(() => {
     fetchList();
-  }, [fetchList]);
+  }, [fetchList, activeTab]);
 
   // 상세 모달 열기
   const openDetail = async (id: number) => {
@@ -61,15 +74,20 @@ export default function AdminPage() {
     }
   };
 
+  // 승인 모달 열기
+  const openApproveModal = () => {
+    setIsApproveOpen(true);
+  };
+
   // 승인 처리
   const handleApprove = async () => {
     if (!selectedAcademyId) return;
-    if (!confirm('정말 승인하시겠습니까?')) return;
 
     setIsProcessing(true);
     try {
       await adminService.approveAcademy(selectedAcademyId);
       toast.success('승인되었습니다.');
+      setIsApproveOpen(false);
       setIsDetailOpen(false);
       fetchList(); // 목록 갱신
     } catch (error: any) {
@@ -132,7 +150,23 @@ export default function AdminPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>학원 승인 관리</h1>
-        <button className={styles.btnCancel} onClick={fetchList}>새로고침</button>
+        <button className={styles.refreshBtn} onClick={fetchList}>새로고침</button>
+      </div>
+
+      {/* 탭 네비게이션 */}
+      <div className={styles.tabContainer}>
+        <button 
+          className={`${styles.tab} ${activeTab === 'PENDING' ? styles.activeTab : ''}`}
+          onClick={() => setActiveTab('PENDING')}
+        >
+          승인 대기 중
+        </button>
+        <button 
+          className={`${styles.tab} ${activeTab === 'REJECTED' ? styles.activeTab : ''}`}
+          onClick={() => setActiveTab('REJECTED')}
+        >
+          반려됨
+        </button>
       </div>
 
       <div className={styles.tableCard}>
@@ -148,21 +182,21 @@ export default function AdminPage() {
           <tbody>
             {!isLoading && academies.length === 0 && (
                 <tr>
-                    <td colSpan={4} style={{textAlign: 'center', padding: '40px'}}>
-                        대기 중인 학원이 없습니다.
+                    <td colSpan={4} className={styles.emptyState}>
+                        {activeTab === 'PENDING' ? '승인 대기 중인 학원이 없습니다.' : '반려된 학원이 없습니다.'}
                     </td>
                 </tr>
             )}
-            {academies.map((academy) => (
+            {!isLoading && academies.map((academy) => (
               <tr key={academy.academyId} onClick={() => openDetail(academy.academyId)}>
                 <td>{academy.academyId}</td>
-                <td style={{fontWeight: 600}}>{academy.name}</td>
+                <td>{academy.name}</td>
                 <td>
                   <span className={`${styles.badge} ${statusBadgeClass(academy.approvalStatus)}`}>
                     {statusLabel(academy.approvalStatus)}
                   </span>
                 </td>
-                <td style={{color: '#6b7280'}}>
+                <td className={styles.reasonText}>
                     {academy.approvalStatus === 'REJECTED' ? academy.rejectionReason : '-'}
                 </td>
               </tr>
@@ -171,15 +205,10 @@ export default function AdminPage() {
         </table>
       </div>
 
-      {/* 상세 정보 모달 (Custom Implementation for richer content) */}
       {isDetailOpen && (
-          <div className="overlay" style={{
-              position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', 
-              display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-          }} onClick={() => setIsDetailOpen(false)}>
+          <div className={styles.modalOverlay} onClick={() => setIsDetailOpen(false)}>
               <div 
-                  className={styles.tableCard} 
-                  style={{ width: '90%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '32px' }}
+                  className={styles.modalContent} 
                   onClick={e => e.stopPropagation()}
               >
                   {isDetailLoading || !detailData ? (
@@ -193,18 +222,16 @@ export default function AdminPage() {
                                     {statusLabel(detailData.approvalStatus)}
                                   </span>
                               </div>
-                              {detailData.approvalStatus === 'REJECTED' && (
-                                  <div style={{marginTop: '12px', color: '#dc2626', fontWeight: 500}}>
-                                      거절 사유: {detailData.rejectionReason}
-                                  </div>
-                              )}
                           </div>
+                          {detailData.approvalStatus === 'REJECTED' && (
+                              <div className={styles.rejectionText} style={{ marginTop: '-8px', marginBottom: '12px' }}>
+                                  거절 사유: {detailData.rejectionReason}
+                              </div>
+                          )}
 
                           <div className={styles.section}>
                               <div className={styles.sectionTitle}>기본 정보</div>
                               <div className={styles.infoGrid}>
-                                  <span className={styles.infoLabel}>ID</span>
-                                  <span className={styles.infoValue}>{detailData.academyId}</span>
                                   <span className={styles.infoLabel}>연락처</span>
                                   <span className={styles.infoValue}>{detailData.phoneNumber || '-'}</span>
                                   <span className={styles.infoLabel}>주소</span>
@@ -212,6 +239,26 @@ export default function AdminPage() {
                                       {detailData.baseAddress || detailData.address || '-'} 
                                       {detailData.detailAddress ? ` ${detailData.detailAddress}` : ''}
                                   </span>
+                              </div>
+                          </div>
+
+                          {/* 사업자등록증 섹션 추가 */}
+                          <div className={styles.section}>
+                              <div className={styles.sectionTitle}>사업자등록증</div>
+                              <div className={styles.certificateWrapper}>
+                                  {detailData.certificate ? (
+                                      <img 
+                                          src={detailData.certificate} 
+                                          alt="사업자등록증" 
+                                          className={styles.certificateImage}
+                                          onClick={() => {
+                                              setPreviewUrl(detailData.certificate!);
+                                              setIsPreviewOpen(true);
+                                          }}
+                                      />
+                                  ) : (
+                                      <div style={{ color: '#9ca3af', padding: '20px' }}>등록된 서류가 없습니다.</div>
+                                  )}
                               </div>
                           </div>
 
@@ -239,7 +286,7 @@ export default function AdminPage() {
                           )}
 
                           <div className={styles.actions}>
-                              <button className={styles.btnCancel} onClick={() => setIsDetailOpen(false)}>닫기</button>
+                              <button className={`${styles.btn} ${styles.btnCancel}`} onClick={() => setIsDetailOpen(false)}>닫기</button>
                               {detailData.approvalStatus === 'PENDING' && (
                                   <>
                                     <button 
@@ -251,7 +298,7 @@ export default function AdminPage() {
                                     </button>
                                     <button 
                                         className={`${styles.btn} ${styles.btnApprove}`} 
-                                        onClick={handleApprove}
+                                        onClick={openApproveModal}
                                         disabled={isProcessing}
                                     >
                                         승인
@@ -293,6 +340,29 @@ export default function AdminPage() {
               autoFocus
           />
       </CustomModal>
+
+      <CustomModal
+          isOpen={isApproveOpen}
+          onClose={() => setIsApproveOpen(false)}
+          title="승인 확인"
+          description={`'${detailData?.name}' 학원의 등록 신청을 승인하시겠습니까?`}
+          actionText={isProcessing ? "처리 중..." : "승인"}
+          onAction={handleApprove}
+          cancelText="취소"
+      />
+      
+      {/* 이미지 라이트박스 모달 */}
+      {isPreviewOpen && (
+          <div className={styles.lightboxOverlay} onClick={() => setIsPreviewOpen(false)}>
+              <span className={styles.lightboxClose}>&times;</span>
+              <img 
+                  src={previewUrl} 
+                  alt="사업자등록증 원본" 
+                  className={styles.lightboxImage} 
+                  onClick={(e) => e.stopPropagation()} 
+              />
+          </div>
+      )}
 
     </div>
   );

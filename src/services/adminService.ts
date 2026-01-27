@@ -10,10 +10,21 @@ import {
 export const adminService = {
     /**
      * 승인 대기 중인 학원 리스트 조회
-     * GET /api/admin/pending
+     * GET /api/admin/academy/pending
      */
     getPendingAcademies: async (page = 0, size = 10, sort = 'createdAt,asc'): Promise<PageResponse<AcademyListResponse>> => {
-        const response = await axiosInstance.get<PageResponse<AcademyListResponse>>('/api/admin/pending', {
+        const response = await axiosInstance.get<PageResponse<AcademyListResponse>>('/api/admin/academy/pending', {
+            params: { page, size, sort }
+        });
+        return response.data;
+    },
+
+    /**
+     * 반려된 학원 리스트 조회
+     * GET /api/admin/academy/rejected
+     */
+    getRejectedAcademies: async (page = 0, size = 10, sort = 'createdAt,asc'): Promise<PageResponse<AcademyListResponse>> => {
+        const response = await axiosInstance.get<PageResponse<AcademyListResponse>>('/api/admin/academy/rejected', {
             params: { page, size, sort }
         });
         return response.data;

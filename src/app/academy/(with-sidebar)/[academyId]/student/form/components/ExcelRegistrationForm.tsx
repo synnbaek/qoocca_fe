@@ -16,6 +16,7 @@ export default function ExcelRegistrationForm({ academyId }: Props) {
     const router = useRouter();
     const [excelFile, setExcelFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isDragging, setIsDragging] = useState(false); // 드래그 상태 추가
 
     // Modal States
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -24,6 +25,35 @@ export default function ExcelRegistrationForm({ academyId }: Props) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setExcelFile(e.target.files[0]);
+        }
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            const extension = file.name.split('.').pop()?.toLowerCase();
+            if (extension === 'xlsx' || extension === 'xls') {
+                setExcelFile(file);
+            } else {
+                alert('엑셀 파일(.xlsx, .xls)만 업로드 가능합니다.');
+            }
         }
     };
 
@@ -59,7 +89,12 @@ export default function ExcelRegistrationForm({ academyId }: Props) {
     return (
         <div className={styles.excelContainer}>
             {!excelFile ? (
-                <label className={styles.uploadBox}>
+                <label 
+                    className={`${styles.uploadBox} ${isDragging ? styles.dragging : ''}`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                >
                     <input
                         type="file"
                         accept=".xlsx, .xls"

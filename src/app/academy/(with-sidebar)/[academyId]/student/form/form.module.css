@@ -386,7 +386,8 @@
   background-color: #f9fafb;
 }
 
-.uploadBox:hover {
+.uploadBox:hover,
+.uploadBox.dragging {
   border-color: var(--primary-color);
   background-color: #eff6ff;
 }
