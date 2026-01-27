@@ -9,7 +9,8 @@ import DashboardBanner from './components/DashboardBanner';
 import DashboardStats from './components/DashboardStats';
 import DashboardReport from './components/DashboardReport';
 import CustomModal from '@/components/common/CustomModal';
-
+import AcademyRejectionModal from './components/AcademyRejectionModal';
+import { toast } from 'sonner';
 
 import { dashboardService } from '@/services/dashboardService';
 import {
@@ -59,6 +60,22 @@ export default function Dashboard({ academyId }: Props) {
   const [userAcademies, setUserAcademies] = useState<AcademyInfo[]>([]);
   const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
 
+  // 승인 거절 모달 관련 상태
+  const [isRejectionModalOpen, setIsRejectionModalOpen] = useState(false);  // 거절 정보 상태
+  const [rejectionInfo, setRejectionInfo] = useState<{
+    reason: string;
+    academyName: string;
+    files: File[];
+    phoneNumber?: string;
+    baseAddress?: string; // address -> baseAddress 변경
+    detailAddress?: string;
+    submittedFileUrl?: string;
+  }>({
+    reason: '',
+    academyName: '',
+    files: [],
+  });
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,10 +103,23 @@ export default function Dashboard({ academyId }: Props) {
         setIsLoading(true);
 
         const academyInfo = await dashboardService.getAcademyInfo(academyId);
+
+        // --- REAL API DATA USAGE ---
         const status = academyInfo.approvalStatus;
         setApprovalStatus(status);
 
-        if (status === 'APPROVED') {
+        if (status === 'REJECTED') {
+          setRejectionInfo({
+            reason: academyInfo.rejectionReason || '등록 정보에 문제가 있어 승인이 거절되었습니다.\n사유를 확인하고 다시 제출해 주세요.',
+            academyName: academyInfo.name || '',
+            phoneNumber: academyInfo.phoneNumber,
+            baseAddress: academyInfo.baseAddress || '', // baseAddress 연결
+            detailAddress: academyInfo.detailAddress,
+            submittedFileUrl: academyInfo.certificate,
+            files: [],
+          });
+          setIsRejectionModalOpen(true);
+        } else if (status === 'APPROVED') {
           const [classData, statsData] = await Promise.all([
             dashboardService.getClassSummary(academyId),
             dashboardService.getStats(academyId),
@@ -121,12 +151,18 @@ export default function Dashboard({ academyId }: Props) {
     };
 
     fetchData();
-  }, [academyId, isRegistered]);
+  }, [academyId, isRegistered, router]);
 
   const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
 
   useEffect(() => {
     if (searchParams?.get('alert') === 'access_denied') {
+      // 이미 Rejection 모달이 뜨는 경우 중복 방지
+      if (approvalStatus === 'REJECTED') {
+        router.replace(`/academy/${academyId}`);
+        return; 
+      }
+
       const status = approvalStatus || 'PENDING';
       const title = status === 'PENDING' ? '승인 대기 중이에요' : '승인이 거절되었어요';
       const desc = status === 'PENDING' ? '학원 승인이 완료된 후에 사용할 수 있는 기능입니다.\n조금만 기다려 주세요!' : '등록 정보를 다시 확인해 주세요.';
@@ -152,6 +188,11 @@ export default function Dashboard({ academyId }: Props) {
     }
 
     if (approvalStatus !== 'APPROVED') {
+      if (approvalStatus === 'REJECTED') {
+        setIsRejectionModalOpen(true);
+        return;
+      }
+      
       const status = approvalStatus || 'PENDING';
       const title = status === 'PENDING' ? '승인 대기 중이에요' : '승인이 거절되었어요';
       const desc = status === 'PENDING'
@@ -167,6 +208,40 @@ export default function Dashboard({ academyId }: Props) {
     }
 
     if (path) router.push(path);
+  };
+
+  const handleRejectionSubmit = async (data: { 
+    academyName: string; 
+    files: File[];
+    // phoneNumber removed
+    baseAddress: string;
+    detailAddress: string;
+  }) => {
+    if (!academyId) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('name', data.academyName);
+      formData.append('baseAddress', data.baseAddress);
+      formData.append('detailAddress', data.detailAddress);
+      
+      // 파일이 새로 업로드된 경우에만 추가
+      if (data.files && data.files.length > 0) {
+        formData.append('certificateFile', data.files[0]);
+      }
+
+      await dashboardService.resubmitAcademy(academyId, formData);
+      
+      toast.success('승인 재요청이 접수되었습니다.');
+      setIsRejectionModalOpen(false);
+      
+      // 상태 갱신: 재요청 후 UI에서 상태를 PENDING으로 즉시 변경
+      setApprovalStatus('PENDING');
+    } catch (error: any) {
+      console.error('승인 재요청 실패:', error);
+      const msg = error.response?.data?.message || '승인 재요청에 실패했습니다.';
+      toast.error(msg);
+    }
   };
 
   return (
@@ -283,6 +358,13 @@ export default function Dashboard({ academyId }: Props) {
               router.push('/academy/register');
             }
           }}
+        />
+
+        <AcademyRejectionModal
+          isOpen={isRejectionModalOpen}
+          onClose={() => setIsRejectionModalOpen(false)}
+          rejectionInfo={rejectionInfo}
+          onSubmit={handleRejectionSubmit}
         />
       </div>
     </div>

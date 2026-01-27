@@ -18,16 +18,23 @@
   align-items: center;
   justify-content: space-between;
   background-color: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-size: 14px;
-  color: #333;
-  transition: border-color 0.2s;
+  border: 1px solid var(--divider-color);
+  border-radius: var(--radius-md);
+  height: var(--input-height);
+  padding: 0 16px;
+  font-size: 16px;
+  color: #1f2937;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
 }
 
 .selectBox:hover {
-  border-color: #d1d5db;
+  background-color: #fafafa;
+}
+
+.selectBox:focus-within {
+  border-color: #a1ccff;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
 }
 
 .arrow {

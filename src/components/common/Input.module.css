@@ -7,7 +7,20 @@
   font-size: 16px;
   box-sizing: border-box;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+  color: #1f2937;
+}
+
+.input[type="time"] {
+  font-family: 'Roboto', 'Noto Sans KR', sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  color: #111;
+}
+
+.input::placeholder {
+  color: #9ca3af;
+  font-family: inherit;
 }
 
 .label {

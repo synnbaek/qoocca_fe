@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { setUserFromToken } from '@/store/userSlice';
+import { jwtDecode } from 'jwt-decode';
 import { authService } from '@/services/authService';
 import styles from './LoginForm.module.css';
 import { toast } from 'sonner';
@@ -36,6 +37,17 @@ export default function LoginForm() {
       if (accessToken) {
         dispatch(setUserFromToken(accessToken));
         toast.success('로그인 성공!');
+
+        // Decode token to check role immediately
+        try {
+          const decoded: any = jwtDecode(accessToken);
+          if (decoded.role === 'ADMIN' || decoded.role === 'ROLE_ADMIN') {
+            router.push('/admin');
+            return;
+          }
+        } catch (e) {
+          console.error('Token decode error:', e);
+        }
 
         // Smart Redirect: 학원이 하나만 있으면 바로 대시보드로 이동
         if (academies && academies.length === 1) {
