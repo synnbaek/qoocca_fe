@@ -1,6 +1,5 @@
 .academyContainer {
   background-color: var(--white);
-  padding: 2rem 3rem;
   border-radius: var(--radius-sm);
 
   width: 100%;
@@ -12,7 +11,6 @@
 
 /* 공통 섹션 박스 (가로 기준) */
 .sectionBox {
-  padding: 16px;
   margin-bottom: 20px;
   box-sizing: border-box;
 }
@@ -21,7 +19,6 @@
 .academyContainer h2 {
   text-align: center;
   color: var(--text-main);
-  margin-bottom: 18px;
   font-weight: bold;
 }
 
@@ -29,8 +26,30 @@
 .fileBox {
   border: 1px solid #dcdcdc;
   border-radius: 8px;
-  padding: 16px;
   background-color: #fafafa;
+}
+
+.guidanceWrapper {
+  margin-top: 24px;
+}
+
+.guidanceTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.guidanceList {
+  margin: 0;
+  padding-left: 20px;
+  color: #888;
+  font-size: 13px;
+}
+
+.guidanceList li {
+  margin-bottom: 4px;
 }
 
 .fileGuide {

@@ -21,9 +21,24 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
+export default axiosInstance;
+
 axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = Cookies.get('accessToken');
+  async (config) => {
+    let token: string | undefined;
+
+    if (typeof window === 'undefined') {
+      try {
+        const { cookies } = await import('next/headers');
+        const cookieStore = await cookies();
+        token = cookieStore.get('accessToken')?.value;
+      } catch (error) {
+        console.error('Error getting server cookies:', error);
+      }
+    } else {
+      token = Cookies.get('accessToken');
+    }
+
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -41,6 +56,11 @@ axiosInstance.interceptors.response.use(
       (err.response?.status === 401 || err.response?.status === 403) &&
       !originalRequest._retry
     ) {
+      if (typeof window === 'undefined') {
+        // Server-side: Cannot handle refresh flow easily or redirect via window
+        return Promise.reject(err);
+      }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -92,5 +112,3 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(err);
   }
 );
-
-export default axiosInstance;

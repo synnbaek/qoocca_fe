@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useParams, useRouter } from 'next/navigation'; // ✅ useRouter 추가
+import { useParams, useRouter } from 'next/navigation';
 import StudentCell from './components/StudentCell';
 import styles from './student.module.css';
 import TextInput from '../../../register/components/TextInput';
@@ -12,7 +12,7 @@ export default function StudentPage() {
   const [keyword, setKeyword] = useState('');
   const params = useParams();
   const academyId = Number(params.academyId);
-  const router = useRouter(); // ✅ 추가
+  const router = useRouter();
 
   const { data: statsData, loading, error } = useStats(academyId);
   const { data: parentStats } = useParentStats(academyId);
@@ -78,33 +78,28 @@ export default function StudentPage() {
   return (
     <div className={styles.studentContainer}>
 
-      <div className={styles.topBar}>
-        <div />
-
-        <div className={styles.buttonGroup}>
-          <button
-            className={styles.addStudentBtn}
-            onClick={() => router.push(`/academy/${academyId}/student/form`)}
-          >
-            + 원생 등록
-          </button>
-
-          <button
-            className={styles.addStudentBtn}
-            onClick={() => router.push(`/academy/${academyId}/class/register`)}
-          >
-            + 신규 클래스 추가
-          </button>
-        </div>
-      </div>
-
-
       <div className={styles.sectionBox}>
         <TextInput
           value={keyword}
           onChange={setKeyword}
           placeholder="클래스명 또는 원생이름을 입력하세요"
         />
+      </div>
+
+      <div className={styles.buttonGroup}>
+        <button
+          className={styles.addStudentBtn}
+          onClick={() => router.push(`/academy/${academyId}/student/form`)}
+        >
+          + 원생 등록
+        </button>
+
+        <button
+          className={styles.addStudentBtn}
+          onClick={() => router.push(`/academy/${academyId}/class/register`)}
+        >
+          + 신규 클래스 추가
+        </button>
       </div>
 
       <div className={styles.sectionBox}>

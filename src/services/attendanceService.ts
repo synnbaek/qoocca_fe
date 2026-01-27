@@ -2,10 +2,18 @@ import axiosInstance from '@/api/axiosInstance';
 import { 
     ClassAttendanceSummary, 
     StudentMonthlyStat, 
-    StudentCalendarResponse 
+    StudentCalendarResponse,
+    ClassAttendanceResponse
 } from '@/types/attendance';
 
 export const attendanceService = {
+    getTodayAttendance: async (academyId: number | string): Promise<ClassAttendanceResponse[]> => {
+        const response = await axiosInstance.get<ClassAttendanceResponse[]>(
+            `/api/attendance/academy/${academyId}/today`
+        );
+        return response.data;
+    },
+
     getAcademySummary: async (academyId: number, date: string): Promise<ClassAttendanceSummary[]> => {
         const response = await axiosInstance.get<ClassAttendanceSummary[]>(
             `/api/attendance/academy/${academyId}/summary`,

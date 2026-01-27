@@ -28,20 +28,27 @@ export default function StudentClassRow({ row, checked, onCheck }: Props) {
 
     return (
         <>
-            <tr className={checked ? styles.selectedRow : undefined}>
-                <td className={styles.td}>
-                    <input type="checkbox" checked={checked} onChange={onCheck} />
+            <tr 
+                className={`${styles.mainRow} ${checked ? styles.selectedRow : ''} ${open ? styles.expanded : ''}`}
+                onClick={() => setOpen(prev => !prev)}
+            >
+                <td onClick={(e) => e.stopPropagation()}>
+                    <input 
+                        type="checkbox" 
+                        checked={checked} 
+                        onChange={onCheck} 
+                    />
                 </td>
-                <td
-                    className={`${styles.td} ${styles.classNameCell}`}
-                    onClick={() => setOpen(prev => !prev)}
-                >
+                <td className={styles.classNameCell}>
                     {row.className}
                 </td>
-                <td className={styles.td}>{row.totalStudents}</td>
-                <td className={styles.td}>{row.inactiveStudents}</td>
-                <td className={`${styles.td} ${styles.statusCell}`}>
-                    <div className={styles.toggleWrapper} onClick={() => setActive(prev => !prev)}>
+                <td>{row.totalStudents}</td>
+                <td>{row.inactiveStudents}</td>
+                <td>
+                    <div className={styles.toggleWrapper} onClick={(e) => {
+                        e.stopPropagation();
+                        setActive(prev => !prev);
+                    }}>
                         <span className={styles.toggleLabel}>
                             {active ? '운영중' : '종료'}
                         </span>
@@ -52,55 +59,55 @@ export default function StudentClassRow({ row, checked, onCheck }: Props) {
                             <div className={styles.toggleKnob} />
                         </div>
                     </div>
-
-
                 </td>
             </tr>
 
-
             {open && (
-                <tr className={styles.detailRow}>
-                    <td colSpan={5}>
-                        {students.length === 0 ? (
-                            <div className={styles.noStudents}>학생 정보가 없습니다.</div>
-                        ) : (
-                            <div className={styles.fakeTable}>
-                                {students.map(student => (
-                                    <div
-                                        key={student.id}
-                                        className={styles.fakeRow}
-                                        onClick={() => router.push(`/academy/${academyId}/student/${student.studentId}`)}
-                                    >
-                                        <div></div> {/* 체크박스 자리 */}
-
-                                        <div>{student.name}</div>
-
-                                        <div>
-                                            {student.parentName === '보호자 연결' ? (
-                                                <span className={styles.linkHint}>{student.parentName}</span>
-                                            ) : (
-                                                student.parentName
-                                            )}
+                <>
+                    {students.length === 0 ? (
+                        <tr>
+                            <td colSpan={5} className={styles.noStudents}>
+                                학생 정보가 없습니다.
+                            </td>
+                        </tr>
+                    ) : (
+                        students.map(student => (
+                            <tr 
+                                key={student.id} 
+                                className={styles.studentRow}
+                                onClick={() => router.push(`/academy/${academyId}/student/${student.studentId}`)}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <td className={styles.subIconCol}>
+                                  <span className={styles.subArrow}>↳</span>
+                                </td>
+                                <td colSpan={4}>
+                                    <div className={styles.studentInfoWrapper}>
+                                        <div className={styles.studentName}>{student.name}</div>
+                                        
+                                        <div className={styles.studentDetail}>
+                                            <div className={styles.infoCell}>
+                                                {student.parentName === '보호자 연결' ? (
+                                                    <span className={styles.linkHint}>{student.parentName}</span>
+                                                ) : (
+                                                    student.parentName
+                                                )}
+                                            </div>
+                                            <div className={styles.infoCell}>
+                                                {student.cardNumber.includes('등록') ? (
+                                                    <span className={styles.linkHint}>{student.cardNumber}</span>
+                                                ) : (
+                                                    student.cardNumber
+                                                )}
+                                            </div>
                                         </div>
-
-                                        <div>
-                                            {student.cardNumber.includes('등록') ? (
-                                                <span className={styles.linkHint}>{student.cardNumber}</span>
-                                            ) : (
-                                                student.cardNumber
-                                            )}
-                                        </div>
-
-                                        <div></div> {/* 운영상태 자리 */}
                                     </div>
-                                ))}
-
-                            </div>
-                        )}
-                    </td>
-                </tr>
+                                </td>
+                            </tr>
+                        ))
+                    )}
+                </>
             )}
-
         </>
     );
 }

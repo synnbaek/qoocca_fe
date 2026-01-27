@@ -68,7 +68,7 @@ export default function PhoneSection(props: Props) {
             disabled={isPhoneVerified || isLoading}
             required
           />
-          {!isPhoneVerified && (
+          {!isPhoneVerified ? (
             <button
               type="button"
               onClick={handleVerifyCode}
@@ -77,6 +77,8 @@ export default function PhoneSection(props: Props) {
             >
               {isLoading ? '...' : '확인'}
             </button>
+          ) : (
+            <span className={styles.verifiedText}>인증됨</span>
           )}
         </div>
       )}

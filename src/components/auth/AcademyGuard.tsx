@@ -7,16 +7,15 @@ import CustomModal from '@/components/common/CustomModal';
 
 interface Props {
   academyId: string;
+  approvalStatus: 'REJECTED' | 'PENDING' | 'APPROVED' | null;
   children: React.ReactNode;
 }
 
-export default function AcademyGuard({ academyId, children }: Props) {
+export default function AcademyGuard({ academyId, approvalStatus, children }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isLoading, setIsLoading] = useState(true);
-  const [approvalStatus, setApprovalStatus] = useState<
-    'REJECTED' | 'PENDING' | 'APPROVED' | null
-  >(null);
+  // We can assume loading is done if status is passed, or handle null status
+  const isLoading = approvalStatus === null;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalConfig, setModalConfig] = useState({
@@ -24,27 +23,8 @@ export default function AcademyGuard({ academyId, children }: Props) {
     description: '',
   });
 
-  useEffect(() => {
-    const checkStatus = async () => {
-      if (!academyId || academyId === 'undefined') {
-        setIsLoading(false);
-        return;
-      }
+  // Removed internal fetching
 
-      try {
-        const academyInfo = await dashboardService.getAcademyInfo(academyId);
-        setApprovalStatus(academyInfo.approvalStatus);
-      } catch (err) {
-        console.error('Failed to fetch academy info:', err);
-        // If API fails (e.g. 403 Forbidden), default to PENDING to ensure access control works
-        setApprovalStatus('PENDING');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkStatus();
-  }, [academyId]);
 
   useEffect(() => {
     // Only run check if not loading and status is known

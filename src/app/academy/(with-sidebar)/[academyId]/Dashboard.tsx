@@ -9,7 +9,7 @@ import DashboardBanner from './components/DashboardBanner';
 import DashboardStats from './components/DashboardStats';
 import DashboardReport from './components/DashboardReport';
 import CustomModal from '@/components/common/CustomModal';
-import AttendanceRightSidebar from './components/AttendanceRightSidebar';
+
 
 import { dashboardService } from '@/services/dashboardService';
 import {
@@ -285,12 +285,6 @@ export default function Dashboard({ academyId }: Props) {
           }}
         />
       </div>
-      {isRegistered && approvalStatus === 'APPROVED' && (
-        <AttendanceRightSidebar
-          academyId={Number(academyId)}
-          classTitle={selectedClassName}
-        />
-      )}
     </div>
   );
 }
