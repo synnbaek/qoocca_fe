@@ -29,7 +29,7 @@ export default function StudentFormPage() {
     // --- 보호자 정보 ---
     const [parentName, setParentName] = useState('');
     const [parentPhone, setParentPhone] = useState('');
-    const [relationship, setRelationship] = useState<string>('부'); // 기본값 부
+    const [relationship, setRelationship] = useState<string>(''); // 기본값 없음
 
     // --- 카드 정보 ---
     const [cardInfo, setCardInfo] = useState<{
@@ -59,8 +59,18 @@ export default function StudentFormPage() {
     }));
 
     const handleRegister = async () => {
-        if (!studentName || !studentPhone || selectedClassNames.length === 0 || !parentName || !parentPhone) {
-            alert('모든 필수 정보를 입력해주세요.');
+        if (!studentName || !studentPhone) {
+            alert('원생 이름과 전화번호를 입력해주세요.');
+            return;
+        }
+
+        if ((parentName && !parentPhone) || (!parentName && parentPhone)) {
+            alert('보호자 정보를 입력하려면 이름과 연락처를 모두 입력해주세요.');
+            return;
+        }
+
+        if (parentName && parentPhone && !relationship) {
+            alert('원생과의 관계를 선택해주세요.');
             return;
         }
 
@@ -74,28 +84,30 @@ export default function StudentFormPage() {
             const studentId = studentResponse.studentId;
 
             // 2. 부모 및 카드 등록
-            // 카드 정보가 없으면 기본값 처리 또는 필수 체크 (여기서는 필수 체크는 위에서 함, cardInfo가 null일 수 있음)
-            // cardInfo가 null이면 카드번호 등은 빈 문자열로 보낼지, 아니면 등록 안할지 결정 필요.
-            // 요구사항상 카드 등록은 선택일 수 있으나, 부모 정보는 필수임.
-            // 카드 정보가 없으면 빈 값으로 보냄.
-            const parentData: ParentCreateRequest = {
-                parentName,
-                parentPhone,
-                parentRelationship: relationship,
-                cardNum: cardInfo ? cardInfo.cardNumber.replace(/-/g, '') : '', // 하이픈 제거
-                cardState: !!cardInfo, // 카드 정보 유무에 따라 설정
-                isPay: true,     // 기본값 true
-                alarm: true,     // 기본값 true
-            };
-            await addParent(studentId, parentData);
+            // 보호자 정보가 온전하게 입력된 경우에만 등록 시도
+            if (parentName && parentPhone) {
+                const parentData: ParentCreateRequest = {
+                    parentName,
+                    parentPhone,
+                    parentRelationship: relationship,
+                    cardNum: cardInfo ? cardInfo.cardNumber.replace(/-/g, '') : '', // 하이픈 제거
+                    cardState: !!cardInfo, // 카드 정보 유무에 따라 설정
+                    isPay: true,     // 기본값 true
+                    alarm: true,     // 기본값 true
+                };
+                await addParent(studentId, parentData);
+            }
 
             // 3. 클래스 배정
-            const selectedClassIds = selectedClassNames
-                .map(name => classes.find(c => c.className === name)?.classId)
-                .filter((id): id is number => id !== undefined);
+            // 선택된 클래스가 있는 경우에만 배정
+            if (selectedClassNames.length > 0) {
+                const selectedClassIds = selectedClassNames
+                    .map(name => classes.find(c => c.className === name)?.classId)
+                    .filter((id): id is number => id !== undefined);
 
-            // Promise.all로 병렬 처리 권장
-            await Promise.all(selectedClassIds.map(id => assignStudentToClass(id, studentId)));
+                // Promise.all로 병렬 처리 권장
+                await Promise.all(selectedClassIds.map(id => assignStudentToClass(id, studentId)));
+            }
 
             console.log('Registration successful');
             setIsCompleteModalOpen(true);
@@ -134,7 +146,7 @@ export default function StudentFormPage() {
                 onChange={setStudentPhone}
             />
             <MultiSelect
-                label="클래스 선택"
+                label="클래스 (선택)"
                 options={classes.map(c => c.className)}
                 selected={selectedClassNames}
                 onChange={setSelectedClassNames}
@@ -152,17 +164,17 @@ export default function StudentFormPage() {
                 보호자 정보
             </div>
             <TextInput
-                label="보호자 이름"
+                label="보호자 이름 (선택)"
                 value={parentName}
                 onChange={setParentName}
             />
             <TextInput
-                label="보호자 연락처"
+                label="보호자 연락처 (선택)"
                 value={parentPhone}
                 onChange={setParentPhone}
             />
             <SingleSelect
-                label="원생과의 관계"
+                label="원생과의 관계 (선택)"
                 options={relationshipOptions}
                 value={relationship}
                 onChange={setRelationship}
@@ -170,7 +182,7 @@ export default function StudentFormPage() {
 
             {/* 소제목 3: 카드 정보 */}
             <div className={styles.sectionTitle} style={{ marginTop: '24px' }}>
-                카드 정보
+                카드 정보 (선택)
             </div>
             <p style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
                 카드 등록후 출결 및 보상 기능을 이용할 수 있습니다.
@@ -217,7 +229,7 @@ export default function StudentFormPage() {
             <div className={styles.sectionBox}>
                 <Button
                     onClick={handleRegister}
-                    disabled={!studentName || !studentPhone || selectedClassNames.length === 0 || !parentName || !parentPhone}
+                    disabled={!studentName || !studentPhone}
                 >
                     등록하기
                 </Button>
