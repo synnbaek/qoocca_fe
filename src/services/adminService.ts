@@ -1,5 +1,4 @@
 import axiosInstance from '@/api/axiosInstance';
-import { AcademyInfo } from '@/types/dashboard';
 import { 
   AcademyRejectRequest, 
   PageResponse, 

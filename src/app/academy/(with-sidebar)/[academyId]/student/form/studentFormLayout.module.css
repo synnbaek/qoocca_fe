@@ -9,7 +9,7 @@
 
 .academyContainer {
     width: 100%;
-    max-width: var(--container-width);
+    max-width: var(--reg-container-width);
     display: flex;
     flex-direction: column;
     align-items: center;
