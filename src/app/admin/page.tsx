@@ -17,8 +17,11 @@ export default function AdminPage() {
   const [academies, setAcademies] = useState<AcademyListResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  // 탭 상태 (PENDING/REJECTED)
-  const [activeTab, setActiveTab] = useState<'PENDING' | 'REJECTED'>('PENDING');
+  // 탭 상태 (ALL/PENDING/REJECTED)
+  const [activeTab, setActiveTab] = useState<'ALL' | 'PENDING' | 'REJECTED'>('ALL');
+  
+  // 검색어 상태
+  const [searchTerm, setSearchTerm] = useState('');
 
   // 상세 모달 상태
   const [selectedAcademyId, setSelectedAcademyId] = useState<number | null>(null);
@@ -42,9 +45,11 @@ export default function AdminPage() {
     setIsLoading(true);
     try {
       const response = 
-        activeTab === 'PENDING' 
-          ? await adminService.getPendingAcademies(0, 50)
-          : await adminService.getRejectedAcademies(0, 50);
+        activeTab === 'ALL'
+          ? await adminService.getAllAcademies(0, 50)
+          : activeTab === 'PENDING' 
+            ? await adminService.getPendingAcademies(0, 50)
+            : await adminService.getRejectedAcademies(0, 50);
       setAcademies(response.content);
     } catch (error) {
       console.error('목록 로딩 실패:', error);
@@ -56,7 +61,13 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetchList();
+    setSearchTerm(''); // 탭 변경 시 검색어 초기화
   }, [fetchList, activeTab]);
+
+  // 검색 필터링 로직
+  const filteredAcademies = academies.filter(academy => 
+    academy.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // 상세 모달 열기
   const openDetail = async (id: number) => {
@@ -130,20 +141,23 @@ export default function AdminPage() {
     }
   };
 
-  const statusBadgeClass = (status: string) => {
-      switch(status) {
-          case 'APPROVED': return styles.badgeApproved;
-          case 'REJECTED': return styles.badgeRejected;
-          default: return styles.badgePending;
-      }
+    // 상태 라벨 헬퍼
+  const statusLabel = (status: string) => {
+    switch (status) {
+      case 'PENDING': return '대기 중';
+      case 'REJECTED': return '반려됨';
+      case 'APPROVED': return '승인됨';
+      default: return status;
+    }
   };
 
-  const statusLabel = (status: string) => {
-      switch(status) {
-          case 'APPROVED': return '승인됨';
-          case 'REJECTED': return '반려됨';
-          default: return '대기중'; 
-      }
+  const statusBadgeClass = (status: string) => {
+    switch (status) {
+      case 'PENDING': return styles.badgePending;
+      case 'REJECTED': return styles.badgeRejected;
+      case 'APPROVED': return styles.badgeApproved;
+      default: return '';
+    }
   };
 
   return (
@@ -155,18 +169,40 @@ export default function AdminPage() {
 
       {/* 탭 네비게이션 */}
       <div className={styles.tabContainer}>
-        <button 
-          className={`${styles.tab} ${activeTab === 'PENDING' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('PENDING')}
-        >
-          승인 대기 중
-        </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'REJECTED' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('REJECTED')}
-        >
-          반려됨
-        </button>
+        <div className={styles.tabs}>
+            <button 
+            className={`${styles.tab} ${activeTab === 'ALL' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('ALL')}
+            >
+            전체
+            </button>
+            <button 
+            className={`${styles.tab} ${activeTab === 'PENDING' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('PENDING')}
+            >
+            승인 대기 중
+            </button>
+            <button 
+            className={`${styles.tab} ${activeTab === 'REJECTED' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('REJECTED')}
+            >
+            반려됨
+            </button>
+        </div>
+
+        <div className={styles.searchContainer}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+                type="text" 
+                className={styles.searchInput} 
+                placeholder="학원명으로 검색..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+        </div>
       </div>
 
       <div className={styles.tableCard}>
@@ -180,17 +216,22 @@ export default function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {!isLoading && academies.length === 0 && (
+            {!isLoading && filteredAcademies.length === 0 && (
                 <tr>
                     <td colSpan={4} className={styles.emptyState}>
-                        {activeTab === 'PENDING' ? '승인 대기 중인 학원이 없습니다.' : '반려된 학원이 없습니다.'}
+                        {searchTerm ? '검색 결과가 없습니다.' : (
+                            activeTab === 'ALL' ? '등록된 학원이 없습니다.' :
+                            activeTab === 'PENDING' ? '승인 대기 중인 학원이 없습니다.' : '반려된 학원이 없습니다.'
+                        )}
                     </td>
                 </tr>
             )}
-            {!isLoading && academies.map((academy) => (
-              <tr key={academy.academyId} onClick={() => openDetail(academy.academyId)}>
-                <td>{academy.academyId}</td>
-                <td>{academy.name}</td>
+            {!isLoading && filteredAcademies.map((academy) => {
+              const displayId = academy.id || academy.academyId;
+              return (
+                <tr key={displayId} onClick={() => displayId && openDetail(displayId)}>
+                  <td>{displayId || '-'}</td>
+                  <td>{academy.name}</td>
                 <td>
                   <span className={`${styles.badge} ${statusBadgeClass(academy.approvalStatus)}`}>
                     {statusLabel(academy.approvalStatus)}
@@ -200,7 +241,7 @@ export default function AdminPage() {
                     {academy.approvalStatus === 'REJECTED' ? academy.rejectionReason : '-'}
                 </td>
               </tr>
-            ))}
+            ); })}
           </tbody>
         </table>
       </div>
@@ -230,9 +271,19 @@ export default function AdminPage() {
                           )}
 
                           <div className={styles.section}>
+                              <div className={styles.sectionTitle}>등록자 정보</div>
+                              <div className={styles.infoGrid}>
+                                  <span className={styles.infoLabel}>이름</span>
+                                  <span className={styles.infoValue}>{detailData.userName || '-'}</span>
+                                  <span className={styles.infoLabel}>연락처</span>
+                                  <span className={styles.infoValue}>{detailData.userPhoneNumber || '-'}</span>
+                              </div>
+                          </div>
+
+                          <div className={styles.section}>
                               <div className={styles.sectionTitle}>기본 정보</div>
                               <div className={styles.infoGrid}>
-                                  <span className={styles.infoLabel}>연락처</span>
+                                  <span className={styles.infoLabel}>학원 연락처</span>
                                   <span className={styles.infoValue}>{detailData.phoneNumber || '-'}</span>
                                   <span className={styles.infoLabel}>주소</span>
                                   <span className={styles.infoValue}>
@@ -270,6 +321,24 @@ export default function AdminPage() {
                                   <span className={styles.infoLabel}>상세 소개</span>
                                   <span className={styles.infoValue} style={{whiteSpace: 'pre-wrap'}}>
                                       {detailData.detailInfo || '-'}
+                                  </span>
+                              </div>
+                          </div>
+
+                          <div className={styles.section}>
+                              <div className={styles.sectionTitle}>대상 연령 및 과목</div>
+                              <div className={styles.infoGrid}>
+                                  <span className={styles.infoLabel}>연령대</span>
+                                  <span className={styles.infoValue}>
+                                      {detailData.ages && detailData.ages.length > 0 
+                                          ? detailData.ages.map(a => a.ageCode).join(', ') 
+                                          : '-'}
+                                  </span>
+                                  <span className={styles.infoLabel}>수강 과목</span>
+                                  <span className={styles.infoValue}>
+                                      {detailData.subjects && detailData.subjects.length > 0 
+                                          ? detailData.subjects.map(s => `${s.detailSubject}(${s.mainSubjectCode})`).join(', ') 
+                                          : '-'}
                                   </span>
                               </div>
                           </div>

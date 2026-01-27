@@ -23,7 +23,7 @@ export const adminService = {
      * 반려된 학원 리스트 조회
      * GET /api/admin/academy/rejected
      */
-    getRejectedAcademies: async (page = 0, size = 10, sort = 'createdAt,asc'): Promise<PageResponse<AcademyListResponse>> => {
+    async getRejectedAcademies(page = 0, size = 10, sort = 'createdAt,asc'): Promise<PageResponse<AcademyListResponse>> {
         const response = await axiosInstance.get<PageResponse<AcademyListResponse>>('/api/admin/academy/rejected', {
             params: { page, size, sort }
         });
@@ -31,11 +31,22 @@ export const adminService = {
     },
 
     /**
+     * 전체 학원 리스트 조회
+     * GET /api/admin/academy
+     */
+    getAllAcademies: async (page = 0, size = 10, sort = 'createdAt,desc'): Promise<PageResponse<AcademyListResponse>> => {
+        const response = await axiosInstance.get<PageResponse<AcademyListResponse>>('/api/admin/academy', {
+            params: { page, size, sort }
+        });
+        return response.data;
+    },
+
+    /**
      * 학원 상세 조회 (관리자용)
-     * GET /api/academy/{id}
+     * GET /api/admin/academy/{id}
      */
     getAcademyDetail: async (academyId: string | number): Promise<AcademyResponse> => {
-        const response = await axiosInstance.get<AcademyResponse>(`/api/academy/${academyId}`);
+        const response = await axiosInstance.get<AcademyResponse>(`/api/admin/academy/${academyId}`);
         return response.data;
     },
 

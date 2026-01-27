@@ -7,15 +7,28 @@ export interface PageResponse<T> {
 }
 
 export interface AcademyListResponse {
-  academyId: number;
+  id: number;
+  academyId?: number; // 호환용
   name: string;
   approvalStatus: 'PENDING' | 'APPROVED' | 'REJECTED';
   rejectionReason?: string;
-  item?: any; // 추가적인 리스트 아이템 정보가 있을 경우
+  item?: any;
+}
+
+export interface AgeGroup {
+  id: number;
+  ageCode: string;
+}
+
+export interface Subject {
+  id: number;
+  mainSubjectCode: string;
+  detailSubject: string;
 }
 
 export interface AcademyResponse {
-  academyId: number;
+  id: number;
+  academyId?: number; // 호환용
   name: string;
   approvalStatus: 'PENDING' | 'APPROVED' | 'REJECTED';
   rejectionReason?: string;
@@ -43,9 +56,13 @@ export interface AcademyResponse {
   certificate?: string; // 사업자등록증 이미지 URL 등
   imageUrls?: string[];
   
-  // 분류
-  ages?: string[];
-  subjects?: string[];
+  // 분류 (JSON 구조에 맞게 수정)
+  ages?: AgeGroup[];
+  subjects?: Subject[];
+
+  // 등록자(원장님) 정보
+  userName?: string;
+  userPhoneNumber?: string;
 }
 
 export interface AcademyRejectRequest {
