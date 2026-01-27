@@ -1,5 +1,5 @@
 .formContainer {
-  width: var(--reg-container-width);
+  width: var(--container-width);
   margin: 0 auto;
   border-radius: var(--radius-sm);
   box-sizing: border-box;
