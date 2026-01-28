@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import styles from './ClassRegisterPage.module.css';
 import Button from '@/components/common/Button';
-import MultiSelect from '@/app/academy/register/components/MultiSelect';
+import Select from '@/components/common/Select';
 
 const DAYS = [
   { id: 'monday', label: '월' },
@@ -30,8 +30,8 @@ export default function ClassRegisterPage() {
     { id: number; detailSubject: string }[]
   >([]);
 
-  const [selectedAge, setSelectedAge] = useState<string[]>([]);
-  const [selectedSubject, setSelectedSubject] = useState<string[]>([]);
+  const [selectedAgeId, setSelectedAgeId] = useState<number | null>(null);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null);
 
   const [formData, setFormData] = useState({
     className: '',
@@ -45,8 +45,6 @@ export default function ClassRegisterPage() {
     saturday: false,
     sunday: false,
     price: '',
-    ageId: '',
-    subjectId: '',
   });
 
   useEffect(() => {
@@ -89,12 +87,7 @@ export default function ClassRegisterPage() {
       return;
     }
 
-    const ageId = ageOptions.find((a) => a.ageCode === selectedAge[0])?.id;
-    const subjectId = subjectOptions.find(
-      (s) => s.detailSubject === selectedSubject[0]
-    )?.id;
-
-    if (!ageId || !subjectId) {
+    if (!selectedAgeId || !selectedSubjectId) {
       toast.error('학년과 과목을 선택해주세요.');
       return;
     }
@@ -102,8 +95,8 @@ export default function ClassRegisterPage() {
     try {
       await axiosInstance.post(`/api/academy/${academyId}/class`, {
         ...formData,
-        ageId,
-        subjectId,
+        ageId: selectedAgeId,
+        subjectId: selectedSubjectId,
       });
       toast.success('클래스가 성공적으로 등록되었습니다.');
       router.push(`/academy/${academyId}`);
@@ -132,20 +125,22 @@ export default function ClassRegisterPage() {
         />
 
         <div className={styles.inputGroup}>
-          <MultiSelect
+          <Select
             label="학년 구분"
-            options={ageOptions.map((a) => a.ageCode)}
-            selected={selectedAge}
-            onChange={(val) => setSelectedAge(val.slice(-1))}
+            options={ageOptions.map((a) => ({ label: a.ageCode, value: a.id }))}
+            value={selectedAgeId}
+            onChange={(val) => setSelectedAgeId(Number(val))}
+            placeholder="학년을 선택하세요"
           />
         </div>
 
         <div className={styles.inputGroup}>
-          <MultiSelect
+          <Select
             label="과목"
-            options={subjectOptions.map((s) => s.detailSubject)}
-            selected={selectedSubject}
-            onChange={(val) => setSelectedSubject(val.slice(-1))}
+            options={subjectOptions.map((s) => ({ label: s.detailSubject, value: s.id }))}
+            value={selectedSubjectId}
+            onChange={(val) => setSelectedSubjectId(Number(val))}
+            placeholder="과목을 선택하세요"
           />
         </div>
 

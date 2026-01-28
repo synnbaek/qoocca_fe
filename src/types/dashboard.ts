@@ -9,7 +9,7 @@ export interface DashboardStatsData {
 export interface ReceiptSummary {
     className: string;
     classTime: string;
-    status: 'BEFORE_REQUEST' | 'ISSUED' | 'PAID';
+    status: 'BEFORE_REQUEST' | 'ISSUED' | 'PAID' | 'NO_STUDENTS';
     statusLabel: string;
     totalAmount: number;
 }
@@ -24,7 +24,15 @@ export interface ClassSummary {
 }
 
 export interface AcademyInfo {
-    academyId: number;
+    id: number; // API 실제 필드
+    academyId?: number; // 기존 코드 호환용
     name: string;
     approvalStatus: 'REJECTED' | 'PENDING' | 'APPROVED';
+    rejectionReason?: string;
+    phoneNumber?: string;
+    address?: string;
+    baseAddress?: string;
+    detailAddress?: string;
+    certificate?: string; // 추가: Nginx 저장 경로
+    businessRegistrationUrl?: string; // 기존 호환용
 }

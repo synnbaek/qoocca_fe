@@ -15,6 +15,7 @@
   --radius-sm: 8px;
 
   --container-width: 450px;
+  --reg-container-width: 700px; /* 등록 및 관리 화면용 너비 */
 
   --primary-color: #007aff;
   --primary-hover: #0056b3;

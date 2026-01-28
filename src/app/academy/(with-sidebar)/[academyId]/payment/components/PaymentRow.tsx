@@ -28,12 +28,12 @@ export default function PaymentRow({
 }: Props) {
   const isAllStudentsSelected =
     cls.students &&
-    cls.students.some((s) => s.status === 'BEFORE_REQUEST') &&
+    cls.students.some((s) => s.status === 'BEFORE_REQUEST' && s.isCardRegistered) &&
     selectedStudentIds.length ===
-      cls.students.filter((s) => s.status === 'BEFORE_REQUEST').length;
+      cls.students.filter((s) => s.status === 'BEFORE_REQUEST' && s.isCardRegistered).length;
 
   const hasSelectableStudents =
-    cls.students && cls.students.some((s) => s.status === 'BEFORE_REQUEST');
+    cls.students && cls.students.some((s) => s.status === 'BEFORE_REQUEST' && s.isCardRegistered);
 
   return (
     <React.Fragment>
@@ -96,10 +96,13 @@ export default function PaymentRow({
                       className={styles.studentCheck}
                       onChange={() => onSelectStudent(student.studentId)}
                       checked={selectedStudentIds.includes(student.studentId)}
-                      disabled={student.status !== 'BEFORE_REQUEST'}
+                      disabled={student.status !== 'BEFORE_REQUEST' || !student.isCardRegistered}
                     />
                     <span className={styles.studentName}>
                       {student.studentName}
+                      {!student.isCardRegistered && (
+                        <span className={styles.noCardBadge}>카드미등록</span>
+                      )}
                     </span>
                     <span className={styles.studentAmount}>
                       {student.amount.toLocaleString()}원

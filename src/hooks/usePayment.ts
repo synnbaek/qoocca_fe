@@ -101,7 +101,7 @@ export const usePayment = (academyId: string) => {
   ) => {
     if (e.target.checked) {
       const selectableStudents = students.filter(
-        (s) => s.status === 'BEFORE_REQUEST'
+        (s) => s.status === 'BEFORE_REQUEST' && s.isCardRegistered
       );
       setSelectedStudentIds(selectableStudents.map((s) => s.studentId));
     } else {

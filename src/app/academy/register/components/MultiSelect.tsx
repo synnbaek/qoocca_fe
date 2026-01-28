@@ -48,36 +48,38 @@ export default function MultiSelect({
     <div className={styles.multiSelectWrapper} ref={wrapperRef}>
       <label className={styles.multiSelectLabel}>{label}</label>
 
-      {/* 선택 박스 (전역 Input 스타일 재사용) */}
-      <div
-        className={`${inputStyles.input} ${styles.multiSelectBox}`}
-        onClick={() => setOpen((prev) => !prev)}
-      >
-        <span className={styles.placeholder}>
-          {selected.length > 0 ? `${selected.length}개 선택됨` : '선택하세요'}
-        </span>
-        <span className={styles.arrow}>{open ? '▲' : '▼'}</span>
-      </div>
-
-      {/* 옵션 리스트 */}
-      {open && (
-        <div className={styles.multiSelectOptionsDropdown}>
-          {options.map((opt) => (
-            <div
-              key={opt}
-              className={`${styles.multiSelectOption} ${
-                selected.includes(opt) ? styles.selected : ''
-              }`}
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleOption(opt);
-              }}
-            >
-              {opt}
-            </div>
-          ))}
+      <div className={styles.relativeWrapper}>
+        <div
+          className={`${inputStyles.input} ${styles.multiSelectBox}`}
+          onClick={() => setOpen((prev) => !prev)}
+        >
+          <span className={styles.placeholder}>
+            {selected.length > 0 ? `${selected.length}개 선택됨` : '선택하세요'}
+          </span>
+          <span className={styles.arrow}>{open ? '▲' : '▼'}</span>
         </div>
-      )}
+
+        {open && (
+          <div className={styles.multiSelectOptionsDropdown}>
+            {options
+              .filter((opt) => !selected.includes(opt))
+              .map((opt) => (
+              <div
+                key={opt}
+                className={`${styles.multiSelectOption} ${
+                  selected.includes(opt) ? styles.selected : ''
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleOption(opt);
+                }}
+              >
+                {opt}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {selected.length > 0 && (
         <div className={styles.selectedTagsContainer}>

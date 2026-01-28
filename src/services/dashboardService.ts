@@ -58,5 +58,15 @@ export const dashboardService = {
             }
         );
         return response.data;
+    },
+
+    /**
+     * 학원 승인 재신청
+     * PUT /api/academy/{id}/resubmit
+     */
+    resubmitAcademy: async (academyId: string | number, data: FormData): Promise<void> => {
+        const url = `/api/academy/${academyId}/resubmit`;
+        console.log(`[DashboardService] Resubmitting to ${url} (PUT)`);
+        await axiosInstance.put(url, data);
     }
 };

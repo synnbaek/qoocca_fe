@@ -3,6 +3,7 @@ export interface StudentDetail {
   studentName: string;
   amount: number;
   status: 'BEFORE_REQUEST' | 'ISSUED' | 'PAID';
+  isCardRegistered: boolean;
 }
 
 export interface ClassSummary {

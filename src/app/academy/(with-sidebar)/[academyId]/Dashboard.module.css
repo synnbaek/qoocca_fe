@@ -113,7 +113,6 @@
   justify-content: space-around;
   width: 100%;
   gap: 40px;
-  margin-bottom: 40px;
 }
 
 .reportRow {
@@ -173,6 +172,11 @@
   color: #999;
 }
 
+.statusNO_STUDENTS {
+  color: #ccc;
+  font-style: italic;
+}
+
 .amountText {
   font-weight: bold;
   color: black;
@@ -227,4 +231,9 @@
 .classSection > div {
   flex-shrink: 0;
   scroll-snap-align: start;
+}
+
+.statusNO_STUDENTS {
+  color: #ccc;
+  font-style: italic;
 }
