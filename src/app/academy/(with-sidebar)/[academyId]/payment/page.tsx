@@ -1,10 +1,13 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import styles from './PaymentPage.module.css';
 import CustomModal from '@/components/common/CustomModal';
 import PaymentDateController from './components/PaymentDateController';
 import PaymentRow from './components/PaymentRow';
+import StudentListModal from './components/StudentListModal';
+import StudentListInline from './components/StudentListInline';
 import { SearchIcon } from '@/components/icons/BasicIcons';
 import { usePayment } from '@/hooks/usePayment';
 
@@ -14,7 +17,6 @@ export default function PaymentPage() {
   
   const {
     currentDate,
-    classList,
     expandedClassId,
     selectedIds,
     selectedStudentIds,
@@ -35,8 +37,27 @@ export default function PaymentPage() {
     filteredClassList,
   } = usePayment(academyId as string);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleAddClass = () => {
     router.push(`/academy/${academyId}/class/register`);
+  };
+
+  const detailClass = expandedClassId
+    ? filteredClassList.find((c) => c.classId === expandedClassId)
+    : null;
+
+  const handleCloseDetail = () => {
+    if (expandedClassId) {
+      handleRowClick(expandedClassId);
+    }
   };
 
   const isAllSelected =
@@ -49,15 +70,19 @@ export default function PaymentPage() {
         currentDate={currentDate}
         onPrevMonth={handlePrevMonth}
         onNextMonth={handleNextMonth}
-        onAddClass={handleAddClass}
       />
 
       <div className={styles.summarySection}>
-        <div className={styles.totalAmountWrapper}>
-          <span className={styles.totalLabel}>이번달 수납 금액</span>
-          <span className={styles.totalAmount}>
-            {totalMonthlyFee.toLocaleString()}원
-          </span>
+        <div className={styles.topRow}>
+          <div className={styles.totalAmountWrapper}>
+            <span className={styles.totalLabel}>이번달 수납 금액</span>
+            <span className={styles.totalAmount}>
+              {totalMonthlyFee.toLocaleString()}원
+            </span>
+          </div>
+          <button onClick={handleAddClass} className={styles.addClassBtn}>
+            + 클래스 추가
+          </button>
         </div>
         <div className={styles.searchBarWrapper}>
           <div className={styles.searchIcon}>
@@ -97,18 +122,24 @@ export default function PaymentPage() {
           <tbody>
             {filteredClassList.length > 0 ? (
               filteredClassList.map((cls) => (
-                <PaymentRow
-                  key={cls.classId}
-                  cls={cls}
-                  isExpanded={expandedClassId === cls.classId}
-                  isSelected={selectedIds.includes(cls.classId)}
-                  selectedStudentIds={selectedStudentIds}
-                  onRowClick={handleRowClick}
-                  onSelectClass={handleSelectOne}
-                  onSelectAllStudents={handleSelectAllStudents}
-                  onSelectStudent={handleSelectStudent}
-                  onPaymentRequest={handlePaymentRequest}
-                />
+                <React.Fragment key={cls.classId}>
+                  <PaymentRow
+                    cls={cls}
+                    isSelected={selectedIds.includes(cls.classId)}
+                    isExpanded={expandedClassId === cls.classId}
+                    onRowClick={handleRowClick}
+                    onSelectClass={handleSelectOne}
+                  />
+                  {!isMobile && expandedClassId === cls.classId && (
+                    <StudentListInline
+                      cls={cls}
+                      selectedStudentIds={selectedStudentIds}
+                      onSelectAllStudents={handleSelectAllStudents}
+                      onSelectStudent={handleSelectStudent}
+                      onPaymentRequest={handlePaymentRequest}
+                    />
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <tr>
@@ -120,6 +151,19 @@ export default function PaymentPage() {
           </tbody>
         </table>
       </div>
+
+      {isMobile && detailClass && (
+        <StudentListModal
+          isOpen={!!detailClass}
+          onClose={handleCloseDetail}
+          cls={detailClass}
+          selectedStudentIds={selectedStudentIds}
+          onSelectAllStudents={handleSelectAllStudents}
+          onSelectStudent={handleSelectStudent}
+          onPaymentRequest={handlePaymentRequest}
+        />
+      )}
+
       <CustomModal
         isOpen={isModalOpen}
         onClose={closeModal}

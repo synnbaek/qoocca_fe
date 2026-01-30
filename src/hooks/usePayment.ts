@@ -101,7 +101,7 @@ export const usePayment = (academyId: string) => {
   ) => {
     if (e.target.checked) {
       const selectableStudents = students.filter(
-        (s) => s.status === 'BEFORE_REQUEST' && s.isCardRegistered
+        (s) => s.status === 'BEFORE_REQUEST' && s.cardRegistered
       );
       setSelectedStudentIds(selectableStudents.map((s) => s.studentId));
     } else {
@@ -125,9 +125,15 @@ export const usePayment = (academyId: string) => {
         if (!student) return;
         if (student.status === 'PAID') return;
 
+        const now = new Date();
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        const receiptDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}.000`;
+
         await paymentService.createReceipt(studentId, {
-          classId: cls.classId,
-          amount: student.amount,
+          classId: Number(cls.classId),
+          amount: Number(student.amount),
+          receiptDate: receiptDate,
+          receiptStatus: 'ISSUED',
         });
       });
 

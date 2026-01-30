@@ -5,14 +5,12 @@ interface Props {
   currentDate: Date;
   onPrevMonth: () => void;
   onNextMonth: () => void;
-  onAddClass: () => void;
 }
 
 export default function PaymentDateController({
   currentDate,
   onPrevMonth,
   onNextMonth,
-  onAddClass,
 }: Props) {
   const formatYearMonth = (date: Date) => {
     return `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
@@ -31,10 +29,6 @@ export default function PaymentDateController({
           &gt;
         </button>
       </div>
-
-      <button onClick={onAddClass} className={styles.addClassBtn}>
-        + 클래스 추가
-      </button>
     </div>
   );
 }
