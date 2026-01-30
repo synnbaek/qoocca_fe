@@ -488,3 +488,7 @@
   height: 100%;
   object-fit: contain;
 }
+
+.marginTop24 {
+  margin-top: 24px;
+}
