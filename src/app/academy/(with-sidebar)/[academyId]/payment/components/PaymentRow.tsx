@@ -28,12 +28,14 @@ export default function PaymentRow({
 }: Props) {
   const isAllStudentsSelected =
     cls.students &&
-    cls.students.some((s) => s.status === 'BEFORE_REQUEST' && s.isCardRegistered) &&
+    cls.students.some((s) => s.status === 'BEFORE_REQUEST' && s.cardRegistered) &&
     selectedStudentIds.length ===
-      cls.students.filter((s) => s.status === 'BEFORE_REQUEST' && s.isCardRegistered).length;
+      cls.students.filter((s) => s.status === 'BEFORE_REQUEST' && s.cardRegistered).length;
 
   const hasSelectableStudents =
-    cls.students && cls.students.some((s) => s.status === 'BEFORE_REQUEST' && s.isCardRegistered);
+    cls.students && cls.students.some((s) => s.status === 'BEFORE_REQUEST' && s.cardRegistered);
+
+
 
   return (
     <React.Fragment>
@@ -96,11 +98,11 @@ export default function PaymentRow({
                       className={styles.studentCheck}
                       onChange={() => onSelectStudent(student.studentId)}
                       checked={selectedStudentIds.includes(student.studentId)}
-                      disabled={student.status !== 'BEFORE_REQUEST' || !student.isCardRegistered}
+                      disabled={student.status !== 'BEFORE_REQUEST' || !student.cardRegistered}
                     />
                     <span className={styles.studentName}>
                       {student.studentName}
-                      {!student.isCardRegistered && (
+                      {!student.cardRegistered && (
                         <span className={styles.noCardBadge}>카드미등록</span>
                       )}
                     </span>
