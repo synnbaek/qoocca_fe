@@ -6,16 +6,31 @@ import Link from 'next/link';
 import style from './Sidebar.module.css';
 import Select from '@/components/common/Select';
 import { getMyAcademyList, AcademyListResponse } from '@/api/academyApi';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { logout } from '@/store/userSlice';
+import axiosInstance from '@/api/axiosInstance';
+import Cookies from 'js-cookie';
 
 interface SidebarProps {
   academyId: string;
   approvalStatus: string | null;
   initialAcademies?: AcademyListResponse[];
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export default function Sidebar({ academyId: propsId, approvalStatus, initialAcademies = [] }: SidebarProps) {
+export default function Sidebar({ 
+  academyId: propsId, 
+  approvalStatus, 
+  initialAcademies = [],
+  isOpen = false,
+  onClose
+}: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { role } = useSelector((state: RootState) => state.user);
 
   const params = useParams();
   const academyId = (params.academyId as string) || propsId;
@@ -51,6 +66,24 @@ export default function Sidebar({ academyId: propsId, approvalStatus, initialAca
     fetchAcademies();
   }, [initialAcademies]);
 
+  const handleLinkClick = () => {
+    if (window.innerWidth <= 1024 && onClose) {
+      onClose();
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post('/api/auth/logout');
+    } catch (err) {
+      console.error('서버 로그아웃 실패: ', err);
+    }
+    Cookies.remove('accessToken');
+    dispatch(logout());
+    router.push('/login');
+    handleLinkClick();
+  };
+
   const currentAcademy = academies.find(a => String(a.academyId) === String(academyId));
   
   const activeStatus = currentAcademy ? currentAcademy.approvalStatus : approvalStatus;
@@ -66,7 +99,7 @@ export default function Sidebar({ academyId: propsId, approvalStatus, initialAca
   };
 
   return (
-    <nav className={style.sidebar}>
+    <nav className={`${style.sidebar} ${isOpen ? style.isOpen : ''}`}>
       <div className={style.academySwitcher}>
         <Select
           options={academies.map((academy) => ({
@@ -76,6 +109,7 @@ export default function Sidebar({ academyId: propsId, approvalStatus, initialAca
           value={Number(academyId) || null}
           onChange={(val) => {
             router.push(`/academy/${val}`);
+            handleLinkClick();
           }}
           placeholder="학원 선택"
         />
@@ -83,7 +117,7 @@ export default function Sidebar({ academyId: propsId, approvalStatus, initialAca
       <ul className={`${style.menuList} ${isDisabled ? style.disabled : ''}`}>
         <div className={style.menuGroupTitle}>학원</div>
         <li className={style.menuItem}>
-          <Link href={`/academy/${academyId}`} className={getMenuClass('/')}>
+          <Link href={`/academy/${academyId}`} className={getMenuClass('/')} onClick={handleLinkClick}>
             홈
           </Link>
         </li>
@@ -91,6 +125,7 @@ export default function Sidebar({ academyId: propsId, approvalStatus, initialAca
           <Link
             href={`/academy/${academyId}/modify`}
             className={getMenuClass('/modify')}
+            onClick={handleLinkClick}
           >
             학원 정보
           </Link>
@@ -101,6 +136,7 @@ export default function Sidebar({ academyId: propsId, approvalStatus, initialAca
           <Link
             href={`/academy/${academyId}/student`}
             className={getMenuClass('/student')}
+            onClick={handleLinkClick}
           >
             원생 관리
           </Link>
@@ -126,6 +162,7 @@ export default function Sidebar({ academyId: propsId, approvalStatus, initialAca
                 <Link
                   href={`/academy/${academyId}/attendance`}
                   className={getSubMenuClass('/attendance')}
+                  onClick={handleLinkClick}
                 >
                   출결
                 </Link>
@@ -134,6 +171,7 @@ export default function Sidebar({ academyId: propsId, approvalStatus, initialAca
                 <Link
                   href={`/academy/${academyId}/payment`}
                   className={getSubMenuClass('/payment')}
+                  onClick={handleLinkClick}
                 >
                   수납
                 </Link>
@@ -147,11 +185,32 @@ export default function Sidebar({ academyId: propsId, approvalStatus, initialAca
           <Link
             href={`/academy/${academyId}/settings`}
             className={getMenuClass('/settings')}
+            onClick={handleLinkClick}
           >
             설정
           </Link>
         </li>
       </ul>
+
+      {/* 모바일 전용 사용자 섹션 */}
+      <div className={style.userSectionMobile}>
+        {role === 'ROLE_ADMIN' && (
+          <Link href="/admin" className={style.userAction} onClick={handleLinkClick}>
+            관리자 페이지
+          </Link>
+        )}
+        <Link href="/academy/register" className={style.userAction} onClick={handleLinkClick}>
+          신규 학원 등록
+        </Link>
+
+        <button 
+          type="button" 
+          className={`${style.userAction} ${style.logoutAction}`} 
+          onClick={handleLogout}
+        >
+          로그아웃
+        </button>
+      </div>
     </nav>
   );
 }

@@ -13,14 +13,15 @@
 }
 
 .modal {
-  background-color: white;
+  background-color: var(--bg-secondary);
   padding: 32px;
   border-radius: 20px;
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-primary);
   animation: slideUp 0.3s ease-out;
 }
 
@@ -32,18 +33,18 @@
 .title {
   font-size: 24px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .subtitle {
   font-size: 16px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .rejectionAlert {
-  background-color: #fef2f2;
-  border: 1px solid #fee2e2;
+  background-color: rgba(254, 242, 242, 0.1);
+  border: 1px solid rgba(254, 226, 226, 0.2);
   border-radius: 8px; /* 둥글기 감소 */
   padding: 12px 16px; /* 패딩 감소 */
   margin-bottom: 20px; /* 하단 여백 감소 */
@@ -55,7 +56,7 @@
 .alertTitle {
   font-size: 13px; /* 폰트 크기 감소 */
   font-weight: 700;
-  color: #991b1b;
+  color: #f87171;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -63,7 +64,7 @@
 
 .alertContent {
   font-size: 14px;
-  color: #b91c1c;
+  color: #fca5a5;
   line-height: 1.4;
   margin-left: 2px; /* 시각적 정렬 보정 */
 }
@@ -88,12 +89,12 @@
 }
 
 .formSection::-webkit-scrollbar-thumb {
-  background-color: #e5e7eb;
+  background-color: var(--border-primary);
   border-radius: 10px;
 }
 
 .formSection::-webkit-scrollbar-thumb:hover {
-  background-color: #d1d5db;
+  background-color: var(--text-tertiary);
 }
 
 .inputGroup {
@@ -105,7 +106,7 @@
 .label {
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .previewContainer {
@@ -116,10 +117,10 @@
 
 .imageWrapper {
   position: relative; /* 추가 */
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   padding: 12px;
-  background-color: #f9fafb;
+  background-color: var(--bg-primary);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -253,15 +254,15 @@
   border-radius: 12px;
   font-size: 16px;
   font-weight: 600;
-  color: #4b5563;
-  background-color: #f3f4f6;
-  border: none;
+  color: var(--text-secondary);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-primary);
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .cancelButton:hover {
-  background-color: #e5e7eb;
+  background-color: var(--bg-surface);
 }
 
 .submitButton {

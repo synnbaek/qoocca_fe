@@ -94,7 +94,7 @@ export default function LoginForm() {
       <Button variant="secondary" type="submit" disabled={isLoading}>
         {isLoading ? (
           <div className={styles.loadingWrapper}>
-            <Loading provider="default" />
+            <div className={styles.spinner}></div>
             <span>로그인 중...</span>
           </div>
         ) : (

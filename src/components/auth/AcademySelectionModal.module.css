@@ -12,7 +12,7 @@
 }
 
 .modalContent {
-    background-color: white;
+    background-color: var(--bg-surface);
     padding: 32px;
     border-radius: 16px;
     width: 400px;
@@ -21,6 +21,7 @@
     flex-direction: column;
     gap: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-primary);
 }
 
 .title {
@@ -28,12 +29,12 @@
     font-weight: bold;
     text-align: center;
     margin: 0;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .description {
     font-size: 14px;
-    color: #666;
+    color: var(--text-secondary);
     text-align: center;
     line-height: 1.5;
     margin-bottom: 8px;
@@ -53,17 +54,23 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-primary);
     border-radius: 12px;
-    background-color: #fff;
+    background-color: var(--bg-surface);
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: left;
 }
 
+@media (prefers-color-scheme: dark) {
+    .academyItem {
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
 .academyItem:hover {
     border-color: var(--primary-color);
-    background-color: #f9f9ff;
+    background-color: var(--bg-secondary);
     transform: translateY(-2px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
@@ -71,7 +78,7 @@
 .academyName {
     font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .academyStatus {

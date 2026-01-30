@@ -1,5 +1,7 @@
 .container {
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
 }
@@ -22,7 +24,7 @@
 .currentDate {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .arrowBtn {
@@ -30,7 +32,7 @@
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
-  color: #666;
+  color: var(--text-secondary);
   padding: 5px 10px;
 }
 
@@ -40,11 +42,42 @@
   background: none;
   border: none;
   font-size: 1rem;
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 5px;
+}
+
+@media (max-width: 768px) {
+  .headerBar {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+  }
+  
+  .backBtn {
+    position: static;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .dateController {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .classInfoRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .addStudentBtn {
+    width: 100%;
+    margin-top: 10px;
+    text-align: center;
+  }
 }
 
 .summarySection {
@@ -57,10 +90,10 @@
 .searchBarWrapper {
   display: flex;
   align-items: center;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   padding: 12px 16px;
-  background-color: white;
+  background-color: var(--bg-primary);
   width: 100%;
   box-sizing: border-box;
 }
@@ -82,7 +115,8 @@
   outline: none;
   font-size: 1rem;
   width: 100%;
-  color: #333;
+  color: var(--text-primary);
+  background-color: transparent;
 }
 
 .searchInput::placeholder {
@@ -99,7 +133,7 @@
 .classTitle {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #111;
+  color: var(--text-primary);
   display: flex;
   gap: 10px;
   align-items: baseline;
@@ -107,12 +141,12 @@
 
 .classTime {
   font-weight: 400;
-  color: #666;
+  color: var(--text-tertiary);
   font-size: 1rem;
 }
 
 .addStudentBtn {
-  background-color: white;
+  background-color: var(--bg-primary);
   color: var(--primary-color);
   border: 1px solid var(--primary-color);
   padding: 8px 16px;
@@ -124,30 +158,33 @@
 }
 
 .addStudentBtn:hover {
-  background-color: #f0faff;
+  background-color: var(--bg-secondary);
 }
 
 .totalCount {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 15px;
 }
 
 .tableSection {
   width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .studentTable {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px; /* 표가 너무 뭉개지지 않도록 최소 너비 설정 */
 }
 
 .studentTable th {
   text-align: center;
   vertical-align: middle;
   padding: 15px 10px;
-  border-bottom: 1px solid #f0f0f0;
-  color: #999;
+  border-bottom: 1px solid var(--border-primary);
+  color: var(--text-tertiary);
   font-weight: 500;
   font-size: 0.9rem;
 }
@@ -172,7 +209,7 @@
   padding: 20px 10px;
   border-bottom: 1px solid var(--divider-color);
   font-size: 1rem;
-  color: #444;
+  color: var(--text-primary);
 }
 
 .studentRow {
@@ -180,26 +217,26 @@
 }
 
 .studentRow:hover {
-  background-color: #f8faff;
+  background-color: var(--bg-secondary);
 }
 
 /* Specific Column Styles */
 .studentName {
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .present {
-  color: #333;
+  color: var(--text-primary);
 }
 
 .late {
-  color: #333;
+  color: var(--text-primary);
 }
 
 .absent {
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .studentTable input[type='checkbox'] {

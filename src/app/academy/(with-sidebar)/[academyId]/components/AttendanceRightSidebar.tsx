@@ -15,7 +15,12 @@ interface ClassAttendanceResponse {
   statusLabel: string;
 }
 
-export default function AttendanceRightSidebar() {
+interface AttendanceRightSidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export default function AttendanceRightSidebar({ isOpen, onClose }: AttendanceRightSidebarProps) {
   const [attendances, setAttendances] = useState<ClassAttendanceResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
@@ -61,7 +66,7 @@ export default function AttendanceRightSidebar() {
   }, {} as Record<string, ClassAttendanceResponse[]>);
 
   return (
-    <div className={styles.sidebarContainer}>
+    <div className={`${styles.sidebarContainer} ${isOpen ? styles.isOpen : ''}`}>
       {isLoading ? (
           <div className={styles.loading}>데이터를 불러오는 중...</div>
         ) : attendances.length === 0 ? (

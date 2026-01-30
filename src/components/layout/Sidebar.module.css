@@ -1,6 +1,6 @@
 .sidebar {
   width: 240px;
-  background-color: #ffffff;
+  background-color: var(--sidebar-bg);
   border-right: 1px solid var(--divider-color);
   padding: 80px 20px 20px 20px;
   box-sizing: border-box;
@@ -11,6 +11,66 @@
   height: 100vh;
   z-index: 99;
   overflow-y: auto;
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.isOpen {
+    transform: translateX(0);
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1200; /* 오버레이보다 위로 배치 */
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    padding-top: 20px; /* 모바일에서는 헤더가 위로 가거나 햄버거 메뉴가 있을 수 있으므로 조정 */
+  }
+}
+
+.userSectionMobile {
+  display: none;
+  border-top: 1px solid var(--divider-color);
+  margin-top: auto;
+  padding: 20px 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 1024px) {
+  .userSectionMobile {
+    display: flex;
+  }
+}
+
+.userAction {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  font-family: inherit;
+}
+
+.userAction:hover {
+  background-color: var(--bg-secondary);
+  color: var(--primary-color);
+  border-radius: 12px;
+}
+
+.logoutAction {
+  color: #ef4444 !important;
 }
 
 .disabled {
@@ -56,8 +116,7 @@
 .menuLink,
 .toggleHeader {
   padding: 12px 16px;
-  color: #333;
-  font-size: 15px;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 14px;
@@ -72,19 +131,19 @@
 
 .subLinkItem {
   padding: 8px 16px;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
 .active {
-  background-color: #f1f3f5 !important;
+  background-color: var(--bg-secondary) !important;
   font-weight: 600;
 }
 
 .menuLink:not(.active):hover,
 .subLinkItem:not(.active):hover,
 .toggleHeader:hover {
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
   color: var(--primary-color);
 }
 
@@ -119,14 +178,14 @@
 
 .menuGroupTitle {
   font-size: 14px;
-  color: #adb5bd;
+  color: var(--text-tertiary);
   margin: 16px 0 8px 16px;
   text-transform: uppercase;
 }
 
 .academySwitcher {
   padding: 0 0 20px 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--divider-color);
   margin-bottom: 20px;
 }
 
@@ -134,11 +193,11 @@
   width: 100%;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background-color: #fff;
+  border: 1px solid var(--border-primary);
+  background-color: var(--bg-surface);
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   cursor: pointer;
   outline: none;
   transition: all 0.2s;

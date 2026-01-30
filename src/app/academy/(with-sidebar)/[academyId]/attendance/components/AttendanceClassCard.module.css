@@ -1,11 +1,11 @@
 .card {
-  background-color: white;
-  border: 1px solid #e0e0e0;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
   border-radius: 16px;
   padding: 24px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: box-shadow 0.2s;
 }
 
@@ -23,18 +23,18 @@
 .className {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #111;
+  color: var(--text-primary);
 }
 
 .time {
   font-size: 0.95rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .sectionTitle {
   font-size: 1rem;
   font-weight: 700;
-  color: #111;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
@@ -46,10 +46,10 @@
 
 .statRow {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .statValue {
-  color: #333; /* Or bold if needed, visually it looks distinct but standard text weight in mockup? hard to see, assuming standard color shift */
+  color: var(--text-primary);
   font-weight: 500;
 }
