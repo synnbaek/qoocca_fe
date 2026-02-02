@@ -40,14 +40,9 @@ export const usePayment = (academyId: string) => {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth() + 1;
       const data = await paymentService.getClassSummary(academyId, year, month);
-      console.log('✅ [수납 현황 데이터]', { 
-        year, 
-        month, 
-        classList: data 
-      });
       setClassList(data || []);
     } catch (err) {
-      console.error('❌ 수납 요약 로딩 실패:', err);
+      console.error('수납 요약 로딩 실패:', err);
     }
   };
 
@@ -60,10 +55,9 @@ export const usePayment = (academyId: string) => {
       if (!academyId) return;
       try {
         const data = await paymentService.getPaymentStats(academyId);
-        console.log('✅ [수납 통계 데이터]', data);
         setTotalMonthlyFee(data.totalMonthlyFee);
       } catch (err) {
-        console.error('❌ 스탯 로딩 실패:', err);
+        console.error('스탯 로딩 실패:', err);
       }
     };
     fetchStats();
