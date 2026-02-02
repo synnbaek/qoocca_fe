@@ -8,6 +8,7 @@ import PaymentDateController from './components/PaymentDateController';
 import PaymentRow from './components/PaymentRow';
 import StudentListModal from './components/StudentListModal';
 import StudentListInline from './components/StudentListInline';
+import CustomPaymentModal from './components/CustomPaymentModal';
 import { SearchIcon } from '@/components/icons/BasicIcons';
 import { usePayment } from '@/hooks/usePayment';
 
@@ -21,6 +22,8 @@ export default function PaymentPage() {
     selectedIds,
     selectedStudentIds,
     isModalOpen,
+    isCustomModalOpen,
+    setIsCustomModalOpen,
     modalConfig,
     closeModal,
     handlePrevMonth,
@@ -31,10 +34,12 @@ export default function PaymentPage() {
     handleSelectAllStudents,
     handleSelectStudent,
     handlePaymentRequest,
+    executeCustomPaymentRequest,
     totalMonthlyFee,
     searchQuery,
     setSearchQuery,
     filteredClassList,
+    classList,
   } = usePayment(academyId as string);
 
   const [isMobile, setIsMobile] = useState(false);
@@ -80,9 +85,14 @@ export default function PaymentPage() {
               {totalMonthlyFee.toLocaleString()}원
             </span>
           </div>
-          <button onClick={handleAddClass} className={styles.addClassBtn}>
-            + 클래스 추가
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={() => setIsCustomModalOpen(true)} className={styles.addClassBtn}>
+              직접 요청
+            </button>
+            <button onClick={handleAddClass} className={styles.addClassBtn}>
+              + 클래스 추가
+            </button>
+          </div>
         </div>
         <div className={styles.searchBarWrapper}>
           <div className={styles.searchIcon}>
@@ -163,6 +173,13 @@ export default function PaymentPage() {
           onPaymentRequest={handlePaymentRequest}
         />
       )}
+
+      <CustomPaymentModal 
+        isOpen={isCustomModalOpen}
+        onClose={() => setIsCustomModalOpen(false)}
+        classes={classList}
+        onCustomRequest={executeCustomPaymentRequest}
+      />
 
       <CustomModal
         isOpen={isModalOpen}

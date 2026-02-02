@@ -109,6 +109,22 @@
     text-align: right;
 }
 
+.statusBadge {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.statusActive {
+    color: #22c55e;
+}
+
+.statusInactive {
+    color: #94a3b8;
+}
+
 .toggleSwitch {
     width: 46px;
     height: 24px;

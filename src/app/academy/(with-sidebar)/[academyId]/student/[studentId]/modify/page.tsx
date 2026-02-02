@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import TextInput from '@/app/academy/register/components/TextInput';
 import SingleSelect from '../../form/components/SingleSelect';
+import MultiSelect from '../../form/components/MultiSelect';
 import CardRegistrationModal from '../../form/components/CardRegistrationModal';
 import DeleteConfirmationModal from '../../form/components/DeleteConfirmationModal';
 import styles from '../../form/form.module.css';
@@ -15,6 +16,7 @@ import {
     updateParent,
     updateStudentStatus,
     moveStudentToClass,
+    assignStudentToClass,
     deleteStudentFromClass,
     AcademyStudentModifyRequest,
     ParentUpdateRequest,
@@ -34,22 +36,33 @@ export default function StudentModifyPage() {
     const studentData = useMemo(() => {
         if (!parentStats) return null;
 
+        let baseStudentInfo = null;
+        const studentClasses: { classId: number; className: string }[] = [];
+
         for (const cls of parentStats) {
             const foundStudent = cls.students.find((s) => s.studentId === studentId);
             if (foundStudent) {
-                return {
-                    ...foundStudent,
-                    className: cls.className,
+                if (!baseStudentInfo) {
+                    baseStudentInfo = foundStudent;
+                }
+                studentClasses.push({
                     classId: cls.classId,
-                };
+                    className: cls.className,
+                });
             }
         }
-        return null;
+
+        if (!baseStudentInfo) return null;
+
+        return {
+            ...baseStudentInfo,
+            classes: studentClasses,
+        };
     }, [parentStats, studentId]);
 
     const [studentName, setStudentName] = useState('');
     const [studentPhone, setStudentPhone] = useState('');
-    const [classId, setClassId] = useState<number | null>(null);
+    const [classIds, setClassIds] = useState<number[]>([]);
     const [classes, setClasses] = useState<ClassGetResponse[]>([]);
     const [status, setStatus] = useState<'ENROLLED' | 'PAUSED' | 'WITHDRAWN'>('ENROLLED');
 
@@ -83,7 +96,7 @@ export default function StudentModifyPage() {
 
         setStudentName(studentData.studentName);
         setStudentPhone(studentData.studentPhone || '');
-        setClassId(studentData.classId);
+        setClassIds(studentData.classes.map((c: any) => c.classId));
         setStatus(studentData.status || 'ENROLLED');
 
         const parents = studentData.parents || [];
@@ -126,14 +139,30 @@ export default function StudentModifyPage() {
                 await updateParent(studentId, parent.parentId, parentUpdate);
             }
 
-            if (status !== studentData?.status) {
-                const statusUpdate: ClassInfoStudentModifyRequest = { status };
-                await updateStudentStatus(studentData!.classId, studentId, statusUpdate);
+            if (studentData) {
+                const originalClassIds = studentData.classes.map((c: any) => c.classId);
+                
+                // Classes to add
+                const toAdd = classIds.filter(id => !originalClassIds.includes(id));
+                // Classes to remove
+                const toRemove = originalClassIds.filter((id: number) => !classIds.includes(id));
+
+                for (const id of toAdd) {
+                    await assignStudentToClass(id, studentId);
+                }
+
+                for (const id of toRemove) {
+                    await deleteStudentFromClass(id, studentId);
+                }
             }
 
-            if (studentData && classId !== studentData.classId && classId !== null) {
-                const moveRequest: ClassInfoStudentMoveRequest = { targetClassId: classId };
-                await moveStudentToClass(academyId, studentData.classId, studentId, moveRequest);
+            // 4. Update status in all currently selected classes
+            // We do this AFTER class changes to avoid 404 for new classes
+            if (status !== studentData?.status || (status !== 'ENROLLED' && classIds.length > 0)) {
+                const statusUpdate: ClassInfoStudentModifyRequest = { status };
+                for (const id of classIds) {
+                    await updateStudentStatus(id, studentId, statusUpdate);
+                }
             }
 
             toast.success('정보가 성공적으로 수정되었습니다.');
@@ -153,7 +182,11 @@ export default function StudentModifyPage() {
         setIsDeleteModalOpen(false);
 
         try {
-            await deleteStudentFromClass(studentData.classId, studentId);
+            // Delete from all classes
+            const originalClassIds = studentData.classes.map((c: any) => c.classId);
+            for (const id of originalClassIds) {
+                await deleteStudentFromClass(id, studentId);
+            }
             toast.success('원생이 성공적으로 삭제되었습니다.');
             router.push(`/academy/${academyId}/student`);
         } catch (error) {
@@ -218,11 +251,11 @@ export default function StudentModifyPage() {
                 readOnly={false}
             />
 
-            <SingleSelect
+            <MultiSelect
                 label="클래스"
-                options={classes.map((c) => ({ label: c.className, value: c.classId.toString() }))}
-                value={classId?.toString() || ''}
-                onChange={(value) => setClassId(Number(value))}
+                options={classes.map((c) => ({ label: c.className, value: c.classId }))}
+                values={classIds}
+                onChange={(values) => setClassIds(values)}
             />
 
             <SingleSelect
@@ -277,11 +310,16 @@ export default function StudentModifyPage() {
                                         readOnly={false}
                                     />
 
-                                    <TextInput
+                                    <SingleSelect
                                         label="원생과의 관계"
+                                        options={[
+                                            { label: '부', value: '부' },
+                                            { label: '모', value: '모' },
+                                            { label: '조부', value: '조부' },
+                                            { label: '조모', value: '조모' },
+                                        ]}
                                         value={parent.relationship}
                                         onChange={(value) => updateParentField(index, 'relationship', value)}
-                                        readOnly={false}
                                     />
                                 </div>
 
