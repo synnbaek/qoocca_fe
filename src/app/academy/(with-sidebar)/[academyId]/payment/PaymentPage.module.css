@@ -1,5 +1,7 @@
 .container {
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
 }
@@ -8,7 +10,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
+  position: relative; /* Keep relative for mobile adjustments if needed, though less critical now */
   margin-bottom: 30px;
   width: 100%;
 }
@@ -22,7 +24,7 @@
 .currentDate {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .arrowBtn {
@@ -30,17 +32,15 @@
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
-  color: #666;
+  color: var(--text-secondary);
   padding: 5px 10px;
 }
 
 .addClassBtn {
-  position: absolute;
-  right: 0;
   display: flex;
   align-items: center;
   gap: 5px;
-  background-color: white;
+  background-color: var(--bg-primary);
   color: var(--primary-color);
   border: 1px solid var(--primary-color);
   padding: 8px 16px;
@@ -49,15 +49,236 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .headerBar {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+    height: auto;
+  }
+  
+  .addClassBtn {
+    position: static; /* 절대 위치 해제 */
+    width: auto;
+    justify-content: center;
+    margin-top: 0;
+  }
+  
+  .requestBtn {
+    width: 100%;
+    justify-content: center;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+  
+  .dateController {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .summarySection {
+    gap: 20px;
+  }
+
+  .totalAmountWrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .searchBarWrapper {
+    width: 100%;
+  }
+
+  /* Table Card Layout Mobile */
+  .paymentTable, 
+  .paymentTable tbody, 
+  .paymentTable tr, 
+  .paymentTable td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .paymentTable thead {
+    display: none;
+  }
+
+  .paymentTable tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Main Class Row (Card) */
+  .mainRow {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 16px;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-primary);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0;
+  }
+  
+  /* 1. Checkbox */
+  .mainRow > td:first-child {
+    width: 40px;
+    padding: 0;
+    border: none;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  /* 2. Class Name */
+  .mainRow > td.classNameCol {
+    width: calc(100% - 40px);
+    padding: 0;
+    border: none;
+    text-align: left;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  /* 3. Stats */
+  .mainRow > td:nth-child(3),
+  .mainRow > td:nth-child(4),
+  .mainRow > td:nth-child(5) {
+    width: 33.33%;
+    padding: 10px 0 0 0;
+    border: none;
+    border-top: 1px solid var(--border-primary);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .mainRow > td:nth-child(3)::before {
+    content: '요청 전';
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+
+  .mainRow > td:nth-child(4)::before {
+    content: '결제 대기';
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+
+  .mainRow > td:nth-child(5)::before {
+    content: '결제 완료';
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+
+  /* Expanded Details (Student List) */
+  .detailActionRow td {
+    padding: 10px;
+    background-color: var(--bg-surface); /* 배경색 통일 */
+    border-radius: 0 0 12px 12px; /* 카드 하단 둥글게 */
+    border-top: 1px solid var(--border-primary);
+  }
+  
+  /* Make expanded main row look connected */
+  .mainRow.expanded {
+    border-radius: 12px 12px 0 0;
+    border-bottom: none;
+    margin-bottom: 0;
+    box-shadow: none;
+  }
+
+  .detailActionContainer {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  /* Student Row inside Expansion */
+  .studentRow {
+    display: flex !important;
+    padding: 12px;
+    background-color: var(--bg-surface);
+    border-left: 1px solid var(--border-primary);
+    border-right: 1px solid var(--border-primary);
+    border-bottom: 1px solid var(--border-primary);
+  }
+  
+  .subIconCol {
+    display: none; /* 화살표 숨김 */
+  }
+  
+  .studentRow td[colspan="4"] {
+    width: 100%;
+    padding: 0;
+    border: none;
+  }
+
+  .studentInfoWrapper {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 4px;
+    width: 100%;
+  }
+  
+  .studentCheck {
+    grid-column: 1;
+    grid-row: 1 / span 2; /* 체크박스 세로 중앙 */
+    margin: 0;
+  }
+  
+  .studentName {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 1rem;
+    font-weight: 600;
+    width: auto;
+    display: block; /* Flex 해제 */
+  }
+  
+  .studentAmount {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 0.95rem;
+    color: #666;
+    margin-left: 0; /* 기존 마진 제거 */
+    text-align: left;
+  }
+  
+  .statusBadgeWrapper {
+    grid-column: 3;
+    grid-row: 1 / span 2; /* 배지 우측 중앙 */
+    width: auto;
+    text-align: right;
+    margin-top: 0;
+  }
 }
 
 .addClassBtn:hover,
 .requestBtn:hover {
-  background-color: #f0faff;
+  background-color: var(--bg-surface);
 }
 
 .requestBtn {
-  background-color: white;
+  background-color: var(--bg-primary);
   color: var(--primary-color);
   border: 1px solid var(--primary-color);
   padding: 8px 16px;
@@ -71,23 +292,31 @@
 
 .totalInfo {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 15px;
+}
+
+.tableSection {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .paymentTable {
   width: 100%;
   border-collapse: collapse;
+  min-width: 800px; /* 표가 너무 뭉개지지 않도록 최소 너비 설정 */
 }
 
 .paymentTable th {
   text-align: center;
   vertical-align: middle;
   padding: 15px 10px;
-  border-bottom: 1px solid #f0f0f0;
-  color: #999;
+  border-bottom: 1px solid var(--border-primary);
+  color: var(--text-tertiary);
   font-weight: 500;
   font-size: 0.9rem;
+  background-color: var(--bg-secondary);
 }
 
 .paymentTable td {
@@ -96,7 +325,7 @@
   padding: 20px 10px;
   border-bottom: 1px solid var(--divider-color);
   font-size: 1rem;
-  color: #444;
+  color: var(--text-primary);
 }
 
 .checkboxCol {
@@ -115,7 +344,7 @@
 
 .classNameCol,
 .completedCount {
-  color: #222;
+  color: var(--text-primary);
 }
 
 .emptyRow {
@@ -137,18 +366,18 @@
 }
 
 .mainRow.expanded {
-  background-color: #f8faff;
+  background-color: var(--bg-surface);
 }
 
 .detailActionRow td,
 .studentRow td {
-  background-color: #fcfcfc;
+  background-color: var(--bg-secondary);
   border: none;
 }
 
 .detailActionRow td {
-  padding: 15px 0 10px 0;
-  background-color: #fcfcfc;
+  padding: 15px 10px 10px 10px;
+  background-color: var(--bg-surface);
   border: none;
 }
 
@@ -165,7 +394,7 @@
 
 .selectAllLabel {
   font-size: 0.9rem;
-  color: #555;
+  color: var(--text-secondary);
   cursor: pointer;}
 
 .subArrow {
@@ -208,17 +437,25 @@
   font-weight: 600;
 }
 .PAID {
-  background-color: white;
-  border: 1px solid #eee;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-primary);
   color: #aaa;
 }
 
 .summarySection {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Stacks TopRow and SearchBar */
   gap: 15px;
   margin-bottom: 30px;
 }
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end; /* Align baseline of total amount with button bottom roughly */
+  width: 100%;
+}
+
 
 .totalAmountWrapper {
   display: flex;
@@ -229,22 +466,22 @@
 .totalLabel {
   font-size: 1rem;
   font-weight: 500;
-  color: #333;
+  color: var(--text-secondary);
 }
 
 .totalAmount {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #111;
+  color: var(--text-primary);
 }
 
 .searchBarWrapper {
   display: flex;
   align-items: center;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   padding: 12px 16px;
-  background-color: white;
+  background-color: var(--bg-primary);
   width: 100%;
   box-sizing: border-box;
   transition: border-color 0.2s;
@@ -271,7 +508,8 @@
   outline: none;
   font-size: 1rem;
   width: 100%;
-  color: #333;
+  color: var(--text-primary);
+  background-color: transparent;
 }
 
 .searchInput::placeholder {
@@ -288,3 +526,82 @@
   margin-left: 8px;
   white-space: nowrap;
 }
+
+/* Modal Content Styles */
+.studentModalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 5px; /* Scrollbar space */
+}
+
+.studentModalRow {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  gap: 12px;
+}
+
+.modalHeaderActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.modalCheckboxWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.studentInfoWrapperModal {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+}
+
+.modalStudentName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1; /* Name takes available space */
+}
+
+.modalStudentAmount {
+  font-size: 0.95rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+.modalStatusBadge {
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  min-width: 80px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary);
+}
+
+.modalCheckbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+  margin-right: 8px;
+}
+

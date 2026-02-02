@@ -22,18 +22,35 @@ export default function StudentDetailPage() {
     const studentData = useMemo(() => {
         if (!parentStats) return null;
 
+        let baseStudentInfo = null;
+        const studentClasses: { classId: number; className: string }[] = [];
+
         for (const cls of parentStats) {
-            const foundStudent = cls.students.find(s => s.studentId === studentId);
+            const foundStudent = cls.students.find((s) => s.studentId === studentId);
             if (foundStudent) {
-                return {
-                    ...foundStudent,
-                    className: cls.className,
+                if (!baseStudentInfo) {
+                    baseStudentInfo = foundStudent;
+                }
+                studentClasses.push({
                     classId: cls.classId,
-                };
+                    className: cls.className,
+                });
             }
         }
-        return null;
+
+        if (!baseStudentInfo) return null;
+
+        return {
+            ...baseStudentInfo,
+            classes: studentClasses,
+        };
     }, [parentStats, studentId]);
+
+    const statusLabelMap = {
+        'ENROLLED': '재원',
+        'PAUSED': '휴원',
+        'WITHDRAWN': '퇴원'
+    };
 
     if (loading) return <div>로딩 중...</div>;
     if (!studentData) return <div>원생 정보가 없습니다.</div>;
@@ -67,8 +84,28 @@ export default function StudentDetailPage() {
                 onChange={() => { }}
                 readOnly
             />
-            <TextInput label="클래스" value={studentData.className} onChange={() => { }} readOnly />
-            <TextInput label="상태" value="재원" onChange={() => { }} readOnly disabled />
+            <div className={styles.multiSelectWrapper}>
+                <label className={styles.multiSelectLabel}>클래스</label>
+                <div 
+                    className={styles.multiSelectBox} 
+                    style={{ height: 'auto', minHeight: 'var(--input-height)', cursor: 'default', flexWrap: 'wrap', gap: '8px', padding: '10px 16px' }}
+                >
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        {studentData.classes.map((c: any) => (
+                            <div key={c.classId} className={styles.tag}>
+                                {c.className}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+            <TextInput
+                label="상태"
+                value={statusLabelMap[studentData.status] || '재원'}
+                onChange={() => { }}
+                readOnly
+                disabled
+            />
 
             {/* 보호자 정보 */}
             {parents.length === 0 ? (

@@ -2,6 +2,7 @@
   display: flex;
   width: 100%;
   min-height: 100vh;
+  position: relative;
 }
 
 .mainContent {
@@ -9,4 +10,79 @@
   padding: 40px 40px 10px 40px;
   display: flex;
   flex-direction: column;
+  margin-left: 240px; /* 사이드바 영역 확보 */
+  transition: all 0.3s ease;
+}
+
+@media (min-width: 1025px) {
+  .mainContent.hasRightSidebar {
+    padding-right: 320px; /* 우측 출결 사이드바 너비(280px) + 좌측과 동일한 간격(40px) */
+  }
+}
+
+.sidebarOverlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1100; /* 헤더(999)와 버튼(1000)을 모두 덮도록 상향 */
+  backdrop-filter: blur(2px); /* 배경을 살짝 흐리게 해서 더 고급스럽게 */
+}
+
+.mobileToggle {
+  display: none; /* 데스크탑에서는 숨김 */
+}
+
+.mobileRightToggle {
+  display: none; /* 데스크탑에서는 숨김 */
+}
+@media (max-width: 1024px) {
+  .mainContent {
+    margin-left: 0;
+    margin-right: 0; /* 모바일에서는 우측 마진 해제 */
+    padding: 30px 20px 60px 20px;
+  }
+
+  .sidebarOverlay.active {
+    display: block;
+  }
+
+  .mobileToggle,
+  .mobileRightToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 10px;
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    border: none;
+    z-index: 1000;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: opacity 0.2s;
+  }
+
+  .mobileToggle {
+    left: 10px;
+  }
+
+  .mobileRightToggle {
+    right: 10px;
+  }
+
+  .mobileToggle:active,
+  .mobileRightToggle:active {
+    background-color: var(--bg-secondary); /* 클릭 시 배경색 테마 적용 */
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 20px 16px 60px 16px;
+  }
 }

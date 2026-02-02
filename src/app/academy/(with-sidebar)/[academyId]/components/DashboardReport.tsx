@@ -34,7 +34,7 @@ export default function DashboardReport({
       {children ? (
         children
       ) : (
-        <div style={{ textAlign: 'center', padding: '20px', color: '#ccc' }}>
+        <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-tertiary)' }}>
           {isRegistered
             ? '데이터를 불러오는 중입니다.'
             : '학원 등록 후 이용 가능합니다.'}

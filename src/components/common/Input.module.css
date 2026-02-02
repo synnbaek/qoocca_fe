@@ -2,37 +2,38 @@
   width: 100%;
   height: var(--input-height);
   border-radius: var(--radius-md);
-  border: 1px solid var(--divider-color);
+  border: 1px solid var(--border-primary);
   padding: 0 16px;
   font-size: 16px;
   box-sizing: border-box;
   outline: none;
   font-family: inherit;
-  color: #1f2937;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 }
 
 .input[type="time"] {
   font-family: 'Roboto', 'Noto Sans KR', sans-serif;
   font-size: 15px;
   letter-spacing: 0.5px;
-  color: #111;
+  color: var(--text-primary);
 }
 
 .input::placeholder {
-  color: #9ca3af;
+  color: var(--text-tertiary);
   font-family: inherit;
 }
 
 .label {
   font-weight: 500;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-bottom: 8px;
   display: block;
 }
 
 .input:focus {
-  border-color: #a1ccff;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
 }
 

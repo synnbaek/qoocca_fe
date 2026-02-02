@@ -14,6 +14,19 @@
   width: 100%;
 }
 
+.backBtn {
+  position: absolute;
+  left: 0;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .dateController {
   display: flex;
   align-items: center;
@@ -23,7 +36,13 @@
 .currentDate {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #333;
+  color: var(--text-primary);
+}
+
+.classTime {
+  font-weight: 400;
+  color: var(--text-tertiary);
+  font-size: 1rem;
 }
 
 .arrowBtn {
@@ -31,21 +50,27 @@
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
-  color: #666;
+  color: var(--text-secondary);
   padding: 5px 10px;
 }
 
 .searchBarWrapper {
   display: flex;
   align-items: center;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   padding: 12px 16px;
-  background-color: white;
+  background-color: var(--bg-primary);
   width: 100%;
   box-sizing: border-box;
   transition: border-color 0.2s;
   margin-bottom: 24px;
+}
+
+.totalCount {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 15px;
 }
 
 .searchBarWrapper:focus-within {
@@ -65,7 +90,8 @@
   outline: none;
   font-size: 1rem;
   width: 100%;
-  color: #333;
+  color: var(--text-primary);
+  background-color: transparent;
 }
 
 .searchInput::placeholder {
@@ -80,12 +106,12 @@
 }
 
 .classCount {
-    color: #666;
+    color: var(--text-secondary);
     font-size: 14px;
 }
 
 .addClassBtn {
-  background-color: white;
+  background-color: var(--bg-primary);
   color: var(--primary-color);
   border: 1px solid var(--primary-color);
   padding: 8px 16px;
@@ -97,7 +123,7 @@
 }
 
 .addClassBtn:hover {
-  background-color: #f0faff;
+  background-color: var(--bg-secondary);
 }
 
 .classGrid {

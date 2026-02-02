@@ -20,6 +20,7 @@ export const usePayment = (academyId: string) => {
   const [selectedStudentIds, setSelectedStudentIds] = useState<number[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [modalConfig, setModalConfig] = useState<ModalConfig>({
     title: '',
     description: '',
@@ -101,7 +102,7 @@ export const usePayment = (academyId: string) => {
   ) => {
     if (e.target.checked) {
       const selectableStudents = students.filter(
-        (s) => s.status === 'BEFORE_REQUEST' && s.isCardRegistered
+        (s) => s.status === 'BEFORE_REQUEST' && s.cardRegistered
       );
       setSelectedStudentIds(selectableStudents.map((s) => s.studentId));
     } else {
@@ -125,9 +126,15 @@ export const usePayment = (academyId: string) => {
         if (!student) return;
         if (student.status === 'PAID') return;
 
+        const now = new Date();
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        const receiptDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}.000`;
+
         await paymentService.createReceipt(studentId, {
-          classId: cls.classId,
-          amount: student.amount,
+          classId: Number(cls.classId),
+          amount: Number(student.amount),
+          receiptDate: receiptDate,
+          receiptStatus: 'ISSUED',
         });
       });
 
@@ -140,6 +147,41 @@ export const usePayment = (academyId: string) => {
         onAction: () => {
           setIsModalOpen(false);
           setSelectedStudentIds([]);
+          fetchSummary();
+        },
+      });
+      setIsModalOpen(true);
+    } catch (err) {
+      console.error(err);
+      setModalConfig({
+        title: '오류 발생',
+        description: '결제 요청 중 오류가 발생했습니다.',
+        actionText: '확인',
+        onAction: () => setIsModalOpen(false),
+      });
+      setIsModalOpen(true);
+    }
+  };
+
+  const executeCustomPaymentRequest = async (studentId: number, classId: number, amount: number) => {
+    try {
+      const now = new Date();
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      const receiptDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}.000`;
+
+      await paymentService.createReceipt(studentId, {
+        classId: Number(classId),
+        amount: Number(amount),
+        receiptDate: receiptDate,
+        receiptStatus: 'ISSUED',
+      });
+
+      setModalConfig({
+        title: '요청 완료',
+        description: '커스텀 결제 요청이 완료되었습니다.',
+        actionText: '확인',
+        onAction: () => {
+          setIsModalOpen(false);
           fetchSummary();
         },
       });
@@ -196,6 +238,9 @@ export const usePayment = (academyId: string) => {
     handleSelectAllStudents,
     handleSelectStudent,
     handlePaymentRequest,
+    executeCustomPaymentRequest,
+    isCustomModalOpen,
+    setIsCustomModalOpen,
     totalMonthlyFee,
     searchQuery,
     setSearchQuery,

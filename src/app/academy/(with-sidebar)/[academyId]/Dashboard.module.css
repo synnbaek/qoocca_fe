@@ -5,10 +5,7 @@
 
 .mainContent {
   flex: 1;
-  max-width: 1400px;
-  margin-top: 0;
-  margin-left: 0;
-  margin-right: auto;
+  margin: 0; /* 중앙 정렬 해제 및 좌측 정렬 */
   display: flex;
   flex-direction: column;
 }
@@ -23,6 +20,11 @@
 .dashboardSummary > p,
 .reportTitle {
   font-weight: bold;
+}
+
+.todayDate {
+  color: var(--text-primary);
+  margin-bottom: 20px;
 }
 
 .promoBanner {
@@ -61,34 +63,41 @@
 }
 
 .dashboardSummary {
-  background-color: #f9f9fa;
+  background-color: var(--bg-secondary);
   border-radius: var(--radius-lg);
-  padding: 30px 40px;
+  padding: 30px;
+  color: var(--text-tertiary); /* 상단 라벨 색상 (전체 원생 등) */
+  font-size: 14px;
 }
 
 .statCard > p {
   font-size: 18px;
-  color: rgba(0, 0, 0, 0.2);
+  color: var(--text-primary); /* 숫자 옆의 단위(명, 원)와 구분선(/) 색상 */
+  margin-top: 8px;
+  opacity: 0.8;
 }
 
 .statLabelText {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .statNum {
   font-size: 24px;
   font-weight: bold;
-  color: black;
+  color: var(--text-primary);
 }
 
 .statsGrid {
   display: flex;
+  flex-wrap: nowrap; /* 한 줄로 나오도록 설정 */
   justify-content: space-between;
   align-items: center;
   gap: 10px;
   margin-top: 40px;
   width: 100%;
+  overflow-x: auto; /* 공간 부족 시 스크롤 허용 (잘림 방지) */
 }
 
 .statsGrid > * {
@@ -98,9 +107,10 @@
 
 .statCard {
   flex: 1;
-  min-width: 0;
+  min-width: 180px; /* 각 카드의 최소 너비 확보 */
   text-align: center;
   box-sizing: border-box;
+  padding: 0 10px;
   border-right: 1px solid var(--divider-color);
 }
 
@@ -110,14 +120,14 @@
 
 .reportContainer {
   display: flex;
-  justify-content: space-around;
+  flex-wrap: wrap; /* 반응형으로 줄바꿈 허용 */
   width: 100%;
-  gap: 40px;
+  gap: 20px;
 }
 
 .reportRow {
-  flex: 1;
-  background-color: #f9f9fa;
+  flex: 1 1 400px; /* 최소 너비 400px, 그 이상은 자유롭게 확장 */
+  background-color: var(--bg-secondary);
   border-radius: var(--radius-lg);
   margin-top: 40px;
   padding: 30px;
@@ -150,8 +160,12 @@
 .reportItem {
   flex: 1;
   text-align: center;
-  font-size: 14px;
-  color: #000000;
+  font-size: 13px; /* 살짝 줄임 */
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 4px;
 }
 
 .reportRowContent {
@@ -179,7 +193,7 @@
 
 .amountText {
   font-weight: bold;
-  color: black;
+  color: var(--text-primary);
 }
 
 .divider {
@@ -236,4 +250,45 @@
 .statusNO_STUDENTS {
   color: #ccc;
   font-style: italic;
+}
+
+@media (max-width: 1024px) {
+}
+
+@media (max-width: 768px) {
+  .promoBanner {
+    flex-direction: column;
+    height: auto;
+    padding: 24px;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .bannerLeft {
+    flex-direction: column;
+  }
+
+  .statsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .statCard {
+    border-right: none;
+    padding: 10px;
+    background: var(--bg-surface);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .dashboardSummary {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
 }

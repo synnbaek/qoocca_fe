@@ -19,7 +19,7 @@
   background: none;
   border: none;
   font-size: 1rem;
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -35,7 +35,7 @@
 .currentDate {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .arrowBtn {
@@ -43,15 +43,15 @@
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
-  color: #666;
+  color: var(--text-secondary);
   padding: 5px 10px;
 }
 
 .contentCard {
-  background-color: white;
+  background-color: var(--bg-secondary);
   border-radius: 20px;
   padding: 30px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -74,24 +74,26 @@
 .studentName {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #111;
+  color: var(--text-primary);
   line-height: 1;
 }
 
 .editBtn {
-  font-size: 0.9rem;
-  color: var(--primary-color);
-  border: 1px solid var(--primary-color);
-  background: white;
-  padding: 6px 20px;
-  border-radius: 20px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-primary);
+  background: transparent;
+  padding: 6px 16px;
+  border-radius: 6px; /* 둥근 정도 감소 */
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 500;
+  margin-top: 4px; /* 살짝 아래로 */
 }
 
 .editBtn:hover {
-  background-color: #f0faff;
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .classTags {
@@ -107,7 +109,7 @@
   border: 1px solid var(--primary-color);
   padding: 6px 14px;
   border-radius: 20px;
-  background-color: #f8fbff;
+  background-color: var(--bg-primary);
   font-weight: 500;
 }
 
@@ -121,7 +123,7 @@
   flex: 1;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  border: 1px solid #eee;
+  border: 1px solid var(--divider-color);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -149,12 +151,12 @@
 .dayHeader {
   text-align: center;
   padding: 15px 0;
-  background-color: #fcfcfc;
-  color: #888;
+  background-color: var(--bg-surface);
+  color: var(--text-tertiary);
   font-weight: 500;
   font-size: 0.9rem;
-  border-bottom: 1px solid #eee;
-  border-right: 1px solid #eee;
+  border-bottom: 1px solid var(--divider-color);
+  border-right: 1px solid var(--divider-color);
 }
 
 .dayHeader:last-child {
@@ -163,12 +165,13 @@
 
 .dayCell {
   height: 120px;
-  border-right: 1px solid #eee;
-  border-bottom: 1px solid #eee;
+  border-right: 1px solid var(--divider-color);
+  border-bottom: 1px solid var(--divider-color);
   padding: 10px;
   display: flex;
   flex-direction: column;
   position: relative;
+  background-color: var(--bg-secondary);
 }
 
 .dayCell:nth-child(7n) {
@@ -177,11 +180,11 @@
 
 .dateNumber {
   font-size: 0.9rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .otherMonth {
-  background-color: #fcfcfc;
+  background-color: var(--bg-primary);
 }
 
 .otherMonth .dateNumber {
@@ -201,17 +204,68 @@
 .statusBadge.present {
   color: #00C853;
   border-color: #00C853;
-  background-color: #fff;
+  background-color: transparent;
 }
 
 .statusBadge.late {
   color: #AA00FF;
   border-color: #AA00FF;
-  background-color: #fff;
+  background-color: transparent;
 }
 
 .statusBadge.absent {
   color: #FF1744;
   border-color: #FF1744;
-  background-color: #fff;
+  background-color: transparent;
+}
+@media (max-width: 768px) {
+  .studentInfoHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .studentInfoLeft {
+    flex-direction: column;
+    gap: 16px; /* 이름과 클래스명 사이 간격 증가 */
+  }
+  
+  .calendarSection {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .calendarGrid {
+    overflow-x: auto;
+  }
+  
+  .dayHeader {
+    font-size: 0.8rem;
+    padding: 10px 0;
+  }
+  
+  .dayCell {
+    height: 80px; /* 모바일에서 높이 축소 */
+    padding: 6px;
+  }
+  
+  /* 전설(범례)을 가로로 배치 */
+  .legendArea {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding-top: 0;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .legendItem {
+    width: 50px;
+    height: 50px;
+    font-size: 0.8rem;
+  }
+  
+  .statusBadge {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
 }

@@ -1,5 +1,7 @@
 .container {
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
 }
@@ -22,7 +24,7 @@
 .currentDate {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .arrowBtn {
@@ -30,7 +32,7 @@
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
-  color: #666;
+  color: var(--text-secondary);
   padding: 5px 10px;
 }
 
@@ -40,11 +42,160 @@
   background: none;
   border: none;
   font-size: 1rem;
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 5px;
+}
+
+@media (max-width: 768px) {
+  .headerBar {
+    margin-bottom: 20px;
+    height: 44px; /* 헤더 높이 확보 */
+  }
+  
+  .backBtn {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: auto;
+    margin: 0;
+    font-size: 0.9rem;
+  }
+  
+  .dateController {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .classInfoRow {
+    flex-direction: row; /* 가로 배치로 변경 */
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .classTitle {
+    font-size: 1.1rem;
+    flex-direction: column;
+    align-items: flex-start; /* 왼쪽 정렬 */
+    text-align: left;
+  }
+  
+  .classTime {
+    font-size: 0.9rem;
+  }
+
+  .addStudentBtn {
+    width: auto; /* 버튼 크기 자동 */
+    margin-top: 0; /* 상단 여백 제거 */
+    padding: 6px 14px;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  }
+  
+  .searchBarWrapper {
+    margin-bottom: 15px;
+  }
+
+  /* Mobile Card Layout for Table */
+  .studentTable, 
+  .studentTable tbody, 
+  .studentTable tr, 
+  .studentTable td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .studentTable thead {
+    display: none; /* 헤더 숨김 */
+  }
+
+  .studentTable tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .studentRow {
+    display: flex !important; /* flex-wrap을 위해 중요 */
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 16px;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-primary);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0; /* tbody gap 사용 */
+  }
+
+  /* 1. Checkbox */
+  .studentRow > td:first-child {
+    width: 40px;
+    padding: 0;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  /* 2. Name */
+  .studentRow > td.studentName {
+    width: calc(100% - 40px);
+    padding: 0;
+    border: none;
+    text-align: left;
+    font-size: 1.1rem; /* 이름 크게 */
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+  }
+
+  /* 3. Stats (Present, Late, Absent) */
+  .studentRow > td.present,
+  .studentRow > td.late,
+  .studentRow > td.absent {
+    width: 33.33%;
+    padding: 12px 0 0 0; /* 위쪽 여백으로 줄바꿈 효과 */
+    border: none;
+    text-align: center;
+    display: flex;
+    flex-direction: column; /* 라벨 위, 숫자 아래 */
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  /* Add Labels via Pseudo-elements */
+  .studentRow > td.present::before {
+    content: '출석';
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+
+  .studentRow > td.late::before {
+    content: '지각';
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+
+  .studentRow > td.absent::before {
+    content: '결석';
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
 }
 
 .summarySection {
@@ -57,10 +208,10 @@
 .searchBarWrapper {
   display: flex;
   align-items: center;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   padding: 12px 16px;
-  background-color: white;
+  background-color: var(--bg-primary);
   width: 100%;
   box-sizing: border-box;
 }
@@ -82,7 +233,8 @@
   outline: none;
   font-size: 1rem;
   width: 100%;
-  color: #333;
+  color: var(--text-primary);
+  background-color: transparent;
 }
 
 .searchInput::placeholder {
@@ -93,13 +245,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  align-items: center;
 }
 
 .classTitle {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #111;
+  color: var(--text-primary);
   display: flex;
   gap: 10px;
   align-items: baseline;
@@ -107,12 +258,12 @@
 
 .classTime {
   font-weight: 400;
-  color: #666;
+  color: var(--text-tertiary);
   font-size: 1rem;
 }
 
 .addStudentBtn {
-  background-color: white;
+  background-color: var(--bg-primary);
   color: var(--primary-color);
   border: 1px solid var(--primary-color);
   padding: 8px 16px;
@@ -124,32 +275,36 @@
 }
 
 .addStudentBtn:hover {
-  background-color: #f0faff;
+  background-color: var(--bg-secondary);
 }
 
 .totalCount {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 15px;
 }
 
 .tableSection {
   width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .studentTable {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px; /* PC 기본값 */
 }
 
 .studentTable th {
   text-align: center;
   vertical-align: middle;
   padding: 15px 10px;
-  border-bottom: 1px solid #f0f0f0;
-  color: #999;
+  border-bottom: 1px solid var(--border-primary);
+  color: var(--text-tertiary);
   font-weight: 500;
   font-size: 0.9rem;
+  white-space: nowrap; /* 줄바꿈 방지 */
 }
 
 .checkboxCol {
@@ -172,7 +327,7 @@
   padding: 20px 10px;
   border-bottom: 1px solid var(--divider-color);
   font-size: 1rem;
-  color: #444;
+  color: var(--text-primary);
 }
 
 .studentRow {
@@ -180,26 +335,26 @@
 }
 
 .studentRow:hover {
-  background-color: #f8faff;
+  background-color: var(--bg-secondary);
 }
 
 /* Specific Column Styles */
 .studentName {
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .present {
-  color: #333;
+  color: var(--text-primary);
 }
 
 .late {
-  color: #333;
+  color: var(--text-primary);
 }
 
 .absent {
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .studentTable input[type='checkbox'] {

@@ -1,8 +1,16 @@
 .studentContainer {
     width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     padding: 24px;
+}
+
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto; /* 모바일에서 표 가로 스크롤 허용 */
+    -webkit-overflow-scrolling: touch;
 }
 
 .buttonGroup {
@@ -13,7 +21,7 @@
 }
 
 .addStudentBtn {
-  background-color: white;
+  background-color: var(--bg-primary);
   color: var(--primary-color);
   border: 1px solid var(--primary-color);
   padding: 8px 16px;
@@ -25,31 +33,28 @@
 }
 
 .addStudentBtn:hover {
-  background-color: #f0faff;
+  background-color: var(--bg-secondary);
 }
 
 .sectionBox {
     margin-bottom: 24px;
 }
 
-.tableWrapper {
-    width: 100%;
-}
-
 .table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 700px; /* Force scroll on small screens */
 }
 
 .table th {
     text-align: center;
     vertical-align: middle;
     padding: 15px 10px;
-    border-bottom: 1px solid #f0f0f0;
-    color: #999;
+    border-bottom: 1px solid var(--border-primary);
+    color: var(--text-tertiary);
     font-weight: 500;
     font-size: 0.9rem;
-    background: white; 
+    background: var(--bg-secondary); 
 }
 
 .table td {
@@ -58,7 +63,7 @@
     padding: 20px 10px;
     border-bottom: 1px solid var(--divider-color);
     font-size: 1rem;
-    color: #444;
+    color: var(--text-primary);
 }
 
 /* Column Widths to match Payment */
@@ -68,22 +73,22 @@
 
 .classNameCell {
     cursor: pointer;
-    color: #222;
+    color: var(--text-primary);
     font-weight: 500;
 }
 
 .mainRow {
     cursor: pointer;
     transition: background-color 0.2s;
-    background: white;
+    background: var(--bg-secondary);
 }
 
 .mainRow:hover {
-    background-color: #fcfcfc;
+    background-color: var(--bg-surface);
 }
 
 .selectedRow {
-    background-color: #f8faff; /* Payment expanded style */
+    background-color: var(--bg-surface); /* Payment expanded style */
 }
 
 /* Toggle Switch Styles */
@@ -99,9 +104,25 @@
 .toggleLabel {
     font-size: 13px;
     font-weight: 600;
-    color: #374151;
+    color: var(--text-secondary);
     min-width: 40px;
     text-align: right;
+}
+
+.statusBadge {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.statusActive {
+    color: #22c55e;
+}
+
+.statusInactive {
+    color: #94a3b8;
 }
 
 .toggleSwitch {
@@ -130,7 +151,7 @@
 
 /* Expanded Student Row Styles (Matching Payment) */
 .studentRow td {
-    background-color: #fcfcfc;
+    background-color: var(--bg-secondary);
     border: none;
     padding: 12px 10px;
 }
@@ -160,7 +181,7 @@
 }
 
 .studentDetail {
-    color: #666;
+    color: var(--text-secondary);
     flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -180,9 +201,9 @@
 
 .noStudents {
     padding: 30px;
-    color: #aaa;
+    color: var(--text-tertiary);
     text-align: center;
-    background-color: #fcfcfc;
+    background-color: var(--bg-secondary);
 }
 
 .table input[type='checkbox'] {

@@ -45,20 +45,9 @@ export default function StudentClassRow({ row, checked, onCheck }: Props) {
                 <td>{row.totalStudents}</td>
                 <td>{row.inactiveStudents}</td>
                 <td>
-                    <div className={styles.toggleWrapper} onClick={(e) => {
-                        e.stopPropagation();
-                        setActive(prev => !prev);
-                    }}>
-                        <span className={styles.toggleLabel}>
-                            {active ? '운영중' : '종료'}
-                        </span>
-
-                        <div
-                            className={`${styles.toggleSwitch} ${active ? styles.toggleOn : styles.toggleOff}`}
-                        >
-                            <div className={styles.toggleKnob} />
-                        </div>
-                    </div>
+                    <span className={`${styles.statusBadge} ${active ? styles.statusActive : styles.statusInactive}`}>
+                        {active ? '운영중' : '종료'}
+                    </span>
                 </td>
             </tr>
 
