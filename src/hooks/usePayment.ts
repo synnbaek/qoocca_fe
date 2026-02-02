@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { paymentService } from '@/services/paymentService';
 import { ClassSummary, StudentDetail } from '@/types/payment';
 
@@ -15,7 +15,7 @@ export const usePayment = (academyId: string) => {
   const [expandedClassId, setExpandedClassId] = useState<number | null>(null);
   const [totalMonthlyFee, setTotalMonthlyFee] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  
+
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [selectedStudentIds, setSelectedStudentIds] = useState<number[]>([]);
 
@@ -25,7 +25,7 @@ export const usePayment = (academyId: string) => {
     title: '',
     description: '',
     actionText: '확인',
-    onAction: () => {},
+    onAction: () => { },
   });
 
   // 확장된 클래스가 변경되면 학생 선택 초기화
@@ -34,7 +34,7 @@ export const usePayment = (academyId: string) => {
   }, [expandedClassId]);
 
   // 데이터 조회
-  const fetchSummary = async () => {
+  const fetchSummary = useCallback(async () => {
     if (!academyId) return;
     try {
       const year = currentDate.getFullYear();
@@ -44,11 +44,11 @@ export const usePayment = (academyId: string) => {
     } catch (err) {
       console.error('수납 요약 로딩 실패:', err);
     }
-  };
+  }, [academyId, currentDate]);
 
   useEffect(() => {
     fetchSummary();
-  }, [academyId, currentDate]);
+  }, [fetchSummary]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -63,24 +63,26 @@ export const usePayment = (academyId: string) => {
     fetchStats();
   }, [academyId]);
 
-  const filteredClassList = classList.filter((cls) =>
-    cls.className.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredClassList = useMemo(() => {
+    return classList.filter((cls) =>
+      cls.className.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [classList, searchQuery]);
 
   // 날짜 핸들러
-  const handlePrevMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
-  };
+  const handlePrevMonth = useCallback(() => {
+    setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1));
+  }, []);
 
-  const handleNextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
-  };
+  const handleNextMonth = useCallback(() => {
+    setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1));
+  }, []);
 
-  const handleRowClick = (classId: number) => {
-    setExpandedClassId(expandedClassId === classId ? null : classId);
-  };
+  const handleRowClick = useCallback((classId: number) => {
+    setExpandedClassId(prev => (prev === classId ? null : classId));
+  }, []);
 
-  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectAll = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       const visibleIds = filteredClassList.map((cls) => cls.classId);
       setSelectedIds((prev) => Array.from(new Set([...prev, ...visibleIds])));
@@ -88,15 +90,15 @@ export const usePayment = (academyId: string) => {
       const visibleIds = filteredClassList.map((cls) => cls.classId);
       setSelectedIds((prev) => prev.filter((id) => !visibleIds.includes(id)));
     }
-  };
+  }, [filteredClassList]);
 
-  const handleSelectOne = (id: number) => {
+  const handleSelectOne = useCallback((id: number) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
-  };
+  }, []);
 
-  const handleSelectAllStudents = (
+  const handleSelectAllStudents = useCallback((
     e: React.ChangeEvent<HTMLInputElement>,
     students: StudentDetail[]
   ) => {
@@ -108,16 +110,16 @@ export const usePayment = (academyId: string) => {
     } else {
       setSelectedStudentIds([]);
     }
-  };
+  }, []);
 
-  const handleSelectStudent = (id: number) => {
+  const handleSelectStudent = useCallback((id: number) => {
     setSelectedStudentIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
-  };
+  }, []);
 
   // 수납 요청 로직
-  const executePaymentRequest = async (cls: ClassSummary) => {
+  const executePaymentRequest = useCallback(async (cls: ClassSummary) => {
     setIsModalOpen(false);
 
     try {
@@ -161,9 +163,9 @@ export const usePayment = (academyId: string) => {
       });
       setIsModalOpen(true);
     }
-  };
+  }, [selectedStudentIds, fetchSummary]);
 
-  const executeCustomPaymentRequest = async (studentId: number, classId: number, amount: number) => {
+  const executeCustomPaymentRequest = useCallback(async (studentId: number, classId: number, amount: number) => {
     try {
       const now = new Date();
       const pad = (n: number) => n.toString().padStart(2, '0');
@@ -196,9 +198,9 @@ export const usePayment = (academyId: string) => {
       });
       setIsModalOpen(true);
     }
-  };
+  }, [fetchSummary]);
 
-  const handlePaymentRequest = (cls: ClassSummary) => {
+  const handlePaymentRequest = useCallback((cls: ClassSummary) => {
     if (selectedStudentIds.length === 0) {
       setModalConfig({
         title: '알림',
@@ -217,9 +219,9 @@ export const usePayment = (academyId: string) => {
       onAction: () => executePaymentRequest(cls),
     });
     setIsModalOpen(true);
-  };
+  }, [selectedStudentIds, executePaymentRequest]);
 
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = useCallback(() => setIsModalOpen(false), []);
 
   return {
     currentDate,

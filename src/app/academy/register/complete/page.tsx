@@ -1,11 +1,12 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './complete.module.css';
 import AcademyTitle from '../components/AcademyTitle';
 import Button from '../../../../components/common/Button';
 
-export default function AcademyCompletePage() {
+function AcademyCompleteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const academyId = searchParams.get('academyId');
@@ -41,5 +42,13 @@ export default function AcademyCompletePage() {
         <Button onClick={handleConfirm}>확인</Button>
       </div>
     </div>
+  );
+}
+
+export default function AcademyCompletePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AcademyCompleteContent />
+    </Suspense>
   );
 }

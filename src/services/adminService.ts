@@ -1,9 +1,8 @@
-import axiosInstance from '@/api/axiosInstance';
-import { 
-  AcademyRejectRequest, 
-  PageResponse, 
-  AcademyListResponse, 
-  AcademyResponse 
+import * as adminApi from '@/api/adminApi';
+import {
+    PageResponse,
+    AcademyListResponse,
+    AcademyResponse
 } from '@/types/admin';
 
 export const adminService = {
@@ -12,10 +11,7 @@ export const adminService = {
      * GET /api/admin/academy/pending
      */
     getPendingAcademies: async (page = 0, size = 10, sort = 'createdAt,asc'): Promise<PageResponse<AcademyListResponse>> => {
-        const response = await axiosInstance.get<PageResponse<AcademyListResponse>>('/api/admin/academy/pending', {
-            params: { page, size, sort }
-        });
-        return response.data;
+        return await adminApi.getPendingAcademies(page, size, sort);
     },
 
     /**
@@ -23,10 +19,7 @@ export const adminService = {
      * GET /api/admin/academy/rejected
      */
     async getRejectedAcademies(page = 0, size = 10, sort = 'createdAt,asc'): Promise<PageResponse<AcademyListResponse>> {
-        const response = await axiosInstance.get<PageResponse<AcademyListResponse>>('/api/admin/academy/rejected', {
-            params: { page, size, sort }
-        });
-        return response.data;
+        return await adminApi.getRejectedAcademies(page, size, sort);
     },
 
     /**
@@ -34,10 +27,7 @@ export const adminService = {
      * GET /api/admin/academy
      */
     getAllAcademies: async (page = 0, size = 10, sort = 'createdAt,desc'): Promise<PageResponse<AcademyListResponse>> => {
-        const response = await axiosInstance.get<PageResponse<AcademyListResponse>>('/api/admin/academy', {
-            params: { page, size, sort }
-        });
-        return response.data;
+        return await adminApi.getAllAcademies(page, size, sort);
     },
 
     /**
@@ -45,8 +35,7 @@ export const adminService = {
      * GET /api/admin/academy/{id}
      */
     getAcademyDetail: async (academyId: string | number): Promise<AcademyResponse> => {
-        const response = await axiosInstance.get<AcademyResponse>(`/api/admin/academy/${academyId}`);
-        return response.data;
+        return await adminApi.getAcademyDetail(academyId);
     },
 
     /**
@@ -54,7 +43,7 @@ export const adminService = {
      * POST /api/admin/academy/{id}/approve
      */
     approveAcademy: async (academyId: string | number): Promise<void> => {
-        await axiosInstance.post(`/api/admin/academy/${academyId}/approve`);
+        await adminApi.approveAcademy(academyId);
     },
 
     /**
@@ -62,9 +51,6 @@ export const adminService = {
      * POST /api/admin/academy/{id}/reject
      */
     rejectAcademy: async (academyId: string | number, reason: string): Promise<void> => {
-        const body: AcademyRejectRequest = { rejectionReason: reason };
-        // 디버깅용 로그
-        console.log(`[AdminService] Rejecting academy: ID=${academyId}, URL=/api/admin/academy/${academyId}/reject`, body);
-        await axiosInstance.post(`/api/admin/academy/${academyId}/reject`, body);
+        await adminApi.rejectAcademy(academyId, reason);
     },
 };
