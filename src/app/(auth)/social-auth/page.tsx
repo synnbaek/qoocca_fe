@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useDispatch } from 'react-redux';
@@ -12,7 +12,7 @@ import TermsSection from '../signup/components/TermsSection';
 import Button from '@/components/common/Button';
 import axiosInstance from '@/api/axiosInstance';
 
-export default function SocialAuthPage() {
+function SocialAuthContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
@@ -61,11 +61,11 @@ export default function SocialAuthPage() {
         agreements: isExistingUser
           ? null
           : {
-              service: agreements.service,
-              privacy: agreements.privacy,
-              thirdParty: agreements.thirdParty,
-              marketing: agreements.marketing,
-            },
+            service: agreements.service,
+            privacy: agreements.privacy,
+            thirdParty: agreements.thirdParty,
+            marketing: agreements.marketing,
+          },
       });
 
       const { accessToken, academyId } = res.data;
@@ -73,7 +73,7 @@ export default function SocialAuthPage() {
       dispatch(setUserFromToken(accessToken));
 
       toast.success(isExistingUser ? '계정 연결 성공!' : '회원가입 성공!');
-      
+
       if (academyId) {
         router.replace(`/academy/${academyId}`);
       } else {
@@ -109,5 +109,13 @@ export default function SocialAuthPage() {
         {isExistingUser ? '계정 연결하기' : '회원가입 완료'}
       </Button>
     </div>
+  );
+}
+
+export default function SocialAuthPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SocialAuthContent />
+    </Suspense>
   );
 }
