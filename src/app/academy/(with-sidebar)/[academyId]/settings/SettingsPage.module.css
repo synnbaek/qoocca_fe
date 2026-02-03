@@ -1,0 +1,169 @@
+.container {
+    width: 100%;
+    max-width: var(--reg-container-width);
+    margin: 0 auto;
+    background-color: var(--bg-secondary);
+    padding: 2rem 3rem;
+    border-radius: var(--radius-sm);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.header h1 {
+    font-size: 32px;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.backBtn {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--primary-color);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: opacity 0.2s ease;
+    width: fit-content;
+}
+
+.backBtn:hover {
+    opacity: 0.7;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sectionTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 0;
+    padding-left: 4px;
+}
+
+.card {
+    background-color: var(--bg-primary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-primary);
+    overflow: hidden;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.item:hover {
+    background-color: var(--bg-surface);
+}
+
+.itemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.label {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.description {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin: 0;
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--divider-color);
+    margin: 0 24px;
+}
+
+.arrow {
+    color: var(--text-tertiary);
+    font-weight: 600;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--text-tertiary);
+    font-size: 14px;
+}
+
+.link {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+/* Toggle Switch Styles */
+.toggleSwitch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 28px;
+}
+
+.toggleSwitch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--primary-color);
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+}

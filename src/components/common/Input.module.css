@@ -47,3 +47,18 @@
 .errorInput {
   border-color: #ff4d4f !important;
 }
+
+@media (prefers-color-scheme: dark) {
+
+  .input[type="time"],
+  .input[type="date"],
+  .input[type="datetime-local"] {
+    color-scheme: dark;
+  }
+
+  /* 캘린더 아이콘 색상 반전 (필요한 경우) */
+  .input[type="time"]::-webkit-calendar-picker-indicator,
+  .input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}
