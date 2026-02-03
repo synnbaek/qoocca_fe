@@ -7,14 +7,22 @@ import IndividualRegistrationForm from './components/IndividualRegistrationForm'
 import ExcelRegistrationForm from './components/ExcelRegistrationForm';
 import AcademyTitle from '@/app/academy/register/components/AcademyTitle';
 
+import { useRouter } from 'next/navigation';
+
 export default function StudentFormPage() {
     const params = useParams();
+    const router = useRouter();
     const academyId = Number(params.academyId);
     const [activeTab, setActiveTab] = useState<'individual' | 'excel'>('individual');
 
     return (
         <div className={styles.formContainer}>
-            <AcademyTitle title="신규 원생 등록" />
+            <header className={styles.header}>
+                <button onClick={() => router.back()} className={styles.backButton}>
+                    &lt; 이전
+                </button>
+                <h1>신규 원생 등록</h1>
+            </header>
 
             <div className={styles.tabContainer}>
                 <button

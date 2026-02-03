@@ -105,7 +105,12 @@ export default function AcademyEditPage({
   return (
     <div className={styles.container}>
       <form className={styles.form}>
-        <AcademyTitle title="학원 정보 수정" />
+        <header className={styles.header}>
+          <button type="button" onClick={() => router.back()} className={styles.backBtn}>
+            &lt; 이전
+          </button>
+          <h1>학원 정보 수정</h1>
+        </header>
 
         <TextInput
           label="기본 주소"

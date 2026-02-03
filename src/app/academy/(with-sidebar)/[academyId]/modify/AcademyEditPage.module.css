@@ -17,10 +17,41 @@
   gap: 24px;
 }
 
-.form h2 {
-  text-align: center;
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.header h1 {
   font-size: 32px;
   color: var(--text-primary);
-  margin: 0 0 24px 0;
+  margin: 0;
+  text-align: center;
+  /* Center align title as per original design? Or left? Original h2 was centered. Let's make h1 centered or keep standard left if user wants "exact same style". ClassRegister is left. AcademyEdit was centered h2. User said "same style as new class modal". So left aligned h1 is better. */
+  text-align: left;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--primary-color);
+  font-size: 16px;
   font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.2s ease;
+  width: fit-content;
+}
+
+.backBtn:hover {
+  opacity: 0.7;
+}
+
+.backBtn:active {
+  transform: translateY(1px);
 }
