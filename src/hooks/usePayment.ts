@@ -64,10 +64,37 @@ export const usePayment = (academyId: string) => {
   }, [academyId]);
 
   const filteredClassList = useMemo(() => {
-    return classList.filter((cls) =>
-      cls.className.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const lowerQuery = searchQuery.toLowerCase();
+    if (!lowerQuery) return classList;
+
+    return classList.map(cls => {
+      const isClassMatch = cls.className.toLowerCase().includes(lowerQuery);
+      const matchedStudents = cls.students?.filter(s => 
+        s.studentName.toLowerCase().includes(lowerQuery)
+      ) || [];
+
+      if (isClassMatch || matchedStudents.length > 0) {
+        return {
+          ...cls,
+          isSearching: matchedStudents.length > 0 && !isClassMatch
+        } as ClassSummary;
+      }
+      return null;
+    }).filter((cls): cls is ClassSummary => cls !== null);
   }, [classList, searchQuery]);
+
+
+  // 검색어가 있을 때 검색된 학생이 있는 클래스 자동 확장
+  useEffect(() => {
+    if (searchQuery.trim() && filteredClassList.length > 0) {
+      const firstResult = filteredClassList[0];
+      if (firstResult && firstResult.students?.some(s => s.studentName.toLowerCase().includes(searchQuery.toLowerCase()))) {
+         setExpandedClassId(firstResult.classId);
+      }
+    }
+  }, [searchQuery, filteredClassList]);
+
+
 
   // 날짜 핸들러
   const handlePrevMonth = useCallback(() => {
@@ -84,10 +111,10 @@ export const usePayment = (academyId: string) => {
 
   const handleSelectAll = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      const visibleIds = filteredClassList.map((cls) => cls.classId);
+      const visibleIds = filteredClassList.filter(c => c !== null).map((cls) => cls.classId);
       setSelectedIds((prev) => Array.from(new Set([...prev, ...visibleIds])));
     } else {
-      const visibleIds = filteredClassList.map((cls) => cls.classId);
+      const visibleIds = filteredClassList.filter(c => c !== null).map((cls) => cls.classId);
       setSelectedIds((prev) => prev.filter((id) => !visibleIds.includes(id)));
     }
   }, [filteredClassList]);
@@ -221,6 +248,85 @@ export const usePayment = (academyId: string) => {
     setIsModalOpen(true);
   }, [selectedStudentIds, executePaymentRequest]);
 
+
+  const handleBulkPaymentRequest = useCallback(() => {
+    if (selectedIds.length === 0) return;
+
+    // 선택된 클래스들에서 수납 요청 가능한 학생들 추출
+    const targetClasses = classList.filter(cls => selectedIds.includes(cls.classId));
+    let totalTargetStudents = 0;
+    
+    targetClasses.forEach(cls => {
+        const eligible = cls.students?.filter(s => s.status === 'BEFORE_REQUEST' && s.cardRegistered) || [];
+        totalTargetStudents += eligible.length;
+    });
+
+    if (totalTargetStudents === 0) {
+        setModalConfig({
+            title: '알림',
+            description: '선택된 클래스에 결제 요청 가능한 학생이 없습니다.',
+            actionText: '확인',
+            onAction: () => setIsModalOpen(false),
+        });
+        setIsModalOpen(true);
+        return;
+    }
+
+    setModalConfig({
+        title: '일괄 결제 요청',
+        description: `선택한 ${selectedIds.length}개 클래스의 총 ${totalTargetStudents}명에게 결제 요청을 보내시겠습니까?`,
+        actionText: '일괄 보내기',
+        onAction: async () => {
+            setIsModalOpen(false);
+            try {
+                const allPromises: Promise<any>[] = [];
+                const now = new Date();
+                const pad = (n: number) => n.toString().padStart(2, '0');
+                const receiptDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}.000`;
+
+                targetClasses.forEach(cls => {
+                    const eligible = cls.students?.filter(s => s.status === 'BEFORE_REQUEST' && s.cardRegistered) || [];
+                    eligible.forEach(student => {
+                        allPromises.push(
+                            paymentService.createReceipt(student.studentId, {
+                                classId: Number(cls.classId),
+                                amount: Number(student.amount),
+                                receiptDate: receiptDate,
+                                receiptStatus: 'ISSUED',
+                            })
+                        );
+                    });
+                });
+
+                await Promise.all(allPromises);
+
+                setModalConfig({
+                    title: '요청 완료',
+                    description: '선택한 모든 클래스의 결제 요청이 완료되었습니다.',
+                    actionText: '확인',
+                    onAction: () => {
+                        setIsModalOpen(false);
+                        setSelectedIds([]);
+                        fetchSummary();
+                    },
+                });
+                setIsModalOpen(true);
+            } catch (err) {
+                console.error(err);
+                setModalConfig({
+                    title: '오류 발생',
+                    description: '일괄 요청 중 일부 또는 전체 요청에 실패했습니다.',
+                    actionText: '확인',
+                    onAction: () => setIsModalOpen(false),
+                });
+                setIsModalOpen(true);
+            }
+        },
+    });
+    setIsModalOpen(true);
+  }, [selectedIds, classList, fetchSummary]);
+
+
   const closeModal = useCallback(() => setIsModalOpen(false), []);
 
   return {
@@ -240,7 +346,9 @@ export const usePayment = (academyId: string) => {
     handleSelectAllStudents,
     handleSelectStudent,
     handlePaymentRequest,
+    handleBulkPaymentRequest,
     executeCustomPaymentRequest,
+
     isCustomModalOpen,
     setIsCustomModalOpen,
     totalMonthlyFee,

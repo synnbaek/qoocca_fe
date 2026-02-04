@@ -1,7 +1,7 @@
 'use client';
 
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import styles from '../student.module.css';
 import { StudentClassRowType } from './StudentCell';
@@ -9,18 +9,24 @@ import { StudentClassRowType } from './StudentCell';
 
 interface Props {
     row: StudentClassRowType;
-    checked: boolean;
-    onCheck: () => void;
+    isSearching?: boolean;
 }
 
 
-export default function StudentClassRow({ row, checked, onCheck }: Props) {
+export default function StudentClassRow({ row, isSearching }: Props) {
     const params = useParams();
     const router = useRouter();
     const academyId = params.academyId;
 
     const [open, setOpen] = useState(false);
     const [active, setActive] = useState(row.isActive);
+
+    useEffect(() => {
+        if (isSearching) {
+            setOpen(true);
+        }
+    }, [isSearching]);
+
 
 
     const students = row.students ?? [];
@@ -29,16 +35,9 @@ export default function StudentClassRow({ row, checked, onCheck }: Props) {
     return (
         <>
             <tr 
-                className={`${styles.mainRow} ${checked ? styles.selectedRow : ''} ${open ? styles.expanded : ''}`}
+                className={`${styles.mainRow} ${open ? styles.expanded : ''}`}
                 onClick={() => setOpen(prev => !prev)}
             >
-                <td onClick={(e) => e.stopPropagation()}>
-                    <input 
-                        type="checkbox" 
-                        checked={checked} 
-                        onChange={onCheck} 
-                    />
-                </td>
                 <td className={styles.classNameCell}>
                     {row.className}
                 </td>
@@ -55,7 +54,7 @@ export default function StudentClassRow({ row, checked, onCheck }: Props) {
                 <>
                     {students.length === 0 ? (
                         <tr>
-                            <td colSpan={5} className={styles.noStudents}>
+                            <td colSpan={4} className={styles.noStudents}>
                                 학생 정보가 없습니다.
                             </td>
                         </tr>
@@ -67,31 +66,28 @@ export default function StudentClassRow({ row, checked, onCheck }: Props) {
                                 onClick={() => router.push(`/academy/${academyId}/student/${student.studentId}`)}
                                 style={{ cursor: 'pointer' }}
                             >
-                                <td className={styles.subIconCol}>
-                                  <span className={styles.subArrow}>↳</span>
-                                </td>
-                                <td colSpan={4}>
-                                    <div className={styles.studentInfoWrapper}>
-                                        <div className={styles.studentName}>{student.name}</div>
-                                        
-                                        <div className={styles.studentDetail}>
-                                            <div className={styles.infoCell}>
-                                                {student.parentName === '보호자 연결' ? (
-                                                    <span className={styles.linkHint}>{student.parentName}</span>
-                                                ) : (
-                                                    student.parentName
-                                                )}
-                                            </div>
-                                            <div className={styles.infoCell}>
-                                                {student.cardNumber.includes('등록') ? (
-                                                    <span className={styles.linkHint}>{student.cardNumber}</span>
-                                                ) : (
-                                                    student.cardNumber
-                                                )}
-                                            </div>
-                                        </div>
+                                <td className={styles.studentNameCell}>
+                                    <div className={styles.studentNameWrapper}>
+                                        <span className={styles.subArrow}>↳</span>
+                                        <span className={styles.studentNameText}>{student.name}</span>
                                     </div>
                                 </td>
+                                <td className={styles.studentParentCell}>
+                                    {student.parentName === '보호자 연결' ? (
+                                        <span className={styles.linkHint}>{student.parentName}</span>
+                                    ) : (
+                                        student.parentName
+                                    )}
+                                </td>
+                                <td className={styles.studentCardCell}>
+                                    {student.cardNumber.includes('등록') ? (
+                                        <span className={styles.linkHint}>{student.cardNumber}</span>
+                                    ) : (
+                                        student.cardNumber
+                                    )}
+                                </td>
+                                <td></td> {/* empty cell for Status column */}
+
                             </tr>
                         ))
                     )}

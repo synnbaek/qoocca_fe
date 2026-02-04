@@ -35,4 +35,12 @@ export interface AcademyInfo {
     detailAddress?: string;
     certificate?: string; // 추가: Nginx 저장 경로
     businessRegistrationUrl?: string; // 기존 호환용
+    briefInfo?: string;
+    operatingHours?: string;
+    websiteUrl?: string;
+    instagramUrl?: string;
+    blogUrl?: string;
+    ages?: { ageCode: string }[];
+    subjects?: { detailSubject: string }[];
 }
+

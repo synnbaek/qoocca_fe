@@ -13,7 +13,9 @@ export interface ClassSummary {
   paymentPending: number;
   paymentCompleted: number;
   students?: StudentDetail[];
+  isSearching?: boolean;
 }
+
 
 export interface ReceiptCreateRequest {
   classId: number;

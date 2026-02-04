@@ -1,5 +1,9 @@
 import axiosInstance from './axiosInstance';
 
+export const ACADEMY_ENDPOINTS = {
+  getParentStats: (academyId: string | number) => `/api/academy/${academyId}/analytics/parent-stats`,
+} as const;
+
 export interface ParentInfo {
   parentId: number;
   parentName: string;
@@ -29,7 +33,7 @@ export const fetchParentStats = async (
   academyId: number
 ): Promise<ClassParentStats[]> => {
   const res = await axiosInstance.get(
-    `/api/academy/${academyId}/class/parentstats`
+    ACADEMY_ENDPOINTS.getParentStats(academyId)
   );
 
   return res.data;

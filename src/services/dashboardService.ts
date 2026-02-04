@@ -44,8 +44,9 @@ export const dashboardService = {
 
     /**
      * 학원 승인 재신청
-     * PUT /api/academy/{id}/resubmit
+     * POST /api/academy/{id}/approval/resubmissions
      */
+
     resubmitAcademy: async (academyId: string | number, data: FormData): Promise<void> => {
         await dashboardApi.resubmitAcademy(academyId, data);
     }

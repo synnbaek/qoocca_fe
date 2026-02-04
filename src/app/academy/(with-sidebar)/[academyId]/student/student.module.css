@@ -66,52 +66,42 @@
     color: var(--text-primary);
 }
 
-/* Column Widths to match Payment */
-.checkboxCol { width: 5%; min-width: 50px; }
-.classNameColHeader { width: 35%; text-align: center; }
+/* Column Widths */
+.classNameColHeader { width: 40%; text-align: center; }
 .statCol { width: 20%; }
+
 
 .classNameCell {
     cursor: pointer;
     color: var(--text-primary);
-    font-weight: 500;
+    text-align: left !important;
+    padding-left: 15% !important; /* Center the cluster slightly by padding */
 }
 
 .mainRow {
     cursor: pointer;
     transition: background-color 0.2s;
-    background: var(--bg-secondary);
+    background-color: #ffffff !important;
 }
 
 .mainRow:hover {
-    background-color: var(--bg-surface);
+    background-color: var(--bg-surface) !important;
+}
+
+.mainRow td {
+    border-bottom: 1px solid var(--divider-color) !important;
+}
+
+.mainRow.expanded {
+    background-color: var(--bg-surface) !important;
 }
 
 .selectedRow {
-    background-color: var(--bg-surface); /* Payment expanded style */
-}
-
-/* Toggle Switch Styles */
-.toggleWrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    user-select: none;
-    justify-content: center;
-}
-
-.toggleLabel {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    min-width: 40px;
-    text-align: right;
+    background-color: #f1f5f9 !important;
 }
 
 .statusBadge {
     font-size: 14px;
-    font-weight: 600;
     padding: 4px 12px;
     border-radius: 4px;
     display: inline-block;
@@ -149,48 +139,48 @@
 
 .toggleOn .toggleKnob { transform: translateX(22px); }
 
-/* Expanded Student Row Styles (Matching Payment) */
+
+/* Expanded Student Row Styles */
 .studentRow td {
-    background-color: var(--bg-secondary);
-    border: none;
+    background-color: var(--bg-secondary) !important;
+    border: none !important;
     padding: 12px 10px;
 }
 
-.subIconCol {
-    text-align: right !important;
-    padding-right: 15px !important;
+.studentRow:hover td {
+    background-color: var(--bg-surface) !important;
+}
+
+.studentNameCell {
+    text-align: left !important;
+    padding-left: 15% !important;
+}
+
+.studentNameWrapper {
+    display: flex;
+    align-items: center;
+    gap: 40px;
 }
 
 .subArrow {
-    color: #ccc;
-    font-size: 1.1rem;
-    margin-right: 10px;
+    color: #cbd5e1;
+    font-size: 1rem;
+    flex-shrink: 0;
 }
 
-.studentInfoWrapper {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    text-align: left;
-    width: 100%;
+.studentNameText {
+    white-space: nowrap;
 }
 
-.studentName {
-    font-weight: 500;
-    min-width: 80px;
-}
 
-.studentDetail {
-    color: var(--text-secondary);
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    align-items: center;
-}
-
-.infoCell {
+.studentParentCell {
     text-align: center;
+    color: var(--text-secondary);
+}
+
+.studentCardCell {
+    text-align: center;
+    color: var(--text-secondary);
 }
 
 .linkHint {
@@ -198,6 +188,7 @@
     font-weight: 500;
     cursor: pointer;
 }
+
 
 .noStudents {
     padding: 30px;

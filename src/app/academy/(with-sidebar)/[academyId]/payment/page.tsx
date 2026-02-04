@@ -34,6 +34,7 @@ export default function PaymentPage() {
     handleSelectAllStudents,
     handleSelectStudent,
     handlePaymentRequest,
+    handleBulkPaymentRequest,
     executeCustomPaymentRequest,
     totalMonthlyFee,
     searchQuery,
@@ -56,7 +57,7 @@ export default function PaymentPage() {
   };
 
   const detailClass = expandedClassId
-    ? filteredClassList.find((c) => c.classId === expandedClassId)
+    ? filteredClassList.find((c) => c && c.classId === expandedClassId)
     : null;
 
   const handleCloseDetail = () => {
@@ -67,7 +68,7 @@ export default function PaymentPage() {
 
   const isAllSelected =
     filteredClassList.length > 0 &&
-    filteredClassList.every((cls) => selectedIds.includes(cls.classId));
+    filteredClassList.every((cls) => cls && selectedIds.includes(cls.classId));
 
   return (
     <div className={styles.container}>
@@ -86,6 +87,11 @@ export default function PaymentPage() {
             </span>
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
+            {selectedIds.length > 0 && (
+              <button onClick={handleBulkPaymentRequest} className={styles.bulkRequestBtn}>
+                일괄 결제 요청 ({selectedIds.length})
+              </button>
+            )}
             <button onClick={() => setIsCustomModalOpen(true)} className={styles.addClassBtn}>
               직접 요청
             </button>
@@ -101,10 +107,12 @@ export default function PaymentPage() {
           <input
             type="text"
             className={styles.searchInput}
-            placeholder="클래스명을 입력해주세요"
+            placeholder="클래스명 또는 학생이름을 입력해주세요"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+
+
         </div>
       </div>
 
