@@ -183,6 +183,13 @@
   color: var(--text-primary);
 }
 
+.badgeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
 .otherMonth {
   background-color: var(--bg-primary);
 }
