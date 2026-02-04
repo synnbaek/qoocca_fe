@@ -9,12 +9,9 @@ interface AttendanceCalendarProps {
 }
 
 export default function AttendanceCalendar({ calendarDays, attendanceRecords }: AttendanceCalendarProps) {
-    const getStatusForDate = (dateStr: string) => {
-        if (!attendanceRecords) return null;
-
-        const records = attendanceRecords.filter(r => r.attendanceDate === dateStr);
-        if (records.length === 0) return null;
-        return records[0].status; 
+    const getRecordsForDate = (dateStr: string) => {
+        if (!attendanceRecords) return [];
+        return attendanceRecords.filter(r => r.attendanceDate === dateStr);
     };
 
     return (
@@ -25,7 +22,7 @@ export default function AttendanceCalendar({ calendarDays, attendanceRecords }: 
                 ))}
 
                 {calendarDays.map((dateObj, index) => {
-                    const status = dateObj.isCurrentMonth ? getStatusForDate(dateObj.dateStr) : null;
+                    const records = dateObj.isCurrentMonth ? getRecordsForDate(dateObj.dateStr) : [];
                     
                     return (
                         <div 
@@ -35,16 +32,20 @@ export default function AttendanceCalendar({ calendarDays, attendanceRecords }: 
                             {dateObj.day && (
                                 <>
                                     <span className={styles.dateNumber}>{dateObj.day}</span>
-                                    {status && (
-                                        <AttendanceBadge 
-                                            status={status} 
-                                            className={`${styles.statusBadge} ${
-                                                status === 'PRESENT' ? styles.present : 
-                                                status === 'LATE' ? styles.late : 
-                                                styles.absent
-                                            }`} 
-                                        />
-                                    )}
+                                    <div className={styles.badgeContainer}>
+                                        {records.map((record, rIdx) => (
+                                            <AttendanceBadge 
+                                                key={rIdx}
+                                                status={record.status} 
+                                                label={`${record.statusLabel} (${record.className})`}
+                                                className={`${styles.statusBadge} ${
+                                                    record.status === 'PRESENT' ? styles.present : 
+                                                    record.status === 'LATE' ? styles.late : 
+                                                    styles.absent
+                                                }`} 
+                                            />
+                                        ))}
+                                    </div>
                                 </>
                             )}
                         </div>
