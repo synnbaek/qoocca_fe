@@ -5,7 +5,7 @@ import { useState, useEffect, use } from 'react';
 import AcademyTitle from '@/app/academy/register/components/AcademyTitle';
 import TextInput from '@/app/academy/register/components/TextInput';
 import Button from '@/components/common/Button';
-import axiosInstance from '@/api/axiosInstance';
+import { getAcademyInfo, updateAcademyProfile } from '@/api/dashboardApi';
 import { toast } from 'sonner';
 import MultiSelect from '@/app/academy/register/components/MultiSelect';
 import { useSubjects } from '@/hooks/useSubjects';
@@ -40,8 +40,7 @@ export default function AcademyEditPage({
   useEffect(() => {
     const fetchAcademyData = async () => {
       try {
-        const res = await axiosInstance.get(`/api/academy/${academyId}`);
-        const data = res.data;
+        const data = await getAcademyInfo(academyId);
 
         setBaseAddress(data.baseAddress || '');
         setDetailAddress(data.detailAddress || '');
@@ -83,7 +82,7 @@ export default function AcademyEditPage({
       .filter((v): v is number => v !== undefined);
 
     try {
-      await axiosInstance.put(`/api/academy/${academyId}`, {
+      await updateAcademyProfile(academyId, {
         baseAddress,
         detailAddress,
         phoneNumber: phone,
@@ -101,6 +100,7 @@ export default function AcademyEditPage({
       toast.error('수정 중 오류가 발생했습니다.');
     }
   };
+
 
   return (
     <div className={styles.container}>

@@ -1,9 +1,10 @@
 'use client';
 
-import axiosInstance from '@/api/axiosInstance';
 import Input from '@/components/common/Input';
 import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { getSubjects, getAges } from '@/api/academyApi';
+import { createClass } from '@/api/classApi';
 import { toast } from 'sonner';
 import styles from './ClassRegisterPage.module.css';
 import Button from '@/components/common/Button';
@@ -50,12 +51,12 @@ export default function ClassRegisterPage() {
   useEffect(() => {
     const fetchAgesSubjects = async () => {
       try {
-        const [subRes, ageRes] = await Promise.all([
-          axiosInstance.get(`/api/academy/${academyId}/subjects`),
-          axiosInstance.get(`/api/academy/${academyId}/ages`),
+        const [subData, ageData] = await Promise.all([
+          getSubjects(academyId as string),
+          getAges(academyId as string),
         ]);
-        setSubjectOptions(subRes.data || []);
-        setAgeOptions(ageRes.data || []);
+        setSubjectOptions(subData || []);
+        setAgeOptions(ageData || []);
       } catch (err) {
         console.error('과목 로딩 실패:', err);
       }
@@ -63,6 +64,7 @@ export default function ClassRegisterPage() {
 
     if (academyId) fetchAgesSubjects();
   }, [academyId]);
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -93,11 +95,12 @@ export default function ClassRegisterPage() {
     }
 
     try {
-      await axiosInstance.post(`/api/academy/${academyId}/class`, {
+      await createClass(academyId as string, {
         ...formData,
         ageId: selectedAgeId,
         subjectId: selectedSubjectId,
       });
+
       toast.success('클래스가 성공적으로 등록되었습니다.');
       router.push(`/academy/${academyId}`);
     } catch (err) {

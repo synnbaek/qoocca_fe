@@ -68,12 +68,30 @@ export default function StudentPage() {
   const filteredData = useMemo(() => {
     if (!keyword.trim()) return mergedData;
     const lowerKeyword = keyword.toLowerCase();
-    return mergedData.filter(
-      cls =>
-        cls.className.toLowerCase().includes(lowerKeyword) ||
-        cls.students.some(s => s.name.toLowerCase().includes(lowerKeyword))
-    );
+
+    return mergedData
+      .map(cls => {
+        // 클래스명 자체가 검색어에 걸리는지 확인
+        const isClassMatch = cls.className.toLowerCase().includes(lowerKeyword);
+        // 학생들 중 검색어에 걸리는 학생(이름 또는 학부모 이름)만 필터링
+        const matchedStudents = cls.students.filter(s => 
+          s.name.toLowerCase().includes(lowerKeyword) ||
+          s.parentName.toLowerCase().includes(lowerKeyword)
+        );
+
+        // 클래스명이 일치하거나, 검색된 학생/학부모가 하나라도 있다면 유지
+        if (isClassMatch || matchedStudents.length > 0) {
+          return {
+            ...cls,
+            students: isClassMatch ? cls.students : matchedStudents, // 클래스명 일치 시 전체 학생 노출, 아니면 매칭된 인원만 노출
+            isSearching: true // 검색 중임을 표시
+          };
+        }
+        return null;
+      })
+      .filter((cls): cls is any => cls !== null);
   }, [mergedData, keyword]);
+
 
   return (
     <div className={styles.studentContainer}>
@@ -82,9 +100,10 @@ export default function StudentPage() {
         <TextInput
           value={keyword}
           onChange={setKeyword}
-          placeholder="클래스명 또는 원생이름을 입력하세요"
+          placeholder="클래스명, 원생이름 또는 학부모이름을 입력하세요"
         />
       </div>
+
 
       <div className={styles.buttonGroup}>
         <button

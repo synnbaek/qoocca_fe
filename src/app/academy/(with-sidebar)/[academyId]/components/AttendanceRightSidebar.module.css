@@ -92,14 +92,18 @@
 
 .studentName {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
+  line-height: 1.1;
+  margin-bottom: 2px;
 }
 
 .statusLabel {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary);
+  line-height: 1;
 }
+
 
 .loading, .empty {
     text-align: center;

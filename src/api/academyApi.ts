@@ -1,5 +1,13 @@
 import axios from "./axiosInstance";
 
+export const ACADEMY_ENDPOINTS = {
+  createAcademy: "/api/academy/registrations",
+  getMyAcademyList: "/api/me/academies",
+  getMyAcademyRegistration: "/api/me/academy-registration",
+  getSubjects: (academyId: string | number) => `/api/academy/${academyId}/curriculum/subjects`,
+  getAges: (academyId: string | number) => `/api/academy/${academyId}/curriculum/ages`,
+} as const;
+
 export interface AcademyCreatePayload {
   name: string;
   baseAddress: string;
@@ -35,7 +43,7 @@ export const createAcademy = async (payload: AcademyCreatePayload) => {
   if (payload.subjects) payload.subjects.forEach(id => formData.append("subjects", String(id)));
   if (payload.detailInfo) formData.append("detailInfo", payload.detailInfo);
 
-  const response = await axios.post("/api/academy/register", formData, {
+  const response = await axios.post(ACADEMY_ENDPOINTS.createAcademy, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return response.data; // 등록된 학원 ID 반환
@@ -48,6 +56,18 @@ export interface AcademyListResponse {
 }
 
 export const getMyAcademyList = async () => {
-  const response = await axios.get<AcademyListResponse[]>("/api/academy/academy-list");
+  const response = await axios.get<AcademyListResponse[]>(ACADEMY_ENDPOINTS.getMyAcademyList);
   return response.data;
 };
+
+export const getSubjects = async (academyId: string | number) => {
+  const response = await axios.get(ACADEMY_ENDPOINTS.getSubjects(academyId));
+  return response.data;
+};
+
+export const getAges = async (academyId: string | number) => {
+  const response = await axios.get(ACADEMY_ENDPOINTS.getAges(academyId));
+  return response.data;
+};
+
+
