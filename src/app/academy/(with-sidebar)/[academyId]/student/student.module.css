@@ -9,7 +9,8 @@
 
 .tableWrapper {
     width: 100%;
-    overflow-x: auto; /* 모바일에서 표 가로 스크롤 허용 */
+    overflow-x: auto;
+    /* 모바일에서 표 가로 스크롤 허용 */
     -webkit-overflow-scrolling: touch;
 }
 
@@ -21,19 +22,19 @@
 }
 
 .addStudentBtn {
-  background-color: var(--bg-primary);
-  color: var(--primary-color);
-  border: 1px solid var(--primary-color);
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
+    background-color: var(--bg-primary);
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .addStudentBtn:hover {
-  background-color: var(--bg-secondary);
+    background-color: var(--bg-secondary);
 }
 
 .sectionBox {
@@ -54,7 +55,7 @@
     color: var(--text-tertiary);
     font-weight: 500;
     font-size: 0.9rem;
-    background: var(--bg-secondary); 
+    background: var(--bg-secondary);
 }
 
 .table td {
@@ -66,9 +67,15 @@
     color: var(--text-primary);
 }
 
+/* Column Widths */
+.classNameColHeader {
+    width: 40%;
+    text-align: center;
+}
 
-.classNameColHeader { width: 40%; text-align: center; }
-.statCol { width: 20%; }
+.statCol {
+    width: 20%;
+}
 
 
 .classNameCell {
@@ -81,7 +88,7 @@
 .mainRow {
     cursor: pointer;
     transition: background-color 0.2s;
-    background-color: #ffffff !important;
+    background-color: var(--bg-primary) !important;
 }
 
 .mainRow:hover {
@@ -123,8 +130,13 @@
     transition: background-color 0.2s ease;
 }
 
-.toggleOn { background-color: #22c55e; }
-.toggleOff { background-color: #d1d5db; }
+.toggleOn {
+    background-color: #22c55e;
+}
+
+.toggleOff {
+    background-color: #d1d5db;
+}
 
 .toggleKnob {
     width: 20px;
@@ -137,7 +149,9 @@
     transition: transform 0.2s ease;
 }
 
-.toggleOn .toggleKnob { transform: translateX(22px); }
+.toggleOn .toggleKnob {
+    transform: translateX(22px);
+}
 
 
 
@@ -198,8 +212,8 @@
 }
 
 .table input[type='checkbox'] {
-  width: 17px;
-  height: 17px;
-  accent-color: var(--primary-color);
-  cursor: pointer;
+    width: 17px;
+    height: 17px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
 }

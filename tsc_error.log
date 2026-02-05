@@ -1,0 +1,6 @@
+src/app/academy/(with-sidebar)/AcademyLayoutShell.tsx(70,9): error TS2322: Type 'AcademyInfo[]' is not assignable to type 'AcademyListResponse[]'.
+  Type 'AcademyInfo' is not assignable to type 'AcademyListResponse'.
+    Types of property 'academyId' are incompatible.
+      Type 'number | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
+src/app/academy/(with-sidebar)/page.tsx(4,11): error TS2741: Property 'initialData' is missing in type '{ academyId: undefined; }' but required in type 'Props'.

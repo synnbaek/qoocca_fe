@@ -23,20 +23,26 @@ import AcademySelectionModal from '@/components/auth/AcademySelectionModal';
 
 interface Props {
   academyId?: string;
+  initialData: {
+    classes?: ClassSummary[];
+    stats?: DashboardStatsData;
+    receipts?: ReceiptSummary[];
+    academyInfo?: AcademyInfo;
+  };
 }
 
-export default function Dashboard({ academyId }: Props) {
+export default function Dashboard({ academyId, initialData }: Props) {
   const router = useRouter();
-
   const scrollRef = useRef<HTMLDivElement>(null);
   const [approvalStatus, setApprovalStatus] = useState<
     'REJECTED' | 'PENDING' | 'APPROVED' | null
-  >(null);
+  >(initialData.academyInfo?.approvalStatus || null);
 
   const isRegistered = !!academyId && academyId !== 'undefined';
 
-  const [classes, setClasses] = useState<ClassSummary[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [classes, setClasses] = useState<ClassSummary[]>(initialData.classes || []);
+  // Loading is false by default since we have initial data
+  const [isLoading, setIsLoading] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalConfig, setModalConfig] = useState({
@@ -44,16 +50,20 @@ export default function Dashboard({ academyId }: Props) {
     description: '',
   });
 
-  const [stats, setStats] = useState<DashboardStatsData>({
-    studentCount: 0,
-    presentCount: 0,
-    totalTodayCount: 0,
-    noCardCount: 0,
-    totalMonthlyFee: 0,
-  });
+  const [stats, setStats] = useState<DashboardStatsData>(
+    initialData.stats || {
+      studentCount: 0,
+      presentCount: 0,
+      totalTodayCount: 0,
+      noCardCount: 0,
+      totalMonthlyFee: 0,
+    }
+  );
 
-  const [receipts, setReceipts] = useState<ReceiptSummary[]>([]);
-  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+  const [receipts, setReceipts] = useState<ReceiptSummary[]>(initialData.receipts || []);
+  const [selectedClassId, setSelectedClassId] = useState<number | null>(
+    (initialData.classes && initialData.classes.length > 0) ? initialData.classes[0].classId : null
+  );
   const selectedClassName = classes.find((c: ClassSummary) => c.classId === selectedClassId)?.className;
 
   // 학원 선택 모달 관련 상태
@@ -76,20 +86,37 @@ export default function Dashboard({ academyId }: Props) {
     files: [],
   });
 
-
+  // Rejection info initialization
   useEffect(() => {
-    const fetchData = async () => {
+    if (initialData.academyInfo?.approvalStatus === 'REJECTED') {
+      setRejectionInfo({
+        reason: initialData.academyInfo.rejectionReason || '등록 정보에 문제가 있어 승인이 거절되었습니다.\n사유를 확인하고 다시 제출해 주세요.',
+        academyName: initialData.academyInfo.name || '',
+        phoneNumber: initialData.academyInfo.phoneNumber,
+        baseAddress: initialData.academyInfo.baseAddress || '',
+        detailAddress: initialData.academyInfo.detailAddress,
+        submittedFileUrl: initialData.academyInfo.certificate,
+        files: [],
+      });
+      setIsRejectionModalOpen(true);
+    }
+  }, [initialData.academyInfo]);
+
+  // 학원 미지정시 리다이렉션 로직 등은 유지 보수가 필요할 수 있으나,
+  // Server Side에서 academyId가 없으면 이미 redirect 시키거나 처리했으므로
+  // 여기서는 클라이언트 사이드 네비게이션으로 들어왔을 때 등을 대비한 방어 코드 정도만 남김.
+  // 다만 SSR 전환으로 대부분의 데이터가 미리 있으므로, useEffect fetching은 제거함.
+
+  // 만약 academyId가 없다면 (layout에서 처리 안된 케이스?), CSR로 fallback
+  useEffect(() => {
+    const checkRedirect = async () => {
       if (!isRegistered) {
-        // 등록된 학원이 없는 경우 (또는 /academy 경로로 온 경우) 사용자의 학원 목록을 확인
         try {
           const academies = await dashboardService.getMyAcademies();
           setUserAcademies(academies);
-
           if (academies.length === 1) {
-            // 학원이 1개만 있으면 바로 해당 학원으로 이동
             router.replace(`/academy/${academies[0].academyId}`);
           } else if (academies.length > 1) {
-            // 학원이 여러 개면 모달 오픈
             setIsSelectionModalOpen(true);
           }
         } catch (error) {
@@ -148,9 +175,9 @@ export default function Dashboard({ academyId }: Props) {
         setIsLoading(false);
       }
     };
+    checkRedirect();
+  }, [isRegistered, router]);
 
-    fetchData();
-  }, [academyId, isRegistered, router]);
 
   const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
 
@@ -159,7 +186,7 @@ export default function Dashboard({ academyId }: Props) {
       // 이미 Rejection 모달이 뜨는 경우 중복 방지
       if (approvalStatus === 'REJECTED') {
         router.replace(`/academy/${academyId}`);
-        return; 
+        return;
       }
 
       const status = approvalStatus || 'PENDING';
@@ -191,7 +218,7 @@ export default function Dashboard({ academyId }: Props) {
         setIsRejectionModalOpen(true);
         return;
       }
-      
+
       const status = approvalStatus || 'PENDING';
       const title = status === 'PENDING' ? '승인 대기 중이에요' : '승인이 거절되었어요';
       const desc = status === 'PENDING'
@@ -209,8 +236,8 @@ export default function Dashboard({ academyId }: Props) {
     if (path) router.push(path);
   };
 
-  const handleRejectionSubmit = async (data: { 
-    academyName: string; 
+  const handleRejectionSubmit = async (data: {
+    academyName: string;
     files: File[];
     baseAddress: string;
     detailAddress: string;
@@ -222,17 +249,17 @@ export default function Dashboard({ academyId }: Props) {
       formData.append('name', data.academyName);
       formData.append('baseAddress', data.baseAddress);
       formData.append('detailAddress', data.detailAddress);
-      
+
       // 파일이 새로 업로드된 경우에만 추가
       if (data.files && data.files.length > 0) {
         formData.append('certificateFile', data.files[0]);
       }
 
       await dashboardService.resubmitAcademy(academyId, formData);
-      
+
       toast.success('승인 재요청이 접수되었습니다.');
       setIsRejectionModalOpen(false);
-      
+
       // 상태 갱신: 재요청 후 UI에서 상태를 PENDING으로 즉시 변경
       setApprovalStatus('PENDING');
     } catch (error: any) {
