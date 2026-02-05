@@ -66,13 +66,23 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
         }
     }, [defaultClassId, classes]);
 
-    // 학원 전체 원생 목록 추출
+    // 학원 전체 원생 목록 추출 및 수강 중인 클래스 정보 포함
     const allStudents = useMemo(() => {
         const studentMap = new Map();
         parentStats.forEach(cls => {
             cls.students.forEach(std => {
                 if (!studentMap.has(std.studentId)) {
-                    studentMap.set(std.studentId, std);
+                    studentMap.set(std.studentId, {
+                        ...std,
+                        enrolledClassIds: [cls.classId],
+                        enrolledClassNames: [cls.className]
+                    });
+                } else {
+                    const existing = studentMap.get(std.studentId);
+                    if (!existing.enrolledClassIds.includes(cls.classId)) {
+                        existing.enrolledClassIds.push(cls.classId);
+                        existing.enrolledClassNames.push(cls.className);
+                    }
                 }
             });
         });
@@ -86,7 +96,7 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
         return allStudents.filter(std => 
             std.studentName.toLowerCase().includes(term) || 
             std.studentPhone.includes(term)
-        ).slice(0, 5); // 최대 5명만 노출
+        ).slice(0, 5); 
     }, [allStudents, studentName, registrationMode]);
 
     // 검색창 외부 클릭 시 닫기
@@ -111,6 +121,24 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
      * 기존 원생 선택 처리
      */
     const handleSelectExistingStudent = (student: any) => {
+        // 중복 체크: 선택된 모든 클래스에 이미 포함되어 있는지 확인
+        const currentSelectedIds = selectedClassIds.map(id => Number(id));
+        const alreadyInAll = currentSelectedIds.every(id => student.enrolledClassIds.includes(id));
+
+        if (alreadyInAll && currentSelectedIds.length > 0) {
+            alert(`${student.studentName} 원생은 이미 선택하신 모든 클래스에 등록되어 있습니다.`);
+            return;
+        }
+
+        // 일부만 포함된 경우 안내
+        const overlap = currentSelectedIds.filter(id => student.enrolledClassIds.includes(id));
+        if (overlap.length > 0) {
+            const overlapNames = overlap.map(id => classes.find(c => c.classId === id)?.className).join(', ');
+            if(!confirm(`${student.studentName} 원생은 이미 [${overlapNames}] 수강 중입니다. 나머지 클래스만 추가할까요?`)) {
+                return;
+            }
+        }
+
         setRegistrationMode('existing');
         setSelectedStudentId(student.studentId);
         setStudentName(student.studentName);
@@ -182,8 +210,20 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
             }
 
             if (studentId) {
-                // 클래스 배정
-                await Promise.all(selectedClassIds.map(id => assignStudentToClass(academyId, Number(id), studentId!)));
+                // 이미 수강 중인 클래스는 제외하고 배정 요청
+                const studentInfo = allStudents.find(s => s.studentId === studentId);
+                const enrolledIds = studentInfo?.enrolledClassIds || [];
+                
+                const classesToAssign = selectedClassIds
+                    .map(id => Number(id))
+                    .filter(id => !enrolledIds.includes(id));
+
+                if (classesToAssign.length > 0) {
+                    await Promise.all(classesToAssign.map(id => assignStudentToClass(academyId, id, studentId!)));
+                } else if (registrationMode === 'existing') {
+                     alert('이미 모든 선택된 클래스에 등록되어 있습니다.');
+                     return;
+                }
             }
 
             setIsCompleteModalOpen(true);
@@ -232,19 +272,33 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                         <div style={{ padding: '8px 16px', fontSize: '12px', color: 'var(--text-tertiary)', backgroundColor: 'var(--bg-primary)' }}>
                             이미 등록된 원생인가요? 선택하면 정보를 불러옵니다.
                         </div>
-                        {filteredStudents.map(std => (
-                            <div 
-                                key={std.studentId} 
-                                className={styles.multiSelectOption}
-                                onClick={() => handleSelectExistingStudent(std)}
-                            >
-                                <div>
-                                    <div style={{ fontWeight: 600 }}>{std.studentName}</div>
-                                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{std.studentPhone}</div>
+                        {filteredStudents.map(std => {
+                            // 현재 선택된 클래스들 중 이미 수강 중인 클래스가 있는지 확인
+                            const studentEnrolledIds = std.enrolledClassIds || [];
+                            const isAlreadyInSome = selectedClassIds.some(id => studentEnrolledIds.includes(Number(id)));
+
+                            return (
+                                <div 
+                                    key={std.studentId} 
+                                    className={styles.multiSelectOption}
+                                    onClick={() => handleSelectExistingStudent(std)}
+                                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                >
+                                    <div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span style={{ fontWeight: 600 }}>{std.studentName}</span>
+                                            {isAlreadyInSome && (
+                                                <span style={{ fontSize: '10px', color: '#ff4d4f', border: '1px solid #ff4d4f', padding: '0 4px', borderRadius: '2px' }}>수강 중</span>
+                                            )}
+                                        </div>
+                                        <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                            {std.studentPhone} | {std.enrolledClassNames?.join(', ')}
+                                        </div>
+                                    </div>
+                                    <span style={{ fontSize: '11px', padding: '4px 8px', backgroundColor: 'var(--bg-secondary)', borderRadius: '4px', whiteSpace: 'nowrap' }}>선택</span>
                                 </div>
-                                <span style={{ fontSize: '11px', padding: '2px 6px', backgroundColor: 'var(--bg-secondary)', borderRadius: '4px' }}>선택</span>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>
