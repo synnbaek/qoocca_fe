@@ -119,26 +119,74 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
         
         return Array.from(studentMap.values());
     }, [academyStudents, parentStats]);
-
-    // 입력값에 따른 기존 원생 검색
     const filteredStudents = useMemo(() => {
         if (!studentName || registrationMode === 'existing') return [];
         const term = studentName.toLowerCase().trim().replace(/-/g, '');
         if (!term) return [];
 
         return allStudents.filter(std => {
+            // 학생 본인 검색
             const nameMatch = (std.studentName || '').toLowerCase().includes(term);
             const rawPhone = (std.studentPhone || '').replace(/-/g, '');
             const phoneMatch = rawPhone.includes(term);
-            return nameMatch || phoneMatch;
+            
+            // 보호자 검색 (형제/자매 찾기용)
+            const parentMatch = std.parents?.some((p: any) => 
+                (p.parentName || '').toLowerCase().includes(term) ||
+                (p.parentPhone || '').replace(/-/g, '').includes(term)
+            );
+
+            return nameMatch || phoneMatch || parentMatch;
         }).slice(0, 5); 
     }, [allStudents, studentName, registrationMode]);
+
+    // 보호자 검색용 Ref 및 State
+    const parentSearchRef = useRef<HTMLDivElement>(null);
+    const [isParentSearchOpen, setIsParentSearchOpen] = useState(false);
+
+    // 전체 보호자 목록 추출 (중복 제거)
+    const allParents = useMemo(() => {
+        const parentMap = new Map();
+        allStudents.forEach(std => {
+            if (std.parents && std.parents.length > 0) {
+                std.parents.forEach((p: any) => {
+                    const key = `${p.parentName}-${p.parentPhone}`; // 이름+번호로 고유 식별
+                    if (parentMap.has(key)) {
+                        const existing = parentMap.get(key);
+                        existing.childrenNames.push(std.studentName);
+                    } else {
+                        parentMap.set(key, {
+                            ...p,
+                            childrenNames: [std.studentName]
+                        });
+                    }
+                });
+            }
+        });
+        return Array.from(parentMap.values());
+    }, [allStudents]);
+
+    // 보호자 검색 결과
+    const filteredParents = useMemo(() => {
+        if (!parentName || registrationMode === 'existing') return [];
+        const term = parentName.toLowerCase().trim().replace(/-/g, '');
+        if (!term) return [];
+
+        return allParents.filter((p: any) => {
+            const nameMatch = (p.parentName || '').toLowerCase().includes(term);
+            const phoneMatch = (p.parentPhone || '').replace(/-/g, '').includes(term);
+            return nameMatch || phoneMatch;
+        }).slice(0, 5);
+    }, [allParents, parentName, registrationMode]);
 
     // 검색창 외부 클릭 시 닫기
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
                 setIsSearchOpen(false);
+            }
+            if (parentSearchRef.current && !parentSearchRef.current.contains(event.target as Node)) {
+                setIsParentSearchOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -151,6 +199,22 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
         { label: '조부', value: '조부' },
         { label: '조모', value: '조모' },
     ];
+    
+    /**
+     * 기존 보호자 선택 처리 (형제/자매 등록 보조)
+     */
+    const handleSelectExistingParent = (parent: any) => {
+        setParentName(parent.parentName || '');
+        setParentPhone(parent.parentPhone || '');
+        setRelationship(parent.parentRelationship || '부');
+        
+        if (parent.cardNum) {
+            setCardInfo({ cardNumber: parent.cardNum, expiry: '', cvc: '' });
+        } else {
+            setCardInfo(null);
+        }
+        setIsParentSearchOpen(false);
+    };
 
     /**
      * 기존 원생 선택 처리
@@ -361,11 +425,16 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                                             )}
                                         </div>
                                         {std.enrolledClassNames && std.enrolledClassNames.length > 0 && (
-                                            <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '2px' }}>
-                                                현재 수강: {std.enrolledClassNames.join(', ')}
-                                            </div>
-                                        )}
-                                    </div>
+                                             <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '2px' }}>
+                                                 현재 수강: {std.enrolledClassNames.join(', ')}
+                                             </div>
+                                         )}
+                                         {std.parents && std.parents.length > 0 && (
+                                             <div style={{ fontSize: '12px', color: 'var(--primary-color)', marginTop: '2px', fontWeight: 500 }}>
+                                                 보호자: {std.parents[0].parentName} ({std.parents[0].parentRelationship})
+                                             </div>
+                                         )}
+                                     </div>
                                     <span style={{ fontSize: '11px', padding: '4px 8px', backgroundColor: 'var(--bg-secondary)', borderRadius: '4px', whiteSpace: 'nowrap' }}>선택</span>
                                 </div>
                             );
@@ -398,28 +467,67 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
             />
 
             {/* 보호자 정보 섹션 */}
-            <>
+            <div style={{ position: 'relative', width: '100%' }}>
                 <div className={`${styles.sectionTitle} ${styles.marginTop24}`}>
                     보호자 정보 {registrationMode === 'existing' && '(확인/수정)'}
                 </div>
-                <TextInput
-                    label="보호자 이름"
-                    value={parentName}
-                    onChange={setParentName}
-                />
-                <TextInput
-                    label="보호자 연락처"
-                    value={formatPhoneNumber(parentPhone)}
-                    onChange={(val) => setParentPhone(val.replace(/\D/g, ''))}
-                    placeholder="보호자 연락처 입력"
-                />
-                <SingleSelect
-                    label="원생과의 관계"
-                    options={relationshipOptions}
-                    value={relationship}
-                    onChange={setRelationship}
-                />
-            </>
+                <div className={styles.inputGroup} style={{ marginTop: '16px', gap: '24px' }}>
+                    <div style={{ position: 'relative' }} ref={parentSearchRef}>
+                        <TextInput
+                            label="보호자 이름"
+                            value={parentName}
+                            onChange={(val) => {
+                                setParentName(val);
+                                setIsParentSearchOpen(true);
+                            }}
+                            placeholder="보호자 이름을 입력하세요"
+                        />
+
+                        {/* 보호자 검색 드롭다운 */}
+                        {isParentSearchOpen && filteredParents.length > 0 && registrationMode === 'new' && (
+                            <div className={styles.multiSelectOptionsDropdown} style={{ top: '100%', marginTop: '4px', zIndex: 10 }}>
+                                <div style={{ padding: '8px 16px', fontSize: '12px', color: 'var(--text-tertiary)', backgroundColor: 'var(--bg-primary)' }}>
+                                    기존 보호자 정보를 불러옵니다.
+                                </div>
+                                {filteredParents.map((parent, idx) => (
+                                    <div 
+                                        key={`${parent.parentId}-${idx}`} 
+                                        className={styles.multiSelectOption}
+                                        onClick={() => handleSelectExistingParent(parent)}
+                                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                    >
+                                        <div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <span style={{ fontWeight: 600, fontSize: '15px' }}>{parent.parentName}</span>
+                                                <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                                                    ({parent.parentPhone ? formatPhoneNumber(parent.parentPhone) : '연락처 없음'})
+                                                </span>
+                                            </div>
+                                            <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '2px' }}>
+                                                자녀: {parent.childrenNames.join(', ')}
+                                            </div>
+                                        </div>
+                                        <span style={{ fontSize: '11px', padding: '4px 8px', backgroundColor: 'var(--bg-secondary)', borderRadius: '4px', whiteSpace: 'nowrap' }}>선택</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <TextInput
+                        label="보호자 연락처"
+                        value={formatPhoneNumber(parentPhone)}
+                        onChange={(val) => setParentPhone(val.replace(/\D/g, ''))}
+                        placeholder="보호자 연락처 입력"
+                    />
+                    <SingleSelect
+                        label="원생과의 관계"
+                        options={relationshipOptions}
+                        value={relationship}
+                        onChange={setRelationship}
+                    />
+                </div>
+            </div>
 
             {/* 카드 정보 섹션 */}
             <>
