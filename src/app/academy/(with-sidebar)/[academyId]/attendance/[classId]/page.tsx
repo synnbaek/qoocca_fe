@@ -118,7 +118,7 @@ export default function ClassAttendancePage() {
                     <div className={styles.classTitle}>
                         {classInfo.name || '클래스명'} <span className={styles.classTime}>{classInfo.time || ''}</span>
                     </div>
-                    <button className={styles.addStudentBtn} onClick={() => router.push(`/academy/${academyId}/student/form`)}>+ 학생 추가</button>
+                    <button className={styles.addStudentBtn} onClick={() => router.push(`/academy/${academyId}/student/form?classId=${classId}`)}>+ 학생 추가</button>
                 </div>
             </div>
 
