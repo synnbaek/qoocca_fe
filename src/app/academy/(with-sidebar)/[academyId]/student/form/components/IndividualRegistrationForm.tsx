@@ -8,10 +8,23 @@ import styles from '../form.module.css';
 import SingleSelect from './SingleSelect';
 import { useClasses } from '@/hooks/useClasses';
 import { useParentStats } from '@/hooks/useParentStats';
+import { useAcademyStudents } from '@/hooks/useAcademyStudents';
 import CardRegistrationModal from './CardRegistrationModal';
 import RegistrationCompleteModal from './RegistrationCompleteModal';
-import { createStudent, addParent, assignStudentToClass, AcademyStudentCreateRequest, ParentCreateRequest } from '@/api/studentApi';
+import { createStudent, createStudentWithParent, addParent, assignStudentToClass, AcademyStudentCreateRequest, ParentCreateRequest, AcademyStudentWithParentCreateRequest } from '@/api/studentApi';
 import MultiSelect from './MultiSelect';
+
+// 전화번호 포맷팅 함수 (01012345678 -> 010-1234-5678)
+const formatPhoneNumber = (phone: string) => {
+    if (!phone) return '';
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 11) {
+        return cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+    } else if (cleaned.length === 10) {
+        return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+    }
+    return phone;
+};
 
 interface Props {
     academyId: number;
@@ -27,9 +40,11 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
 
     const { classes, loading: classesLoading } = useClasses(academyId);
     const { data: parentStats, loading: statsLoading } = useParentStats(academyId);
+    const { students: academyStudents, loading: studentsLoading } = useAcademyStudents(academyId);
 
     // --- 등록 모드 및 상태 ---
     const [registrationMode, setRegistrationMode] = useState<'new' | 'existing'>('new');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
 
     // --- 원생 정보 ---
@@ -66,37 +81,67 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
         }
     }, [defaultClassId, classes]);
 
-    // 학원 전체 원생 목록 추출 및 수강 중인 클래스 정보 포함
+    // 학원 전체 원생 목록 및 상세 정보(보호자/클래스) 통합
     const allStudents = useMemo(() => {
+        // 1. 먼저 전체 학생 목록을 기본 맵으로 구성
         const studentMap = new Map();
+        
+        academyStudents.forEach(std => {
+            const phone = std.studentPhone || (std as any).phone || (std as any).student_phone || '';
+            studentMap.set(std.studentId, {
+                studentId: std.studentId,
+                studentName: std.studentName,
+                studentPhone: phone,
+                enrolledClassIds: [],
+                enrolledClassNames: [],
+                parents: []
+            });
+        });
+
+        // 2. 클래스 기반 통계 데이터에서 상세 정보(수강 반, 보호자) 매핑
         parentStats.forEach(cls => {
             cls.students.forEach(std => {
-                if (!studentMap.has(std.studentId)) {
+                const existing = studentMap.get(std.studentId);
+                if (existing) {
+                    // 수강 반 정보 추가
+                    if (!existing.enrolledClassIds.includes(cls.classId)) {
+                        existing.enrolledClassIds.push(cls.classId);
+                        existing.enrolledClassNames.push(cls.className);
+                    }
+                    // 보호자 정보가 아직 없으면 추가
+                    if (existing.parents.length === 0 && std.parents && std.parents.length > 0) {
+                        existing.parents = std.parents;
+                    }
+                } else {
+                    // 전체 목록에서 혹시라도 누락된 경우(드문 상황) 추가
                     studentMap.set(std.studentId, {
                         ...std,
                         enrolledClassIds: [cls.classId],
                         enrolledClassNames: [cls.className]
                     });
-                } else {
-                    const existing = studentMap.get(std.studentId);
-                    if (!existing.enrolledClassIds.includes(cls.classId)) {
-                        existing.enrolledClassIds.push(cls.classId);
-                        existing.enrolledClassNames.push(cls.className);
-                    }
                 }
             });
         });
-        return Array.from(studentMap.values());
-    }, [parentStats]);
+        
+        
+        const result = Array.from(studentMap.values());
+        return result;
+    }, [academyStudents, parentStats]);
 
     // 입력값에 따른 기존 원생 검색
     const filteredStudents = useMemo(() => {
         if (!studentName || registrationMode === 'existing') return [];
-        const term = studentName.toLowerCase();
-        return allStudents.filter(std => 
-            std.studentName.toLowerCase().includes(term) || 
-            std.studentPhone.includes(term)
-        ).slice(0, 5); 
+        const term = studentName.toLowerCase().trim().replace(/-/g, '');
+        if (!term) return [];
+
+        const results = allStudents.filter(std => {
+            const nameMatch = (std.studentName || '').toLowerCase().includes(term);
+            const rawPhone = (std.studentPhone || '').replace(/-/g, '');
+            const phoneMatch = rawPhone.includes(term);
+            return nameMatch || phoneMatch;
+        }).slice(0, 5); 
+
+        return results;
     }, [allStudents, studentName, registrationMode]);
 
     // 검색창 외부 클릭 시 닫기
@@ -174,43 +219,51 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
      * 학생 등록 실행
      */
     const handleRegister = async () => {
+        // 필수값 검증
         if (registrationMode === 'new') {
-            if (!studentName || !studentPhone || selectedClassIds.length === 0 || !parentName || !parentPhone) {
-                alert('모든 필수 정보를 입력해주세요.');
+            if (!studentName.trim() || !studentPhone || !parentName.trim() || !parentPhone || !relationship) {
+                alert('학생 정보와 보호자 필수 정보를 모두 입력해주세요.');
                 return;
             }
         } else {
-            if (!selectedStudentId || selectedClassIds.length === 0) {
-                alert('학생과 클래스를 선택해주세요.');
+            if (!selectedStudentId) {
+                alert('등록할 학생을 선택해주세요.');
                 return;
             }
         }
 
+        if (selectedClassIds.length === 0) {
+            alert('배정할 클래스를 하나 이상 선택해주세요.');
+            return;
+        }
+
         try {
+            setIsSubmitting(true);
             let studentId = selectedStudentId;
 
             if (registrationMode === 'new') {
-                const studentData: AcademyStudentCreateRequest = {
-                    studentName,
-                    studentPhone,
+                const combinedData: AcademyStudentWithParentCreateRequest = {
+                    student: {
+                        studentName: studentName.trim(),
+                        studentPhone: studentPhone.replace(/\D/g, ''),
+                    },
+                    parent: {
+                        parentName: parentName.trim(),
+                        parentPhone: parentPhone.replace(/\D/g, ''),
+                        parentRelationship: relationship,
+                        cardNum: cardInfo ? cardInfo.cardNumber.replace(/\D/g, '') : '',
+                        cardState: !!cardInfo,
+                        isPay: true,
+                        alarm: true,
+                    }
                 };
-                const studentResponse = await createStudent(academyId, studentData);
+                
+                const studentResponse = await createStudentWithParent(academyId, combinedData);
                 studentId = studentResponse.studentId;
-
-                const parentData: ParentCreateRequest = {
-                    parentName,
-                    parentPhone,
-                    parentRelationship: relationship,
-                    cardNum: cardInfo ? cardInfo.cardNumber.replace(/-/g, '') : '',
-                    cardState: !!cardInfo,
-                    isPay: true,
-                    alarm: true,
-                };
-                await addParent(studentId, parentData);
             }
 
             if (studentId) {
-                // 이미 수강 중인 클래스는 제외하고 배정 요청
+                // 수강 신청 처리
                 const studentInfo = allStudents.find(s => s.studentId === studentId);
                 const enrolledIds = studentInfo?.enrolledClassIds || [];
                 
@@ -221,20 +274,25 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                 if (classesToAssign.length > 0) {
                     await Promise.all(classesToAssign.map(id => assignStudentToClass(academyId, id, studentId!)));
                 } else if (registrationMode === 'existing') {
-                     alert('이미 모든 선택된 클래스에 등록되어 있습니다.');
-                     return;
+                      alert('이미 선택한 모든 클래스에 등록된 원생입니다.');
+                      setIsSubmitting(false);
+                      return;
                 }
             }
 
             setIsCompleteModalOpen(true);
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('Registration failed:', error);
-            alert('등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+            // 가이드라인 5번: 서버 에러 메시지 우선 표시
+            const serverMessage = error.response?.data?.message || error.message;
+            alert(serverMessage || '등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    if (classesLoading || statsLoading) return <div>로딩 중...</div>;
+    if (classesLoading || statsLoading || studentsLoading) return <div>로딩 중...</div>;
 
     const classOptions = classes.map(c => ({
         label: c.className,
@@ -247,8 +305,11 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
             <div className={styles.sectionTitle}>
                 원생 정보 
                 {registrationMode === 'existing' && (
-                    <span style={{ fontSize: '13px', color: 'var(--primary-color)', marginLeft: '8px', cursor: 'pointer' }} onClick={handleResetToNew}>
-                        [선택 취소]
+                    <span 
+                        style={{ fontSize: '13px', color: 'var(--primary-color)', marginLeft: '8px', cursor: 'pointer', fontWeight: 500 }} 
+                        onClick={handleResetToNew}
+                    >
+                        [다른 원생 선택/새로 입력]
                     </span>
                 )}
             </div>
@@ -259,21 +320,23 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                     value={studentName}
                     onChange={(val) => {
                         setStudentName(val);
-                        if (registrationMode === 'new') setIsSearchOpen(true);
+                        setIsSearchOpen(true);
+                        if (registrationMode === 'existing') {
+                            setRegistrationMode('new');
+                            setSelectedStudentId(null);
+                        }
                     }}
                     placeholder="원생 이름을 입력하세요"
                     readOnly={registrationMode === 'existing'}
-                    disabled={registrationMode === 'existing'}
                 />
                 
                 {/* 검색 드롭다운 (신규 입력 중에만 노출) */}
-                {isSearchOpen && filteredStudents.length > 0 && (
+                {isSearchOpen && filteredStudents.length > 0 && registrationMode === 'new' && (
                     <div className={styles.multiSelectOptionsDropdown} style={{ top: '100%', marginTop: '-8px' }}>
                         <div style={{ padding: '8px 16px', fontSize: '12px', color: 'var(--text-tertiary)', backgroundColor: 'var(--bg-primary)' }}>
                             이미 등록된 원생인가요? 선택하면 정보를 불러옵니다.
                         </div>
                         {filteredStudents.map(std => {
-                            // 현재 선택된 클래스들 중 이미 수강 중인 클래스가 있는지 확인
                             const studentEnrolledIds = std.enrolledClassIds || [];
                             const isAlreadyInSome = selectedClassIds.some(id => studentEnrolledIds.includes(Number(id)));
 
@@ -286,14 +349,19 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                                 >
                                     <div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <span style={{ fontWeight: 600 }}>{std.studentName}</span>
+                                            <span style={{ fontWeight: 600, fontSize: '15px' }}>{std.studentName}</span>
+                                            <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                                                ({std.studentPhone ? formatPhoneNumber(std.studentPhone) : '연락처 없음'})
+                                            </span>
                                             {isAlreadyInSome && (
                                                 <span style={{ fontSize: '10px', color: '#ff4d4f', border: '1px solid #ff4d4f', padding: '0 4px', borderRadius: '2px' }}>수강 중</span>
                                             )}
                                         </div>
-                                        <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                                            {std.studentPhone} | {std.enrolledClassNames?.join(', ')}
-                                        </div>
+                                        {std.enrolledClassNames && std.enrolledClassNames.length > 0 && (
+                                            <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '2px' }}>
+                                                현재 수강: {std.enrolledClassNames.join(', ')}
+                                            </div>
+                                        )}
                                     </div>
                                     <span style={{ fontSize: '11px', padding: '4px 8px', backgroundColor: 'var(--bg-secondary)', borderRadius: '4px', whiteSpace: 'nowrap' }}>선택</span>
                                 </div>
@@ -305,11 +373,17 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
 
             <TextInput
                 label="원생 전화번호"
-                value={studentPhone}
-                onChange={setStudentPhone}
+                value={formatPhoneNumber(studentPhone)}
+                onChange={(val) => {
+                    const onlyNums = val.replace(/\D/g, '');
+                    setStudentPhone(onlyNums);
+                    if (registrationMode === 'existing') {
+                        setRegistrationMode('new');
+                        setSelectedStudentId(null);
+                    }
+                }}
                 placeholder="전화번호 입력 (예: 01012345678)"
                 readOnly={registrationMode === 'existing'}
-                disabled={registrationMode === 'existing'}
             />
 
             <MultiSelect
@@ -321,67 +395,60 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
             />
 
             {/* 보호자 정보 섹션 */}
-            <div className={`${styles.sectionTitle} ${styles.marginTop24}`}>
-                보호자 정보 {registrationMode === 'existing' && '(기존 정보)'}
-            </div>
-            <TextInput
-                label="보호자 이름"
-                value={parentName}
-                onChange={setParentName}
-                readOnly={registrationMode === 'existing'}
-                disabled={registrationMode === 'existing'}
-            />
-            <TextInput
-                label="보호자 연락처"
-                value={parentPhone}
-                onChange={setParentPhone}
-                readOnly={registrationMode === 'existing'}
-                disabled={registrationMode === 'existing'}
-            />
-            <SingleSelect
-                label="원생과의 관계"
-                options={relationshipOptions}
-                value={relationship}
-                onChange={setRelationship}
-            />
+            <>
+                <div className={`${styles.sectionTitle} ${styles.marginTop24}`}>
+                    보호자 정보 {registrationMode === 'existing' && '(확인/수정)'}
+                </div>
+                <TextInput
+                    label="보호자 이름"
+                    value={parentName}
+                    onChange={setParentName}
+                />
+                <TextInput
+                    label="보호자 연락처"
+                    value={formatPhoneNumber(parentPhone)}
+                    onChange={(val) => setParentPhone(val.replace(/\D/g, ''))}
+                    placeholder="보호자 연락처 입력"
+                />
+                <SingleSelect
+                    label="원생과의 관계"
+                    options={relationshipOptions}
+                    value={relationship}
+                    onChange={setRelationship}
+                />
+            </>
 
             {/* 카드 정보 섹션 */}
-            <div className={`${styles.sectionTitle} ${styles.marginTop24}`}>
-                카드 정보 {registrationMode === 'existing' && '(기존 정보)'}
-            </div>
-            
-            {registrationMode === 'new' ? (
-                <>
-                    {!cardInfo ? (
-                        <div className={styles.cardBox} onClick={() => setIsCardModalOpen(true)}>
-                            <span className={styles.addCardText}>+ 카드 등록하기</span>
-                        </div>
-                    ) : (
-                        <div className={styles.registeredContainer}>
-                            <div className={styles.cardNumberBox}>
-                                <span>{cardInfo.cardNumber.slice(0, 4)}-****-****-{cardInfo.cardNumber.slice(15)}</span>
-                                <button className={styles.changeButton} onClick={() => setCardInfo(null)}>취소</button>
-                            </div>
-                        </div>
-                    )}
-                </>
-            ) : (
-                <div className={styles.cardNumberBox} style={{ opacity: 0.8 }}>
-                    <span>{cardInfo ? (cardInfo.cardNumber.length > 4 ? `****-****-****-${cardInfo.cardNumber.slice(-4)}` : cardInfo.cardNumber) : '등록된 카드 없음'}</span>
+            <>
+                <div className={`${styles.sectionTitle} ${styles.marginTop24}`}>
+                    카드 정보 {registrationMode === 'existing' && '(확인/수정)'}
                 </div>
-            )}
+                {!cardInfo ? (
+                    <div className={styles.cardBox} onClick={() => setIsCardModalOpen(true)}>
+                        <span className={styles.addCardText}>+ 카드 등록하기</span>
+                    </div>
+                ) : (
+                    <div className={styles.registeredContainer}>
+                        <div className={styles.cardNumberBox}>
+                            <span>
+                                {cardInfo.cardNumber.length >= 16 
+                                    ? `${cardInfo.cardNumber.slice(0, 4)}-****-****-${cardInfo.cardNumber.slice(-4)}`
+                                    : cardInfo.cardNumber
+                                }
+                            </span>
+                            <button className={styles.changeButton} onClick={() => setCardInfo(null)}>취소</button>
+                        </div>
+                    </div>
+                )}
+            </>
 
             <div className={`${styles.sectionBox} ${styles.buttonGroup}`} style={{ marginTop: '32px' }}>
                 <Button
                     onClick={handleRegister}
-                    disabled={
-                        registrationMode === 'new' 
-                            ? (!studentName || !studentPhone || selectedClassIds.length === 0 || !parentName || !parentPhone)
-                            : (!selectedStudentId || selectedClassIds.length === 0)
-                    }
+                    disabled={isSubmitting}
                     className={styles.flex1}
                 >
-                    {registrationMode === 'new' ? '신규 원생으로 등록' : '기존 원생 클래스 추가'}
+                    {isSubmitting ? '등록 중...' : (registrationMode === 'new' ? '신규 원생으로 등록' : '기존 원생 클래스 추가')}
                 </Button>
             </div>
 

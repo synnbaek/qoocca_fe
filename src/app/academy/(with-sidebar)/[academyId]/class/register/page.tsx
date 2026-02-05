@@ -20,6 +20,13 @@ const DAYS = [
   { id: 'sunday', label: '일' },
 ];
 
+const formatPrice = (val: string) => {
+  if (!val) return '';
+  const num = val.replace(/\D/g, '');
+  if (!num) return '';
+  return new Intl.NumberFormat().format(Number(num));
+};
+
 export default function ClassRegisterPage() {
   const router = useRouter();
   const { academyId } = useParams();
@@ -183,11 +190,14 @@ export default function ClassRegisterPage() {
 
         <Input
           label="월 수업비"
-          type="number"
+          type="text"
           name="price"
-          value={formData.price}
-          onChange={handleChange}
-          placeholder="ex) 200000"
+          value={formatPrice(formData.price)}
+          onChange={(e) => {
+            const rawValue = e.target.value.replace(/\D/g, '');
+            setFormData(prev => ({ ...prev, price: rawValue }));
+          }}
+          placeholder="ex) 200,000"
         />
 
         <div className={styles.buttonWrapper}>
