@@ -12,7 +12,7 @@ type Props = {
     value: string | number | undefined | null;
     onChange: (value: any) => void;
     placeholder?: string;
-    className?: string; // wrapper style override
+    className?: string;
 };
 
 export default function Select({ label, options, value, onChange, placeholder = "선택", className }: Props) {

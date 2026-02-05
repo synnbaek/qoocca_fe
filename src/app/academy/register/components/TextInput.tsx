@@ -1,7 +1,7 @@
 import Input from '../../../../components/common/Input';
 
 type Props = {
-  label?: string;          // optional
+  label?: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;   // 추가

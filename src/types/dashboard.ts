@@ -43,4 +43,3 @@ export interface AcademyInfo {
     ages?: { ageCode: string }[];
     subjects?: { detailSubject: string }[];
 }
-

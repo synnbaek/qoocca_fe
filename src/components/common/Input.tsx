@@ -28,7 +28,6 @@ export default function Input({ label, error, onClick, ...props }: InputProps) {
           target.showPicker();
         }
       } catch (err) {
-        // ignore error (e.g. if already open)
       }
     }
   };

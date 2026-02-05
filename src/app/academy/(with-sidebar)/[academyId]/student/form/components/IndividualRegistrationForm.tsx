@@ -78,7 +78,7 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                 .map(name => classes.find(c => c.className === name)?.classId)
                 .filter((id): id is number => id !== undefined);
 
-            await Promise.all(selectedClassIds.map(id => assignStudentToClass(id, studentId)));
+            await Promise.all(selectedClassIds.map(id => assignStudentToClass(academyId, id, studentId)));
 
             console.log('Registration successful');
             setIsCompleteModalOpen(true);

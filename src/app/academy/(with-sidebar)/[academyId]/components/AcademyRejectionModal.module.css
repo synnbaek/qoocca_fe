@@ -79,7 +79,7 @@
   padding-right: 4px; /* 스크롤바 공간 확보 */
 }
 
-/* Custom Scrollbar for formSection */
+
 .formSection::-webkit-scrollbar {
   width: 6px;
 }
@@ -186,7 +186,7 @@
   opacity: 0.8;
 }
 
-/* Lightbox Styles */
+
 .lightboxOverlay {
   position: fixed;
   top: 0;

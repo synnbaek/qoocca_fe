@@ -35,7 +35,6 @@ export interface StudentCalendarResponse {
     attendanceRecords: AttendanceRecord[];
 }
 
-// Added for AttendanceRightSidebar
 export interface ClassAttendanceResponse {
   studentId: number;
   studentName: string;

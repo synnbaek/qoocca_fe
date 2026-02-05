@@ -25,7 +25,6 @@ export function useSignup() {
   const [isExistingUser, setIsExistingUser] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [agreements, setAgreements] = useState({
-    // ... (skipping some unchanged state lines if possible, but replace_file_content needs exact match)
     service: false,
     privacy: false,
     thirdParty: false,

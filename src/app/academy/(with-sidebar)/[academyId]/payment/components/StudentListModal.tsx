@@ -43,7 +43,7 @@ export default function StudentListModal({
     <CustomModal
       isOpen={isOpen}
       onClose={onClose}
-      title={`${cls.className} 학생 목록`} // Class Name Student List
+      title={`${cls.className} 학생 목록`}
       actionText="결제 요청"
       onAction={() => {
         onPaymentRequest(cls);

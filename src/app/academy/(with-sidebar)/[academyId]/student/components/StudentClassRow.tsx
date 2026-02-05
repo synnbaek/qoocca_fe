@@ -86,7 +86,7 @@ export default function StudentClassRow({ row, isSearching }: Props) {
                                         student.cardNumber
                                     )}
                                 </td>
-                                <td></td> {/* empty cell for Status column */}
+                                <td></td> {}
 
                             </tr>
                         ))

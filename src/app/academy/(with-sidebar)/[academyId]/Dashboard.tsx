@@ -104,7 +104,6 @@ export default function Dashboard({ academyId }: Props) {
 
         const academyInfo = await dashboardService.getAcademyInfo(academyId);
 
-        // --- REAL API DATA USAGE ---
         const status = academyInfo.approvalStatus;
         setApprovalStatus(status);
 
@@ -213,7 +212,6 @@ export default function Dashboard({ academyId }: Props) {
   const handleRejectionSubmit = async (data: { 
     academyName: string; 
     files: File[];
-    // phoneNumber removed
     baseAddress: string;
     detailAddress: string;
   }) => {
