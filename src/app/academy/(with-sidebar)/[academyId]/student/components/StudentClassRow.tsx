@@ -34,7 +34,7 @@ export default function StudentClassRow({ row, isSearching }: Props) {
 
     return (
         <>
-            <tr 
+            <tr
                 className={`${styles.mainRow} ${open ? styles.expanded : ''}`}
                 onClick={() => setOpen(prev => !prev)}
             >
@@ -60,8 +60,8 @@ export default function StudentClassRow({ row, isSearching }: Props) {
                         </tr>
                     ) : (
                         students.map(student => (
-                            <tr 
-                                key={student.id} 
+                            <tr
+                                key={student.id}
                                 className={styles.studentRow}
                                 onClick={() => router.push(`/academy/${academyId}/student/${student.studentId}`)}
                                 style={{ cursor: 'pointer' }}
@@ -86,8 +86,7 @@ export default function StudentClassRow({ row, isSearching }: Props) {
                                         student.cardNumber
                                     )}
                                 </td>
-                                <td></td> {/* empty cell for Status column */}
-
+                                <td></td>
                             </tr>
                         ))
                     )}
