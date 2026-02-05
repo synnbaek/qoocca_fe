@@ -83,37 +83,31 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
 
     // 학원 전체 원생 목록 및 상세 정보(보호자/클래스) 통합
     const allStudents = useMemo(() => {
-        // 1. 먼저 전체 학생 목록을 기본 맵으로 구성
         const studentMap = new Map();
         
+        // 1. 기본 원생 목록 구성
         academyStudents.forEach(std => {
-            const phone = std.studentPhone || (std as any).phone || (std as any).student_phone || '';
             studentMap.set(std.studentId, {
-                studentId: std.studentId,
-                studentName: std.studentName,
-                studentPhone: phone,
+                ...std,
                 enrolledClassIds: [],
                 enrolledClassNames: [],
                 parents: []
             });
         });
 
-        // 2. 클래스 기반 통계 데이터에서 상세 정보(수강 반, 보호자) 매핑
+        // 2. 통계 데이터(보호자, 수강정보) 병합
         parentStats.forEach(cls => {
             cls.students.forEach(std => {
                 const existing = studentMap.get(std.studentId);
                 if (existing) {
-                    // 수강 반 정보 추가
                     if (!existing.enrolledClassIds.includes(cls.classId)) {
                         existing.enrolledClassIds.push(cls.classId);
                         existing.enrolledClassNames.push(cls.className);
                     }
-                    // 보호자 정보가 아직 없으면 추가
                     if (existing.parents.length === 0 && std.parents && std.parents.length > 0) {
                         existing.parents = std.parents;
                     }
                 } else {
-                    // 전체 목록에서 혹시라도 누락된 경우(드문 상황) 추가
                     studentMap.set(std.studentId, {
                         ...std,
                         enrolledClassIds: [cls.classId],
@@ -123,9 +117,7 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
             });
         });
         
-        
-        const result = Array.from(studentMap.values());
-        return result;
+        return Array.from(studentMap.values());
     }, [academyStudents, parentStats]);
 
     // 입력값에 따른 기존 원생 검색
@@ -134,14 +126,12 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
         const term = studentName.toLowerCase().trim().replace(/-/g, '');
         if (!term) return [];
 
-        const results = allStudents.filter(std => {
+        return allStudents.filter(std => {
             const nameMatch = (std.studentName || '').toLowerCase().includes(term);
             const rawPhone = (std.studentPhone || '').replace(/-/g, '');
             const phoneMatch = rawPhone.includes(term);
             return nameMatch || phoneMatch;
         }).slice(0, 5); 
-
-        return results;
     }, [allStudents, studentName, registrationMode]);
 
     // 검색창 외부 클릭 시 닫기
@@ -166,6 +156,8 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
      * 기존 원생 선택 처리
      */
     const handleSelectExistingStudent = (student: any) => {
+        console.log('Selected existing student data:', student);
+        
         // 중복 체크: 선택된 모든 클래스에 이미 포함되어 있는지 확인
         const currentSelectedIds = selectedClassIds.map(id => Number(id));
         const alreadyInAll = currentSelectedIds.every(id => student.enrolledClassIds.includes(id));
@@ -191,12 +183,20 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
         
         if (student.parents && student.parents.length > 0) {
             const firstParent = student.parents[0];
-            setParentName(firstParent.parentName);
-            setParentPhone(firstParent.parentPhone);
-            setRelationship(firstParent.parentRelationship);
+            setParentName(firstParent.parentName || '');
+            setParentPhone(firstParent.parentPhone || '');
+            setRelationship(firstParent.parentRelationship || '부');
             if (firstParent.cardNum) {
                 setCardInfo({ cardNumber: firstParent.cardNum, expiry: '', cvc: '' });
+            } else {
+                setCardInfo(null);
             }
+        } else {
+            // 보호자 정보가 없는 경우 초기화
+            setParentName('');
+            setParentPhone('');
+            setRelationship('부');
+            setCardInfo(null);
         }
         setIsSearchOpen(false);
     };
@@ -242,6 +242,7 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
             let studentId = selectedStudentId;
 
             if (registrationMode === 'new') {
+                const classIds = selectedClassIds.map(id => Number(id));
                 const combinedData: AcademyStudentWithParentCreateRequest = {
                     student: {
                         studentName: studentName.trim(),
@@ -255,28 +256,30 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                         cardState: !!cardInfo,
                         isPay: true,
                         alarm: true,
-                    }
+                    },
+                    classIds: classIds
                 };
                 
+                console.log('Sending registration data:', combinedData);
                 const studentResponse = await createStudentWithParent(academyId, combinedData);
                 studentId = studentResponse.studentId;
-            }
+            } else {
+                // 기존 원생 선택 시: 선택한 클래스들 중 아직 수강하지 않는 클래스만 추가 배정
+                if (studentId) {
+                    const studentInfo = allStudents.find(s => s.studentId === studentId);
+                    const enrolledIds = studentInfo?.enrolledClassIds || [];
+                    
+                    const classesToAssign = selectedClassIds
+                        .map(id => Number(id))
+                        .filter(id => !enrolledIds.includes(id));
 
-            if (studentId) {
-                // 수강 신청 처리
-                const studentInfo = allStudents.find(s => s.studentId === studentId);
-                const enrolledIds = studentInfo?.enrolledClassIds || [];
-                
-                const classesToAssign = selectedClassIds
-                    .map(id => Number(id))
-                    .filter(id => !enrolledIds.includes(id));
-
-                if (classesToAssign.length > 0) {
-                    await Promise.all(classesToAssign.map(id => assignStudentToClass(academyId, id, studentId!)));
-                } else if (registrationMode === 'existing') {
-                      alert('이미 선택한 모든 클래스에 등록된 원생입니다.');
-                      setIsSubmitting(false);
-                      return;
+                    if (classesToAssign.length > 0) {
+                        await Promise.all(classesToAssign.map(id => assignStudentToClass(academyId, id, studentId!)));
+                    } else {
+                        alert('이미 선택한 모든 클래스에 등록된 원생입니다.');
+                        setIsSubmitting(false);
+                        return;
+                    }
                 }
             }
 

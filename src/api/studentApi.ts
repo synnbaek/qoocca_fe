@@ -33,6 +33,7 @@ export interface ParentCreateRequest {
 export interface AcademyStudentWithParentCreateRequest {
     student: AcademyStudentCreateRequest;
     parent: ParentCreateRequest;
+    classIds?: number[];
 }
 
 /**
