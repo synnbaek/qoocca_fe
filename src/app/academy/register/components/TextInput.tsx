@@ -8,6 +8,7 @@ type Props = {
   readOnly?: boolean;
   disabled?: boolean;
   type?: string;
+  autoComplete?: string;
 };
 
 export default function TextInput({
@@ -18,6 +19,7 @@ export default function TextInput({
   readOnly,
   disabled,
   type = 'text',
+  autoComplete = 'off',
 }: Props) {
   return (
     <Input
@@ -28,6 +30,7 @@ export default function TextInput({
       readOnly={readOnly}
       disabled={disabled}
       type={type}
+      autoComplete={autoComplete}
     />
   );
 }

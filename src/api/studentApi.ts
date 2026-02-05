@@ -14,6 +14,7 @@ export interface AcademyStudentCreateRequest {
 export interface AcademyStudentResponse {
     studentId: number;
     studentName: string;
+    studentPhone: string;
 }
 
 /**
@@ -27,6 +28,12 @@ export interface ParentCreateRequest {
     cardState: boolean;
     isPay: boolean;
     alarm: boolean;
+}
+
+export interface AcademyStudentWithParentCreateRequest {
+    student: AcademyStudentCreateRequest;
+    parent: ParentCreateRequest;
+    classIds?: number[];
 }
 
 /**
@@ -88,8 +95,21 @@ export const createStudent = async (academyId: number, data: AcademyStudentCreat
     return response.data;
 };
 
+export const createStudentWithParent = async (academyId: number, data: AcademyStudentWithParentCreateRequest): Promise<AcademyStudentResponse> => {
+    const response = await axiosInstance.post<AcademyStudentResponse>(`/api/academy/${academyId}/student/with-parent`, data);
+    return response.data;
+};
+
 /**
- * 2. 원생에게 보호자 정보 추가
+ * 2. 학원 전체 원생 목록 조회
+ */
+export const getStudents = async (academyId: number): Promise<AcademyStudentResponse[]> => {
+    const response = await axiosInstance.get<AcademyStudentResponse[]>(`/api/academy/${academyId}/student`);
+    return response.data;
+};
+
+/**
+ * 3. 원생에게 보호자 정보 추가
  */
 export const addParent = async (studentId: number, data: ParentCreateRequest): Promise<ParentResponse> => {
     const response = await axiosInstance.post<ParentResponse>(`/api/student/${studentId}/parent`, data);

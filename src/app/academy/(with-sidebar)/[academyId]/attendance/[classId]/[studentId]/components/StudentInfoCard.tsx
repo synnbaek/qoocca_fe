@@ -3,9 +3,10 @@ import styles from '../StudentDetailPage.module.css';
 interface StudentInfoCardProps {
     studentName?: string;
     enrolledClasses?: string[];
+    onEdit?: () => void;
 }
 
-export default function StudentInfoCard({ studentName, enrolledClasses }: StudentInfoCardProps) {
+export default function StudentInfoCard({ studentName, enrolledClasses, onEdit }: StudentInfoCardProps) {
     return (
         <div className={styles.studentInfoHeader}>
             <div className={styles.studentInfoLeft}>
@@ -16,7 +17,7 @@ export default function StudentInfoCard({ studentName, enrolledClasses }: Studen
                     ))}
                 </div>
             </div>
-            <button className={styles.editBtn}>정보 수정</button>
+            <button className={styles.editBtn} onClick={onEdit}>정보 수정</button>
         </div>
     );
 }

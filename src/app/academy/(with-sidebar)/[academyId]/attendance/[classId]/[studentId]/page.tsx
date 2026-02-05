@@ -55,6 +55,10 @@ export default function StudentAttendanceDetailPage() {
         router.back();
     };
 
+    const handleEdit = () => {
+        router.push(`/academy/${academyId}/student/${studentId}/modify`);
+    };
+
     const calendarDays = generateCalendarDays(currentDate.getFullYear(), currentDate.getMonth());
 
     return (
@@ -78,6 +82,7 @@ export default function StudentAttendanceDetailPage() {
                 <StudentInfoCard 
                     studentName={data?.studentName}
                     enrolledClasses={data?.enrolledClasses}
+                    onEdit={handleEdit}
                 />
 
                 <AttendanceCalendar 
