@@ -20,9 +20,9 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
-export default function Sidebar({ 
-  academyId: propsId, 
-  approvalStatus, 
+export default function Sidebar({
+  academyId: propsId,
+  approvalStatus,
   initialAcademies = [],
   isOpen = false,
   onClose
@@ -31,6 +31,11 @@ export default function Sidebar({
   const router = useRouter();
   const dispatch = useDispatch();
   const { role } = useSelector((state: RootState) => state.user);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const params = useParams();
   const academyId = (params.academyId as string) || propsId;
@@ -85,7 +90,7 @@ export default function Sidebar({
   };
 
   const currentAcademy = academies.find(a => String(a.academyId) === String(academyId));
-  
+
   const activeStatus = currentAcademy ? currentAcademy.approvalStatus : approvalStatus;
   const isDisabled = activeStatus !== 'APPROVED';
 
@@ -146,9 +151,8 @@ export default function Sidebar({
           >
             <div className={style.leftContent}>
               <span
-                className={`${style.arrow} ${
-                  isManagementOpen ? style.rotated : ''
-                }`}
+                className={`${style.arrow} ${isManagementOpen ? style.rotated : ''
+                  }`}
               >
                 &gt;
               </span>
@@ -194,7 +198,7 @@ export default function Sidebar({
 
       {/* 모바일 전용 사용자 섹션 */}
       <div className={style.userSectionMobile}>
-        {role === 'ROLE_ADMIN' && (
+        {mounted && role === 'ROLE_ADMIN' && (
           <Link href="/admin" className={style.userAction} onClick={handleLinkClick}>
             관리자 페이지
           </Link>
@@ -203,9 +207,9 @@ export default function Sidebar({
           신규 학원 등록
         </Link>
 
-        <button 
-          type="button" 
-          className={`${style.userAction} ${style.logoutAction}`} 
+        <button
+          type="button"
+          className={`${style.userAction} ${style.logoutAction}`}
           onClick={handleLogout}
         >
           로그아웃

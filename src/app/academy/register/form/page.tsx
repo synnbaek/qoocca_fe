@@ -5,6 +5,7 @@ import { useState } from 'react';
 import AcademyTitle from '../components/AcademyTitle';
 import TextInput from '../components/TextInput';
 import MultiSelect from '../components/MultiSelect';
+import MultiFileInput from '../components/MultiFileInput';
 import styles from './form.module.css';
 import { useSubjects } from '@/hooks/useSubjects';
 import { useAges } from '@/hooks/useAges';
@@ -31,6 +32,7 @@ export default function AcademyFormPage() {
   const [website, setWebsite] = useState('');
   const [instagram, setInstagram] = useState('');
   const [blog, setBlog] = useState('');
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   // 선택한 문자열 → id 배열
   const selectedAgeIds = ages
@@ -58,6 +60,7 @@ export default function AcademyFormPage() {
         instagramUrl: instagram,
         blogUrl: blog,
         certificateFile: businessFiles[0],
+        imageFiles: imageFiles,
         ageIds: selectedAgeIds,
         subjects: selectedSubjectIds,
       });
@@ -119,6 +122,13 @@ export default function AcademyFormPage() {
       <TextInput label="홈페이지" value={website} onChange={setWebsite} />
       <TextInput label="인스타그램" value={instagram} onChange={setInstagram} />
       <TextInput label="네이버 블로그" value={blog} onChange={setBlog} />
+
+      <MultiFileInput
+        label="학원 대표 이미지 업로드"
+        description="학원 대표 이미지 (png, jpg, jpeg)를 입력하세요."
+        files={imageFiles}
+        onChange={setImageFiles}
+      />
 
       <div className={styles.sectionBox}>
         <Button

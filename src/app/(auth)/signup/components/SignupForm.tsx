@@ -30,6 +30,7 @@ export default function SignupForm() {
           error={errors.username}
           disabled={auth.isLoading}
           required
+          autoComplete="name"
         />
         <Input
           type="email"
@@ -39,6 +40,7 @@ export default function SignupForm() {
           error={errors.email}
           disabled={auth.isLoading}
           required
+          autoComplete="username"
         />
         <Input
           type="password"
@@ -48,6 +50,7 @@ export default function SignupForm() {
           error={errors.password}
           disabled={auth.isLoading}
           required
+          autoComplete="new-password"
         />
 
         <PhoneSection

@@ -74,6 +74,7 @@ export default function LoginForm() {
         onChange={(e) => setEmail(e.target.value)}
         required
         disabled={isLoading}
+        autoComplete="username"
       />
       <Input
         type="password"
@@ -82,6 +83,7 @@ export default function LoginForm() {
         onChange={(e) => setPassword(e.target.value)}
         required
         disabled={isLoading}
+        autoComplete="current-password"
       />
 
       <div className={styles.forgotPasswordWrapper}>
