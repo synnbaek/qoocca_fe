@@ -40,6 +40,7 @@ export interface AcademyInfo {
     websiteUrl?: string;
     instagramUrl?: string;
     blogUrl?: string;
+    imageUrls?: string[]; // 학원 대표 이미지 URL 목록
     ages?: { ageCode: string }[];
     subjects?: { detailSubject: string }[];
 }

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, use } from 'react';
 import AcademyTitle from '@/app/academy/register/components/AcademyTitle';
 import TextInput from '@/app/academy/register/components/TextInput';
+import MultiFileInput from '@/app/academy/register/components/MultiFileInput';
 import Button from '@/components/common/Button';
 import { getAcademyInfo, updateAcademyProfile } from '@/api/dashboardApi';
 import { toast } from 'sonner';
@@ -37,6 +38,11 @@ export default function AcademyEditPage({
   const [instagram, setInstagram] = useState('');
   const [blog, setBlog] = useState('');
 
+  // 이미지 관련 상태
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+  const [deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
+
   useEffect(() => {
     const fetchAcademyData = async () => {
       try {
@@ -50,6 +56,11 @@ export default function AcademyEditPage({
         setWebsite(data.websiteUrl || '');
         setInstagram(data.instagramUrl || '');
         setBlog(data.blogUrl || '');
+
+        // 기존 이미지 URL 설정
+        if (data.imageUrls && data.imageUrls.length > 0) {
+          setExistingImageUrls(data.imageUrls);
+        }
 
         if (data.ages && data.ages.length > 0) {
           const ageLabels = data.ages.map((a: any) => a.ageCode);
@@ -70,6 +81,11 @@ export default function AcademyEditPage({
     }
   }, [academyId, ageOptions, subjectOptions]);
 
+  const handleRemoveExistingImage = (url: string) => {
+    setExistingImageUrls(prev => prev.filter(u => u !== url));
+    setDeletedImageUrls(prev => [...prev, url]);
+  };
+
   const handleUpdate = async () => {
     const selectedAgeIds = ages
       .map((label: string) => ageOptions.find((a) => a.label === label)?.value)
@@ -82,18 +98,47 @@ export default function AcademyEditPage({
       .filter((v): v is number => v !== undefined);
 
     try {
-      await updateAcademyProfile(academyId, {
-        baseAddress,
-        detailAddress,
-        phoneNumber: phone,
-        briefInfo: intro,
-        operatingHours,
-        websiteUrl: website,
-        instagramUrl: instagram,
-        blogUrl: blog,
-        ageIds: selectedAgeIds,
-        subjects: selectedSubjectIds,
-      });
+      // FormData 사용 여부 결정
+      const hasImageChanges = newImageFiles.length > 0 || deletedImageUrls.length > 0;
+
+      if (hasImageChanges) {
+        // 이미지 변경이 있는 경우 FormData 사용
+        const formData = new FormData();
+        formData.append('baseAddress', baseAddress);
+        if (detailAddress) formData.append('detailAddress', detailAddress);
+        if (phone) formData.append('phoneNumber', phone);
+        if (intro) formData.append('briefInfo', intro);
+        if (operatingHours) formData.append('operatingHours', operatingHours);
+        if (website) formData.append('websiteUrl', website);
+        if (instagram) formData.append('instagramUrl', instagram);
+        if (blog) formData.append('blogUrl', blog);
+
+        selectedAgeIds.forEach(id => formData.append('ageIds', String(id)));
+        selectedSubjectIds.forEach(id => formData.append('subjects', String(id)));
+
+        // 새 이미지 파일 추가
+        newImageFiles.forEach(file => formData.append('imageFiles', file));
+
+        // 삭제할 이미지 URL 추가
+        deletedImageUrls.forEach(url => formData.append('deletedImageUrls', url));
+
+        await updateAcademyProfile(academyId, formData);
+      } else {
+        // 이미지 변경이 없는 경우 JSON 사용
+        await updateAcademyProfile(academyId, {
+          baseAddress,
+          detailAddress,
+          phoneNumber: phone,
+          briefInfo: intro,
+          operatingHours,
+          websiteUrl: website,
+          instagramUrl: instagram,
+          blogUrl: blog,
+          ageIds: selectedAgeIds,
+          subjects: selectedSubjectIds,
+        });
+      }
+
       toast.info('수정이 완료되었습니다. 다시 승인 절차가 진행됩니다.');
       router.push(`/${academyId}/dashboard`);
     } catch (err) {
@@ -165,6 +210,39 @@ export default function AcademyEditPage({
           onChange={setInstagram}
         />
         <TextInput label="네이버 블로그" value={blog} onChange={setBlog} />
+
+        {/* 기존 이미지 표시 */}
+        {existingImageUrls.length > 0 && (
+          <div className={styles.imageSection}>
+            <label className={styles.imageLabel}>현재 학원 이미지</label>
+            <div className={styles.existingImageGrid}>
+              {existingImageUrls.map((url, index) => (
+                <div key={index} className={styles.existingImageItem}>
+                  <img src={url} alt={`학원 이미지 ${index + 1}`} className={styles.existingImage} />
+                  <button
+                    type="button"
+                    className={styles.deleteBtn}
+                    onClick={() => handleRemoveExistingImage(url)}
+                    aria-label="이미지 삭제"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 새 이미지 업로드 */}
+        <div className={styles.uploadSection}>
+          <MultiFileInput
+            label="새 학원 이미지 추가"
+            description="사진 또는 캡처화면 제출 (png, jpg, pdf)"
+            files={newImageFiles}
+            onChange={setNewImageFiles}
+            multiple={true}
+          />
+        </div>
 
         <Button onClick={handleUpdate}>수정하기</Button>
       </form>

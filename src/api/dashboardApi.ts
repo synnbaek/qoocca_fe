@@ -36,9 +36,13 @@ export const getAcademyInfo = async (academyId: string | number): Promise<Academ
 
 /**
  * 학원 프로필 정보 부분 수정 (PATCH)
+ * FormData 또는 JSON 객체를 지원합니다.
  */
-export const updateAcademyProfile = async (academyId: string | number, data: any): Promise<void> => {
-    await axiosInstance.patch(ACADEMY_ENDPOINTS.updateAcademyProfile(academyId), data);
+export const updateAcademyProfile = async (academyId: string | number, data: any | FormData): Promise<void> => {
+    const config = data instanceof FormData
+        ? { headers: { 'Content-Type': 'multipart/form-data' } }
+        : {};
+    await axiosInstance.patch(ACADEMY_ENDPOINTS.updateAcademyProfile(academyId), data, config);
 };
 
 /**

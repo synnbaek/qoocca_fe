@@ -10,8 +10,14 @@ import Button from '@/components/common/Button';
 
 export default function AcademyRegisterPage() {
   const router = useRouter();
-  const { academyName, setAcademyName, businessFiles, setBusinessFiles } =
-    useAcademy();
+  const {
+    academyName,
+    setAcademyName,
+    businessFiles,
+    setBusinessFiles,
+    academyImageFiles,
+    setAcademyImageFiles
+  } = useAcademy();
 
   return (
     <div className={styles.academyContainer}>
@@ -47,6 +53,16 @@ export default function AcademyRegisterPage() {
             </li>
           </ul>
         </div>
+      </div>
+
+      <div className={styles.sectionBox}>
+        <MultiFileInput
+          label="학원 대표 이미지 제출"
+          description="사진 또는 캡처화면 제출 (png, jpg, pdf)"
+          files={academyImageFiles}
+          onChange={setAcademyImageFiles}
+          multiple={true}
+        />
       </div>
 
       <div className={styles.sectionBox}>

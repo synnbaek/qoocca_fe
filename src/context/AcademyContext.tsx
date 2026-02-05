@@ -7,6 +7,8 @@ type AcademyContextType = {
   setAcademyName: (name: string) => void;
   businessFiles: File[];
   setBusinessFiles: (files: File[]) => void;
+  academyImageFiles: File[];
+  setAcademyImageFiles: (files: File[]) => void;
 };
 
 const AcademyContext = createContext<AcademyContextType | undefined>(undefined);
@@ -14,10 +16,18 @@ const AcademyContext = createContext<AcademyContextType | undefined>(undefined);
 export function AcademyProvider({ children }: { children: ReactNode }) {
   const [academyName, setAcademyName] = useState("");
   const [businessFiles, setBusinessFiles] = useState<File[]>([]);
+  const [academyImageFiles, setAcademyImageFiles] = useState<File[]>([]);
 
   return (
     <AcademyContext.Provider
-      value={{ academyName, setAcademyName, businessFiles, setBusinessFiles }}
+      value={{
+        academyName,
+        setAcademyName,
+        businessFiles,
+        setBusinessFiles,
+        academyImageFiles,
+        setAcademyImageFiles
+      }}
     >
       {children}
     </AcademyContext.Provider>
