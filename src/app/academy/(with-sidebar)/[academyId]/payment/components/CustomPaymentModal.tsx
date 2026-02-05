@@ -32,7 +32,6 @@ export default function CustomPaymentModal({
     }
     await onCustomRequest(selectedStudentId, selectedClassId, Number(amount));
     onClose();
-    // Reset state
     setSelectedClassId(null);
     setSelectedStudentId(null);
     setAmount('');

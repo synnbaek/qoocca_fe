@@ -122,6 +122,57 @@ export default function Dashboard({ academyId, initialData }: Props) {
         } catch (error) {
           console.error('학원 목록 조회 실패:', error);
         }
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+
+        const academyInfo = await dashboardService.getAcademyInfo(academyId);
+
+        const status = academyInfo.approvalStatus;
+        setApprovalStatus(status);
+
+        if (status === 'REJECTED') {
+          setRejectionInfo({
+            reason: academyInfo.rejectionReason || '등록 정보에 문제가 있어 승인이 거절되었습니다.\n사유를 확인하고 다시 제출해 주세요.',
+            academyName: academyInfo.name || '',
+            phoneNumber: academyInfo.phoneNumber,
+            baseAddress: academyInfo.baseAddress || '', // baseAddress 연결
+            detailAddress: academyInfo.detailAddress,
+            submittedFileUrl: academyInfo.certificate,
+            files: [],
+          });
+          setIsRejectionModalOpen(true);
+        } else if (status === 'APPROVED') {
+          const [classData, statsData] = await Promise.all([
+            dashboardService.getClassSummary(academyId),
+            dashboardService.getStats(academyId),
+          ]);
+
+          setClasses(classData || []);
+          if (classData && classData.length > 0) {
+            setSelectedClassId(classData[0].classId);
+          }
+          setStats(statsData);
+
+          try {
+            const receiptData = await dashboardService.getReceiptSummary(
+              academyId,
+              new Date().getFullYear(),
+              new Date().getMonth() + 1
+            );
+            setReceipts(receiptData || []);
+          } catch (e) {
+            setReceipts([]);
+          }
+        }
+      } catch (err: any) {
+        console.error('데이터 로딩 실패:', err.response?.data || err.message);
+        setApprovalStatus('PENDING');
+      } finally {
+        setIsLoading(false);
       }
     };
     checkRedirect();
@@ -188,7 +239,6 @@ export default function Dashboard({ academyId, initialData }: Props) {
   const handleRejectionSubmit = async (data: {
     academyName: string;
     files: File[];
-    // phoneNumber removed
     baseAddress: string;
     detailAddress: string;
   }) => {

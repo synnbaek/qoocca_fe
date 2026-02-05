@@ -9,7 +9,7 @@ import { formatYearMonth } from '@/utils/dateUtils';
 import { attendanceService } from '@/services/attendanceService';
 import { DateController } from '@/components/common/DateController';
 import { StudentMonthlyStat } from '@/types/attendance';
-import { getClasses } from '@/api/classApi'; // Import API
+import { getClasses } from '@/api/classApi';
 
 export default function ClassAttendancePage() {
     const { academyId, classId } = useParams();

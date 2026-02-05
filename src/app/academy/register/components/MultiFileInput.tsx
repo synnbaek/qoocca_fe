@@ -30,7 +30,7 @@ export default function MultiFileInput({ label, description, files, onChange }: 
         id="business-file"
         type="file"
         accept="image/*,.pdf"
-        multiple={false} // Assuming single file for business license
+        multiple={false}
         onChange={handleChange}
         style={{ display: "none" }}
       />

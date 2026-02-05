@@ -56,7 +56,7 @@
     color: var(--text-primary);
 }
 
-/* Add specialized file icon style if needed for non-image files */
+
 .fileIcon {
     width: 60px;
     height: 60px;

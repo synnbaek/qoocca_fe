@@ -29,7 +29,6 @@ export default function CardRegistrationModal({
     const [expiryYear, setExpiryYear] = useState('');
     const [cvc, setCvc] = useState('');
 
-    // Update state when initialCardData changes
     useEffect(() => {
         if (isOpen && initialCardData) {
             setCardNumber(initialCardData.cardNumber || '');
@@ -45,7 +44,6 @@ export default function CardRegistrationModal({
 
             setCvc(initialCardData.cvc || '');
         } else if (isOpen && !initialCardData) {
-            // Reset to empty when opening without initial data
             setCardNumber('');
             setExpiryMonth('');
             setExpiryYear('');

@@ -21,7 +21,6 @@ export default function AuthSection() {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
 
-  // Click outside handler
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
@@ -35,7 +34,6 @@ export default function AuthSection() {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
@@ -67,7 +65,7 @@ export default function AuthSection() {
         <button className={styles.markAllRead}>모두 읽음</button>
       </div>
       <div className={styles.notificationList}>
-        {/* Dummy Data */}
+        {}
         <div className={`${styles.notificationItem} ${styles.unread}`}>
           <div className={styles.notiTitle}>출결 알림</div>
           <div className={styles.notiDesc}>김철수 학생이 등원하였습니다.</div>
@@ -89,7 +87,7 @@ export default function AuthSection() {
 
   return (
     <>
-      {/* ... previous JSX ... */}
+      {}
       
       <div className={styles.notificationWrapper} ref={notificationRef}>
         <button type="button" onClick={() => setIsNotificationOpen(!isNotificationOpen)}>
@@ -98,12 +96,12 @@ export default function AuthSection() {
         
         {isNotificationOpen && (
           <>
-            {/* Desktop: Render in-place (Absolute) */}
+            {}
             <div className={styles.desktopOnly}>
                {dropdownContent}
             </div>
 
-            {/* Mobile: Render via Portal (Fixed, Global) */}
+            {}
             {createPortal(
               <div className={styles.mobileOnly}>
                 <div className={styles.mobileOverlay} onClick={() => setIsNotificationOpen(false)} />

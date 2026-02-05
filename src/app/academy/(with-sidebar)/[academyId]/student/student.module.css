@@ -44,8 +44,7 @@
 .table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 700px;
-    /* Force scroll on small screens */
+    min-width: 700px; 
 }
 
 .table th {
@@ -83,8 +82,7 @@
     cursor: pointer;
     color: var(--text-primary);
     text-align: left !important;
-    padding-left: 15% !important;
-    /* Center the cluster slightly by padding */
+    padding-left: 15% !important; 
 }
 
 .mainRow {
@@ -156,7 +154,7 @@
 }
 
 
-/* Expanded Student Row Styles */
+
 .studentRow td {
     background-color: var(--bg-secondary) !important;
     border: none !important;

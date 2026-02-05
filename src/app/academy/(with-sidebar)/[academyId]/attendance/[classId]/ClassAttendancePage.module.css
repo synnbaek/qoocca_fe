@@ -101,7 +101,7 @@
     margin-bottom: 15px;
   }
 
-  /* Mobile Card Layout for Table */
+  
   .studentTable, 
   .studentTable tbody, 
   .studentTable tr, 
@@ -133,7 +133,7 @@
     margin-bottom: 0; /* tbody gap 사용 */
   }
 
-  /* 1. Checkbox */
+  
   .studentRow > td:first-child {
     width: 40px;
     padding: 0;
@@ -143,7 +143,7 @@
     justify-content: flex-start;
   }
 
-  /* 2. Name */
+  
   .studentRow > td.studentName {
     width: calc(100% - 40px);
     padding: 0;
@@ -155,7 +155,7 @@
     align-items: center;
   }
 
-  /* 3. Stats (Present, Late, Absent) */
+  
   .studentRow > td.present,
   .studentRow > td.late,
   .studentRow > td.absent {
@@ -172,7 +172,7 @@
     color: var(--text-primary);
   }
 
-  /* Add Labels via Pseudo-elements */
+  
   .studentRow > td.present::before {
     content: '출석';
     font-size: 0.8rem;
@@ -338,7 +338,7 @@
   background-color: var(--bg-secondary);
 }
 
-/* Specific Column Styles */
+
 .studentName {
   font-weight: 500;
   color: var(--text-primary);

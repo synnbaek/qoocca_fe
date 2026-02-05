@@ -18,7 +18,6 @@ export default function ExcelRegistrationForm({ academyId }: Props) {
     const [isLoading, setIsLoading] = useState(false);
     const [isDragging, setIsDragging] = useState(false); // 드래그 상태 추가
 
-    // Modal States
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
     const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
 

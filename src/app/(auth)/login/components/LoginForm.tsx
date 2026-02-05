@@ -38,7 +38,6 @@ export default function LoginForm() {
         dispatch(setUserFromToken(accessToken));
         toast.success('로그인 성공!');
 
-        // Decode token to check role immediately
         try {
           const decoded: any = jwtDecode(accessToken);
           if (decoded.role === 'ADMIN' || decoded.role === 'ROLE_ADMIN') {

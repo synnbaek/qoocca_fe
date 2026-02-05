@@ -10,7 +10,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative; /* Keep relative for mobile adjustments if needed, though less critical now */
+  position: relative; 
   margin-bottom: 30px;
   width: 100%;
 }
@@ -115,7 +115,7 @@
     width: 100%;
   }
 
-  /* Table Card Layout Mobile */
+  
   .paymentTable, 
   .paymentTable tbody, 
   .paymentTable tr, 
@@ -135,7 +135,7 @@
     gap: 12px;
   }
 
-  /* Main Class Row (Card) */
+  
   .mainRow {
     display: flex !important;
     flex-wrap: wrap;
@@ -148,7 +148,7 @@
     margin-bottom: 0;
   }
   
-  /* 1. Checkbox */
+  
   .mainRow > td:first-child {
     width: 40px;
     padding: 0;
@@ -157,7 +157,7 @@
     justify-content: flex-start;
   }
 
-  /* 2. Class Name */
+  
   .mainRow > td.classNameCol {
     width: calc(100% - 40px);
     padding: 0;
@@ -168,7 +168,7 @@
     margin-bottom: 12px;
   }
 
-  /* 3. Stats */
+  
   .mainRow > td:nth-child(3),
   .mainRow > td:nth-child(4),
   .mainRow > td:nth-child(5) {
@@ -208,7 +208,7 @@
     margin-bottom: 4px;
   }
 
-  /* Expanded Details (Student List) */
+  
   .detailActionRow td {
     padding: 10px;
     background-color: var(--bg-surface); /* 배경색 통일 */
@@ -216,7 +216,7 @@
     border-top: 1px solid var(--border-primary);
   }
   
-  /* Make expanded main row look connected */
+  
   .mainRow.expanded {
     border-radius: 12px 12px 0 0;
     border-bottom: none;
@@ -230,7 +230,7 @@
     align-items: flex-end;
   }
 
-  /* Student Row inside Expansion */
+  
   .studentRow {
     display: flex !important;
     padding: 12px;
@@ -465,7 +465,7 @@
 
 .summarySection {
   display: flex;
-  flex-direction: column; /* Stacks TopRow and SearchBar */
+  flex-direction: column; 
   gap: 15px;
   margin-bottom: 30px;
 }
@@ -473,7 +473,7 @@
 .topRow {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end; /* Align baseline of total amount with button bottom roughly */
+  align-items: flex-end; 
   width: 100%;
 }
 
@@ -548,14 +548,14 @@
   white-space: nowrap;
 }
 
-/* Modal Content Styles */
+
 .studentModalContent {
   display: flex;
   flex-direction: column;
   gap: 10px;
   max-height: 400px;
   overflow-y: auto;
-  padding-right: 5px; /* Scrollbar space */
+  padding-right: 5px; 
 }
 
 .studentModalRow {
@@ -594,7 +594,7 @@
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
-  flex: 1; /* Name takes available space */
+  flex: 1; 
 }
 
 .modalStudentAmount {
@@ -625,4 +625,3 @@
   cursor: pointer;
   margin-right: 8px;
 }
-

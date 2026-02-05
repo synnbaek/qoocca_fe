@@ -66,7 +66,6 @@ export default function StudentModifyPage() {
     const [classes, setClasses] = useState<ClassGetResponse[]>([]);
     const [status, setStatus] = useState<'ENROLLED' | 'PAUSED' | 'WITHDRAWN'>('ENROLLED');
 
-    // Card modal state
     const [isCardModalOpen, setIsCardModalOpen] = useState(false);
     const [selectedParentIndex, setSelectedParentIndex] = useState<number | null>(null);
 
@@ -142,26 +141,22 @@ export default function StudentModifyPage() {
             if (studentData) {
                 const originalClassIds = studentData.classes.map((c: any) => c.classId);
                 
-                // Classes to add
                 const toAdd = classIds.filter(id => !originalClassIds.includes(id));
-                // Classes to remove
                 const toRemove = originalClassIds.filter((id: number) => !classIds.includes(id));
 
                 for (const id of toAdd) {
-                    await assignStudentToClass(id, studentId);
+                    await assignStudentToClass(academyId, id, studentId);
                 }
 
                 for (const id of toRemove) {
-                    await deleteStudentFromClass(id, studentId);
+                    await deleteStudentFromClass(academyId, id, studentId);
                 }
             }
 
-            // 4. Update status in all currently selected classes
-            // We do this AFTER class changes to avoid 404 for new classes
             if (status !== studentData?.status || (status !== 'ENROLLED' && classIds.length > 0)) {
                 const statusUpdate: ClassInfoStudentModifyRequest = { status };
                 for (const id of classIds) {
-                    await updateStudentStatus(id, studentId, statusUpdate);
+                    await updateStudentStatus(academyId, id, studentId, statusUpdate);
                 }
             }
 
@@ -182,10 +177,9 @@ export default function StudentModifyPage() {
         setIsDeleteModalOpen(false);
 
         try {
-            // Delete from all classes
             const originalClassIds = studentData.classes.map((c: any) => c.classId);
             for (const id of originalClassIds) {
-                await deleteStudentFromClass(id, studentId);
+                await deleteStudentFromClass(academyId, id, studentId);
             }
             toast.success('원생이 성공적으로 삭제되었습니다.');
             router.push(`/academy/${academyId}/student`);
@@ -390,7 +384,7 @@ export default function StudentModifyPage() {
                 }
             />
 
-            {/* Delete Confirmation Modal */}
+            {}
             <DeleteConfirmationModal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
@@ -399,4 +393,3 @@ export default function StudentModifyPage() {
         </div>
     );
 }
-

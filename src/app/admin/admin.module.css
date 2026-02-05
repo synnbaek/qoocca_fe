@@ -164,8 +164,8 @@
 }
 
 .badgeApproved {
-  background-color: #e0f2fe; /* Light blue */
-  color: #2563eb; /* Darker blue */
+  background-color: #e0f2fe; 
+  color: #2563eb; 
 }
 
 .badgeRejected {
@@ -173,7 +173,7 @@
   color: #991b1b;
 }
 
-/* Modal Styles */
+
 .detailHeader {
   display: flex;
   align-items: center;
@@ -189,7 +189,7 @@
   color: #111827;
 }
 
-/* Lightbox Styles */
+
 .lightboxOverlay {
   position: fixed;
   inset: 0;
@@ -293,7 +293,7 @@
   cursor: pointer;
 }
 
-/* Preset Buttons for Rejection */
+
 .presetContainer {
   display: flex;
   flex-direction: column; /* 세로 배치로 변경 */
@@ -367,8 +367,8 @@
 }
 .btnCancel:hover { background-color: #e5e7eb; }
 
-/* Rejection Modal Input */
-/* Modal Overlay & Layout */
+
+
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -425,7 +425,7 @@
   font-weight: 500;
 }
 
-.table td[style*="color: #6b7280"] { /* Reason column gray color */
+.table td[style*="color: #6b7280"] { 
   color: #6b7280;
 }
 

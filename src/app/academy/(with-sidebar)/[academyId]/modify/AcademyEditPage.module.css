@@ -29,7 +29,7 @@
   color: var(--text-primary);
   margin: 0;
   text-align: center;
-  /* Center align title as per original design? Or left? Original h2 was centered. Let's make h1 centered or keep standard left if user wants "exact same style". ClassRegister is left. AcademyEdit was centered h2. User said "same style as new class modal". So left aligned h1 is better. */
+  
   text-align: left;
 }
 

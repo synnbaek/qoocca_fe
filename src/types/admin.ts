@@ -3,7 +3,7 @@ export interface PageResponse<T> {
   totalPages: number;
   totalElements: number;
   size: number;
-  number: number; // current page
+  number: number;
 }
 
 export interface AcademyListResponse {

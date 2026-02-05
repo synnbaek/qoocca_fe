@@ -14,12 +14,12 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  /* The transition property is already defined above, so this is redundant. Keeping it as per the instruction's structure. */
-  /* transition: transform 0.3s ease; */
-  /* The z-index property is already defined above, so this is redundant. Keeping it as per the instruction's structure. */
-  /* z-index: 99; */
+  
+  
+  
+  
 
-  /* Hide scrollbar */
+  
   -ms-overflow-style: none;
   scrollbar-width: none;
 }

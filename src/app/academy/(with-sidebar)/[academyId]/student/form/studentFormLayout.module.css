@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    /* padding-top: 160px;  <-- Removed/Reduced because it's inside sidebar layout */
+    
     box-sizing: border-box;
 }
 
