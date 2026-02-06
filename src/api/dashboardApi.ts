@@ -46,6 +46,8 @@ export const uploadAcademyImages = async (academyId: string | number, imageFiles
 
     const response = await axiosInstance.post<AcademyImage[]>(`/api/academy/${academyId}/images`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        transformRequest: (data, headers) => data // FormData 그대로 전송
+
     });
     return response.data;
 };

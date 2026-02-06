@@ -120,13 +120,20 @@ export default function AcademyEditPageClient({ academyId }: Props) {
                 {existingImages.length > 0 && (
                     <div className={styles.existingImageGrid}>
                         {existingImages.map(img => (
-                            <div key={img.imageId}>
-                                <img src={img.imageUrl} alt="academy image" />
-                                <button type="button" onClick={() => handleRemoveExistingImage(img.imageId)}>×</button>
+                            <div key={img.imageId} className={styles.existingImageItem}>
+                                <img src={img.imageUrl} alt="academy image" className={styles.existingImage} />
+                                <button
+                                    type="button"
+                                    className={styles.deleteBtn}
+                                    onClick={() => handleRemoveExistingImage(img.imageId)}
+                                >
+                                    ×
+                                </button>
                             </div>
                         ))}
                     </div>
                 )}
+
 
                 <MultiFileInput label="이미지 추가" files={newImageFiles} onChange={setNewImageFiles} multiple />
 
