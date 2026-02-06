@@ -7,6 +7,9 @@ import styles from '../student.module.css';
 import { StudentClassRowType } from './StudentCell';
 
 
+import { ChevronRight } from '@/components/icons/BasicIcons';
+
+
 interface Props {
     row: StudentClassRowType;
     isSearching?: boolean;
@@ -39,7 +42,10 @@ export default function StudentClassRow({ row, isSearching }: Props) {
                 onClick={() => setOpen(prev => !prev)}
             >
                 <td className={styles.classNameCell}>
-                    {row.className}
+                    <div className={styles.classNameContent}>
+                        <ChevronRight className={styles.chevron} />
+                        {row.className}
+                    </div>
                 </td>
                 <td>{row.totalStudents}</td>
                 <td>{row.inactiveStudents}</td>

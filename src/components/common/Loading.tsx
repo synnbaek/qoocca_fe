@@ -12,7 +12,10 @@ export default function Loading({ provider = 'default' }: LoadingProps) {
     <div className={styles.container}>
       <div className={styles.iconWrapper}>
         {provider === 'default' ? (
-          <div className={styles.spinnner}></div>
+          <div className={styles.loadingWrapper} style={{ flexDirection: 'column' }}>
+            <div className={styles.spinner}></div>
+            <div className={styles.loadingText}>수업 정보를 불러오고 있어요</div>
+          </div>
         ) : (
           <>
             <div className={`${styles.bouncingIcon} ${styles[provider]}`}>

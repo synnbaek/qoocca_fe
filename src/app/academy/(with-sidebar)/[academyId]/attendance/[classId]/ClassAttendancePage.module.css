@@ -97,7 +97,7 @@
     white-space: nowrap; /* 텍스트 줄바꿈 방지 */
   }
   
-  .searchBarWrapper {
+  .searchBar {
     margin-bottom: 15px;
   }
 
@@ -205,40 +205,8 @@
   margin-bottom: 30px;
 }
 
-.searchBarWrapper {
-  display: flex;
-  align-items: center;
-  border: 1px solid var(--border-primary);
-  border-radius: 12px;
-  padding: 12px 16px;
-  background-color: var(--bg-primary);
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.searchBarWrapper:focus-within {
-  border-color: var(--primary-color);
-}
-
-.searchIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-  color: #999;
-}
-
-.searchInput {
-  border: none;
-  outline: none;
-  font-size: 1rem;
-  width: 100%;
-  color: var(--text-primary);
-  background-color: transparent;
-}
-
-.searchInput::placeholder {
-  color: #ccc;
+.searchBar {
+  margin-bottom: 24px;
 }
 
 .classInfoRow {

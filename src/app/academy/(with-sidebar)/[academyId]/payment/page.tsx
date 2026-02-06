@@ -9,8 +9,9 @@ import PaymentRow from './components/PaymentRow';
 import StudentListModal from './components/StudentListModal';
 import StudentListInline from './components/StudentListInline';
 import CustomPaymentModal from './components/CustomPaymentModal';
-import { SearchIcon } from '@/components/icons/BasicIcons';
 import { usePayment } from '@/hooks/usePayment';
+import Loading from '@/components/common/Loading';
+import SearchBar from '@/components/common/SearchBar';
 
 export default function PaymentPage() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function PaymentPage() {
   
   const {
     currentDate,
-    expandedClassId,
+    expandedClassIds,
     selectedIds,
     selectedStudentIds,
     isModalOpen,
@@ -41,6 +42,7 @@ export default function PaymentPage() {
     setSearchQuery,
     filteredClassList,
     classList,
+    isLoading,
   } = usePayment(academyId as string);
 
   const [isMobile, setIsMobile] = useState(false);
@@ -56,13 +58,14 @@ export default function PaymentPage() {
     router.push(`/academy/${academyId}/class/register`);
   };
 
-  const detailClass = expandedClassId
-    ? filteredClassList.find((c) => c && c.classId === expandedClassId)
+  const lastExpandedId = expandedClassIds.length > 0 ? expandedClassIds[expandedClassIds.length - 1] : null;
+  const detailClass = lastExpandedId
+    ? filteredClassList.find((c) => c && c.classId === lastExpandedId)
     : null;
 
   const handleCloseDetail = () => {
-    if (expandedClassId) {
-      handleRowClick(expandedClassId);
+    if (lastExpandedId) {
+      handleRowClick(lastExpandedId);
     }
   };
 
@@ -100,20 +103,12 @@ export default function PaymentPage() {
             </button>
           </div>
         </div>
-        <div className={styles.searchBarWrapper}>
-          <div className={styles.searchIcon}>
-            <SearchIcon />
-          </div>
-          <input
-            type="text"
-            className={styles.searchInput}
-            placeholder="클래스명 또는 학생이름을 입력해주세요"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-
-
-        </div>
+        <SearchBar 
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder="클래스명 또는 학생이름을 입력해주세요"
+          className={styles.searchBar}
+        />
       </div>
 
       <div className={styles.tableSection}>
@@ -138,17 +133,19 @@ export default function PaymentPage() {
             </tr>
           </thead>
           <tbody>
-            {filteredClassList.length > 0 ? (
+            {isLoading ? (
+              <tr><td colSpan={6}><Loading /></td></tr>
+            ) : filteredClassList.length > 0 ? (
               filteredClassList.map((cls) => (
                 <React.Fragment key={cls.classId}>
                   <PaymentRow
                     cls={cls}
                     isSelected={selectedIds.includes(cls.classId)}
-                    isExpanded={expandedClassId === cls.classId}
+                    isExpanded={expandedClassIds.includes(cls.classId)}
                     onRowClick={handleRowClick}
                     onSelectClass={handleSelectOne}
                   />
-                  {!isMobile && expandedClassId === cls.classId && (
+                  {!isMobile && expandedClassIds.includes(cls.classId) && (
                     <StudentListInline
                       cls={cls}
                       selectedStudentIds={selectedStudentIds}

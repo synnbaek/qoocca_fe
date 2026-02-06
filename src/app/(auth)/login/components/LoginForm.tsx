@@ -66,7 +66,7 @@ export default function LoginForm() {
 
 
   return (
-    <form onSubmit={handleLogin} className={styles.form}>
+    <form onSubmit={handleLogin} className={styles.form} autoComplete="off">
       <Input
         type="email"
         placeholder="이메일"
@@ -74,6 +74,7 @@ export default function LoginForm() {
         onChange={(e) => setEmail(e.target.value)}
         required
         disabled={isLoading}
+        autoComplete="off"
       />
       <Input
         type="password"
@@ -82,6 +83,7 @@ export default function LoginForm() {
         onChange={(e) => setPassword(e.target.value)}
         required
         disabled={isLoading}
+        autoComplete="off"
       />
 
       <div className={styles.forgotPasswordWrapper}>

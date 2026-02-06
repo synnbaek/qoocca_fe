@@ -1,0 +1,54 @@
+@import '@/app/globals.css';
+
+.searchBarWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 14px 20px;
+  background-color: #fff;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.searchBarWrapper:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 14px;
+  color: #adb5bd;
+}
+
+.searchIcon svg path {
+  stroke: currentColor;
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  width: 100%;
+  color: var(--text-primary);
+  background-color: transparent;
+}
+
+.searchInput::placeholder {
+  color: #ccc;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .searchBarWrapper {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+}

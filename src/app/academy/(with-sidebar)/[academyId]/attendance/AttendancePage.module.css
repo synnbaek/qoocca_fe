@@ -54,48 +54,8 @@
   padding: 5px 10px;
 }
 
-.searchBarWrapper {
-  display: flex;
-  align-items: center;
-  border: 1px solid var(--border-primary);
-  border-radius: 12px;
-  padding: 12px 16px;
-  background-color: var(--bg-primary);
-  width: 100%;
-  box-sizing: border-box;
-  transition: border-color 0.2s;
-  margin-bottom: 24px;
-}
-
-.totalCount {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  margin-bottom: 15px;
-}
-
-.searchBarWrapper:focus-within {
-  border-color: var(--primary-color);
-}
-
-.searchIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-  color: #999;
-}
-
-.searchInput {
-  border: none;
-  outline: none;
-  font-size: 1rem;
-  width: 100%;
-  color: var(--text-primary);
-  background-color: transparent;
-}
-
-.searchInput::placeholder {
-  color: #ccc;
+.searchBar {
+  margin-bottom: 32px;
 }
 
 .infoRow {
@@ -106,8 +66,9 @@
 }
 
 .classCount {
-    color: var(--text-secondary);
-    font-size: 14px;
+    color: #495057;
+    font-size: 15px;
+    font-weight: 500;
 }
 
 .addClassBtn {
@@ -136,4 +97,46 @@
     .classGrid {
         grid-template-columns: 1fr;
     }
+}
+
+.emptyState {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 40px;
+    background: linear-gradient(145deg, #ffffff, #f1f3f5);
+    border-radius: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    text-align: center;
+    margin-top: 20px;
+}
+
+.emptyIcon {
+    font-size: 64px;
+    margin-bottom: 24px;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    animation: floating 3s ease-in-out infinite;
+}
+
+.emptyTitle {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
+.emptyDesc {
+    font-size: 1rem;
+    color: #6c757d;
+    line-height: 1.6;
+    max-width: 400px;
+}
+
+@keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
 }

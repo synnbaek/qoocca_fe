@@ -86,6 +86,7 @@ export default function CardRegistrationModal({
                         }}
                         placeholder="카드번호 16자리를 입력해주세요"
                         maxLength={16}
+                        autoComplete="off"
                     />
                 </div>
 
@@ -101,6 +102,7 @@ export default function CardRegistrationModal({
                             }}
                             placeholder="MM"
                             maxLength={2}
+                            autoComplete="off"
                         />
                         <input
                             className={styles.cardInput}
@@ -111,6 +113,7 @@ export default function CardRegistrationModal({
                             }}
                             placeholder="YY"
                             maxLength={2}
+                            autoComplete="off"
                         />
                     </div>
                 </div>
@@ -127,6 +130,7 @@ export default function CardRegistrationModal({
                         placeholder="000"
                         maxLength={3}
                         type="password"
+                        autoComplete="off"
                     />
                 </div>
 

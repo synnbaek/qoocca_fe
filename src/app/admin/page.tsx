@@ -201,6 +201,7 @@ export default function AdminPage() {
                 placeholder="학원명으로 검색..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                autoComplete="off"
             />
         </div>
       </div>

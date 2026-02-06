@@ -40,6 +40,7 @@ export default function Input({ label, error, onClick, ...props }: InputProps) {
         className={`${styles.input} ${error ? styles.errorInput : ''}`}
         onClick={handleClick}
         {...props}
+        autoComplete="off"
       />
       {error && <span className={styles.errorText}>{error}</span>}
     </div>
