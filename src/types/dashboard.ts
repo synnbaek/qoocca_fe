@@ -23,6 +23,11 @@ export interface ClassSummary {
     absentCount: number;
 }
 
+export interface AcademyImage {
+    imageId: number;  // 백엔드 응답 필드명과 일치
+    imageUrl: string;
+}
+
 export interface AcademyInfo {
     id: number; // API 실제 필드
     academyId?: number; // 기존 코드 호환용
@@ -40,7 +45,8 @@ export interface AcademyInfo {
     websiteUrl?: string;
     instagramUrl?: string;
     blogUrl?: string;
-    imageUrls?: string[]; // 학원 대표 이미지 URL 목록
+    imageUrls?: string[]; // 하위 호환용 (deprecated)
+    images?: AcademyImage[]; // 학원 대표 이미지 객체 목록 (imageId 포함)
     ages?: { ageCode: string }[];
     subjects?: { detailSubject: string }[];
 }
