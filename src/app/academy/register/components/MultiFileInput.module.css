@@ -2,10 +2,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid var(--primary-color);
+    border: 1px solid var(--border-primary);
     border-radius: 12px;
     padding: 0 20px;
-    background-color: var(--bg-surface);
+    background-color: var(--bg-primary);
     cursor: pointer;
     transition: all 0.2s ease;
     min-height: 120px;
@@ -13,6 +13,13 @@
 
 .container:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.container:focus-within,
+.container:active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    background-color: var(--bg-surface);
 }
 
 .textSection {
@@ -67,4 +74,71 @@
     justify-content: center;
     font-size: 12px;
     color: var(--text-secondary);
+}
+
+.imageGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.imageItem {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    /* 1:1 aspect ratio */
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-primary);
+}
+
+.gridImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gridFileIcon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.removeBtn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: rgba(239, 68, 68, 0.9);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.removeBtn:hover {
+    background-color: rgba(220, 38, 38, 1);
+    transform: scale(1.1);
 }

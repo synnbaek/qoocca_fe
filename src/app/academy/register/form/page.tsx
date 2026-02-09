@@ -14,7 +14,7 @@ import Button from '../../../../components/common/Button';
 
 export default function AcademyFormPage() {
   const router = useRouter();
-  const { academyName, businessFiles } = useAcademy();
+  const { academyName, businessFiles, academyImageFiles } = useAcademy();
 
   const { subjectOptions, loading: subjectLoading } = useSubjects();
   const { ageOptions, loading: ageLoading } = useAges();
@@ -58,6 +58,7 @@ export default function AcademyFormPage() {
         instagramUrl: instagram,
         blogUrl: blog,
         certificateFile: businessFiles[0],
+        imageFiles: academyImageFiles.length > 0 ? academyImageFiles : undefined,
         ageIds: selectedAgeIds,
         subjects: selectedSubjectIds,
       });

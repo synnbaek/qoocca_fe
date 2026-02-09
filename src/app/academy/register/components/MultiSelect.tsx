@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "../form/form.module.css";
-import inputStyles from '../../../../components/common/Input.module.css';
+import inputStyles from "../../../../components/common/Input.module.css";
 
 type Props = {
   label: string;
@@ -40,8 +40,8 @@ export default function MultiSelect({
         setOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -54,37 +54,36 @@ export default function MultiSelect({
           onClick={() => setOpen((prev) => !prev)}
         >
           <span className={styles.placeholder}>
-            {selected.length > 0 ? `${selected.length}개 선택됨` : '선택하세요'}
+            {selected.length > 0 ? `${selected.length}개 선택됨` : "선택하세요"}
           </span>
-          <span className={styles.arrow}>{open ? '▲' : '▼'}</span>
+          <span className={styles.arrow}>{open ? "▲" : "▼"}</span>
         </div>
 
         {open && (
           <div className={styles.multiSelectOptionsDropdown}>
             {options
               .filter((opt) => !selected.includes(opt))
-              .map((opt) => (
-              <div
-                key={opt}
-                className={`${styles.multiSelectOption} ${
-                  selected.includes(opt) ? styles.selected : ''
-                }`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleOption(opt);
-                }}
-              >
-                {opt}
-              </div>
-            ))}
+              .map((opt, idx) => (
+                <div
+                  key={`${opt}-${idx}`}
+                  className={`${styles.multiSelectOption} ${selected.includes(opt) ? styles.selected : ""
+                    }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleOption(opt);
+                  }}
+                >
+                  {opt}
+                </div>
+              ))}
           </div>
         )}
       </div>
 
       {selected.length > 0 && (
         <div className={styles.selectedTagsContainer}>
-          {selected.map((val) => (
-            <div key={val} className={styles.tag}>
+          {selected.map((val, idx) => (
+            <div key={`${val}-${idx}`} className={styles.tag}>
               <span className={styles.tagName}>{val}</span>
               <button
                 type="button"

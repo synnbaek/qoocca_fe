@@ -1,101 +1,100 @@
 import axiosInstance from '@/api/axiosInstance';
-import {
-    DashboardStatsData,
-    ReceiptSummary,
-    ClassSummary,
-    AcademyInfo
-} from '@/types/dashboard';
+import { DashboardStatsData, ReceiptSummary, ClassSummary, AcademyInfo, AcademyImage } from '@/types/dashboard';
 
 /**
  * 대시보드 관련 학원 API 엔드포인트
  */
 export const ACADEMY_ENDPOINTS = {
-    /** 학원 프로필 정보 조회 */
     getAcademyInfo: (id: number | string) => `/api/academy/${id}/profile`,
-    /** 학원 프로필 정보 수정 */
     updateAcademyProfile: (id: number | string) => `/api/academy/${id}/profile`,
-    /** 내 학원 목록 조회 */
     getMyAcademyList: '/api/me/academies',
-    /** 대시보드 클래스 요약 정보 조회 */
     getDashboardClassSummary: (id: number | string) => `/api/academy/${id}/dashboard/class-summary`,
-    /** 대시보드 통계 데이터 조회 */
     getStats: (id: number | string) => `/api/academy/${id}/dashboard/stats`,
-    /** 대시보드 메인 영수증 현황 조회 */
     getDashboardReceiptMain: (id: number | string) => `/api/academy/${id}/dashboard/receipt-main`,
-    /** 학원 등록 재심사 요청 */
     resubmitAcademy: (id: number | string) => `/api/academy/${id}/approval/resubmissions`,
-} as const;
+};
 
-/**
- * 학원 프로필 상세 정보 조회
- */
+/** 학원 상세 정보 조회 */
 export const getAcademyInfo = async (academyId: string | number): Promise<AcademyInfo> => {
     const response = await axiosInstance.get<AcademyInfo>(ACADEMY_ENDPOINTS.getAcademyInfo(academyId));
     return response.data;
 };
 
-/**
- * 학원 프로필 정보 부분 수정 (PATCH)
- */
-export const updateAcademyProfile = async (academyId: string | number, data: any): Promise<void> => {
-    await axiosInstance.patch(ACADEMY_ENDPOINTS.updateAcademyProfile(academyId), data);
+/** 학원 정보 수정 (PATCH, multipart/form-data) */
+export const updateAcademyProfile = async (academyId: string | number, data: Record<string, any>): Promise<void> => {
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+            if (Array.isArray(value)) {
+                value.forEach(item => formData.append(key, String(item)));
+            } else {
+                formData.append(key, String(value));
+            }
+        }
+    });
+
+    await axiosInstance.patch(ACADEMY_ENDPOINTS.updateAcademyProfile(academyId), formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
 };
 
-/**
- * 현재 로그인한 사용자의 모든 학원 목록 조회
- */
+/** 학원 이미지 업로드 */
+export const uploadAcademyImages = async (academyId: string | number, imageFiles: File[]): Promise<AcademyImage[]> => {
+    const formData = new FormData();
+    imageFiles.forEach(file => formData.append('images', file));
+
+    const response = await axiosInstance.post<AcademyImage[]>(`/api/academy/${academyId}/images`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        transformRequest: (data, headers) => data // FormData 그대로 전송
+
+    });
+    return response.data;
+};
+
+/** 학원 이미지 삭제 */
+export const deleteAcademyImage = async (academyId: string | number, imageId: number): Promise<void> => {
+    const url = `/api/academy/${academyId}/images/${imageId}`;
+    try {
+        await axiosInstance.delete(url);
+    } catch (error) {
+        console.error('이미지 삭제 실패:', error);
+        throw error;
+    }
+};
+
+/** 내 학원 목록 조회 */
 export const getMyAcademies = async (): Promise<AcademyInfo[]> => {
     const response = await axiosInstance.get<AcademyInfo[]>(ACADEMY_ENDPOINTS.getMyAcademyList);
     return response.data;
 };
 
-/**
- * 대시보드 상단 클래스 요약 현황 조회 (원생 수 등)
- */
+/** 클래스 요약 조회 */
 export const getClassSummary = async (academyId: string | number): Promise<ClassSummary[]> => {
     const response = await axiosInstance.get<ClassSummary[]>(ACADEMY_ENDPOINTS.getDashboardClassSummary(academyId), {
-        params: { _t: Date.now() } // 캐시 방지를 위한 타임스탬프
+        params: { _t: Date.now() },
     });
     return response.data;
 };
 
-/**
- * 대시보드 전반적인 통계 데이터 조회
- */
+/** 통계 조회 */
 export const getStats = async (academyId: string | number): Promise<DashboardStatsData> => {
     const response = await axiosInstance.get<DashboardStatsData>(ACADEMY_ENDPOINTS.getStats(academyId), {
-        params: { _t: Date.now() }
+        params: { _t: Date.now() },
     });
     return response.data;
 };
 
-/**
- * 대시보드 메인 화면의 월별 영수증/수납 요약 정보 조회
- */
+/** 월별 영수증/수납 요약 */
 export const getReceiptSummary = async (academyId: string | number, year: number, month: number): Promise<ReceiptSummary[]> => {
-    const response = await axiosInstance.get<ReceiptSummary[]>(
-        ACADEMY_ENDPOINTS.getDashboardReceiptMain(academyId),
-        {
-            params: {
-                year,
-                month,
-                _t: Date.now()
-            }
-        }
-    );
+    const response = await axiosInstance.get<ReceiptSummary[]>(ACADEMY_ENDPOINTS.getDashboardReceiptMain(academyId), {
+        params: { year, month, _t: Date.now() },
+    });
     return response.data;
 };
 
-/**
- * 학원 등록 거절 후 정보 수정하여 재심사 요청 (멀티파트 데이터)
- */
+/** 학원 재심사 요청 */
 export const resubmitAcademy = async (academyId: string | number, data: FormData): Promise<void> => {
     const url = ACADEMY_ENDPOINTS.resubmitAcademy(academyId);
-    console.log(`[DashboardApi] Resubmitting to ${url} (POST)`);
-    await axiosInstance.post(url, data, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    await axiosInstance.post(url, data, { headers: { 'Content-Type': 'multipart/form-data' } });
 };
-
-
-
