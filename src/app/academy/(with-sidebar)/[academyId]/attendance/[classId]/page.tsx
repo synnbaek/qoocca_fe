@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import styles from './ClassAttendancePage.module.css';
-import { SearchIcon } from '@/components/icons/BasicIcons';
 import StudentAttendanceRow from './components/StudentAttendanceRow';
 import { formatYearMonth } from '@/utils/dateUtils';
 import { attendanceService } from '@/services/attendanceService';
 import { DateController } from '@/components/common/DateController';
 import { StudentMonthlyStat } from '@/types/attendance';
 import { getClasses } from '@/api/classApi';
+import Loading from '@/components/common/Loading';
+import SearchBar from '@/components/common/SearchBar';
 
 export default function ClassAttendancePage() {
     const { academyId, classId } = useParams();
@@ -101,18 +102,12 @@ export default function ClassAttendancePage() {
             </div>
 
             <div className={styles.summarySection}>
-                <div className={styles.searchBarWrapper}>
-                    <div className={styles.searchIcon}>
-                        <SearchIcon />
-                    </div>
-                    <input
-                        type="text"
-                        className={styles.searchInput}
-                        placeholder="학생 이름을 입력해주세요"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
+                <SearchBar 
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    placeholder="학생 이름을 입력해주세요"
+                    className={styles.searchBar}
+                />
 
                 <div className={styles.classInfoRow}>
                     <div className={styles.classTitle}>
@@ -136,7 +131,7 @@ export default function ClassAttendancePage() {
                     </thead>
                     <tbody>
                         {isLoading ? (
-                            <tr><td colSpan={5}>로딩 중...</td></tr>
+                            <tr><td colSpan={5}><Loading /></td></tr>
                         ) : filteredStudents.length > 0 ? (
                             filteredStudents.map(student => (
                                 <StudentAttendanceRow

@@ -7,18 +7,51 @@
     padding: 24px;
 }
 
-.tableWrapper {
-    width: 100%;
-    overflow-x: auto;
-    /* 모바일에서 표 가로 스크롤 허용 */
-    -webkit-overflow-scrolling: touch;
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+}
+
+.titleSection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pageTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.statsContainer {
+    display: flex;
+    gap: 12px;
+}
+
+.statsBadge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.statsValue {
+    font-weight: 600;
+    color: var(--primary-color);
 }
 
 .buttonGroup {
     display: flex;
     gap: 12px;
-    justify-content: flex-end;
-    margin-bottom: 20px;
+    align-items: center;
 }
 
 .addStudentBtn {
@@ -38,6 +71,10 @@
 }
 
 .sectionBox {
+    margin-bottom: 24px;
+}
+
+.searchBar {
     margin-bottom: 24px;
 }
 
@@ -82,7 +119,65 @@
     cursor: pointer;
     color: var(--text-primary);
     text-align: left !important;
-    padding-left: 15% !important; 
+    padding-left: 13.5% !important; 
+    font-weight: 600;
+}
+
+.studentNameCell {
+    text-align: left !important;
+    padding-left: 15% !important;
+}
+
+.studentNameWrapper {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.subArrow {
+    color: #cbd5e1;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.studentNameText {
+    white-space: nowrap;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+
+.studentParentCell {
+    text-align: center;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.studentCardCell {
+    text-align: center;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.linkHint {
+    color: #38bdf8;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+
+.noStudents {
+    padding: 30px;
+    color: var(--text-tertiary);
+    text-align: center;
+    background-color: var(--bg-secondary);
+}
+
+.table input[type='checkbox'] {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
 }
 
 .mainRow {
@@ -153,8 +248,6 @@
     transform: translateX(22px);
 }
 
-
-
 .studentRow td {
     background-color: var(--bg-secondary) !important;
     border: none !important;
@@ -165,55 +258,20 @@
     background-color: var(--bg-surface) !important;
 }
 
-.studentNameCell {
-    text-align: left !important;
-    padding-left: 15% !important;
-}
-
-.studentNameWrapper {
+.classNameContent {
     display: flex;
     align-items: center;
-    gap: 40px;
+    gap: 12px;
 }
 
-.subArrow {
-    color: #cbd5e1;
-    font-size: 1rem;
-    flex-shrink: 0;
-}
-
-.studentNameText {
-    white-space: nowrap;
-}
-
-
-.studentParentCell {
-    text-align: center;
-    color: var(--text-secondary);
-}
-
-.studentCardCell {
-    text-align: center;
-    color: var(--text-secondary);
-}
-
-.linkHint {
-    color: #38bdf8;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-
-.noStudents {
-    padding: 30px;
+.chevron {
     color: var(--text-tertiary);
-    text-align: center;
-    background-color: var(--bg-secondary);
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.table input[type='checkbox'] {
-    width: 17px;
-    height: 17px;
-    accent-color: var(--primary-color);
-    cursor: pointer;
+.expanded .chevron {
+    transform: rotate(90deg);
 }

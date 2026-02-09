@@ -38,6 +38,7 @@ export default function PhoneSection(props: Props) {
           className={styles.insideInput}
           disabled={isPhoneVerified || isLoading}
           required
+          autoComplete="off"
         />
         {!isPhoneVerified && (
           <div className={styles.btnWrapper}>
@@ -67,6 +68,7 @@ export default function PhoneSection(props: Props) {
             className={styles.insideInput}
             disabled={isPhoneVerified || isLoading}
             required
+            autoComplete="off"
           />
           {!isPhoneVerified ? (
             <button

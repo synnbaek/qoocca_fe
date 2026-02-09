@@ -12,9 +12,10 @@ interface ModalConfig {
 export const usePayment = (academyId: string) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [classList, setClassList] = useState<ClassSummary[]>([]);
-  const [expandedClassId, setExpandedClassId] = useState<number | null>(null);
+  const [expandedClassIds, setExpandedClassIds] = useState<number[]>([]);
   const [totalMonthlyFee, setTotalMonthlyFee] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [selectedStudentIds, setSelectedStudentIds] = useState<number[]>([]);
@@ -31,18 +32,21 @@ export const usePayment = (academyId: string) => {
   // 확장된 클래스가 변경되면 학생 선택 초기화
   useEffect(() => {
     setSelectedStudentIds([]);
-  }, [expandedClassId]);
+  }, [expandedClassIds]);
 
   // 데이터 조회
   const fetchSummary = useCallback(async () => {
     if (!academyId) return;
     try {
+      setIsLoading(true);
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth() + 1;
       const data = await paymentService.getClassSummary(academyId, year, month);
       setClassList(data || []);
     } catch (err) {
       console.error('수납 요약 로딩 실패:', err);
+    } finally {
+      setIsLoading(false);
     }
   }, [academyId, currentDate]);
 
@@ -89,7 +93,7 @@ export const usePayment = (academyId: string) => {
     if (searchQuery.trim() && filteredClassList.length > 0) {
       const firstResult = filteredClassList[0];
       if (firstResult && firstResult.students?.some(s => s.studentName.toLowerCase().includes(searchQuery.toLowerCase()))) {
-         setExpandedClassId(firstResult.classId);
+         setExpandedClassIds(prev => prev.includes(firstResult.classId) ? prev : [...prev, firstResult.classId]);
       }
     }
   }, [searchQuery, filteredClassList]);
@@ -106,7 +110,11 @@ export const usePayment = (academyId: string) => {
   }, []);
 
   const handleRowClick = useCallback((classId: number) => {
-    setExpandedClassId(prev => (prev === classId ? null : classId));
+    setExpandedClassIds(prev => 
+      prev.includes(classId) 
+        ? prev.filter(id => id !== classId) 
+        : [...prev, classId]
+    );
   }, []);
 
   const handleSelectAll = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -332,7 +340,7 @@ export const usePayment = (academyId: string) => {
   return {
     currentDate,
     classList,
-    expandedClassId,
+    expandedClassIds,
     selectedIds,
     selectedStudentIds,
     isModalOpen,
@@ -355,5 +363,6 @@ export const usePayment = (academyId: string) => {
     searchQuery,
     setSearchQuery,
     filteredClassList,
+    isLoading,
   };
 };

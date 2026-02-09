@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import styles from './Dashboard.module.css';
 import ClassCard from '@/components/common/ClassCard';
 
@@ -9,7 +10,6 @@ import DashboardBanner from './components/DashboardBanner';
 import DashboardStats from './components/DashboardStats';
 import DashboardReport from './components/DashboardReport';
 import CustomModal from '@/components/common/CustomModal';
-import AcademyRejectionModal from './components/AcademyRejectionModal';
 import { toast } from 'sonner';
 
 import { dashboardService } from '@/services/dashboardService';
@@ -19,7 +19,9 @@ import {
   ClassSummary,
   AcademyInfo
 } from '@/types/dashboard';
-import AcademySelectionModal from '@/components/auth/AcademySelectionModal';
+
+const AcademyRejectionModal = dynamic(() => import('./components/AcademyRejectionModal'), { ssr: false });
+const AcademySelectionModal = dynamic(() => import('@/components/auth/AcademySelectionModal'), { ssr: false });
 
 interface Props {
   academyId?: string;
@@ -107,9 +109,15 @@ export default function Dashboard({ academyId, initialData }: Props) {
   // 여기서는 클라이언트 사이드 네비게이션으로 들어왔을 때 등을 대비한 방어 코드 정도만 남김.
   // 다만 SSR 전환으로 대부분의 데이터가 미리 있으므로, useEffect fetching은 제거함.
 
-  // 만약 academyId가 없다면 (layout에서 처리 안된 케이스?), CSR로 fallback
+  // SSR 데이터를 받았을 경우 클라이언트 사이드 중복 요청 방지
   useEffect(() => {
     const checkRedirect = async () => {
+      // 이미 서버에서 충분한 데이터를 받았다면 fetch 생략
+      if (isRegistered && initialData.academyInfo && initialData.classes && initialData.stats) {
+        setIsLoading(false);
+        return;
+      }
+
       if (!isRegistered) {
         try {
           const academies = await dashboardService.getMyAcademies();
@@ -139,7 +147,7 @@ export default function Dashboard({ academyId, initialData }: Props) {
             reason: academyInfo.rejectionReason || '등록 정보에 문제가 있어 승인이 거절되었습니다.\n사유를 확인하고 다시 제출해 주세요.',
             academyName: academyInfo.name || '',
             phoneNumber: academyInfo.phoneNumber,
-            baseAddress: academyInfo.baseAddress || '', // baseAddress 연결
+            baseAddress: academyInfo.baseAddress || '', 
             detailAddress: academyInfo.detailAddress,
             submittedFileUrl: academyInfo.certificate,
             files: [],
@@ -176,7 +184,7 @@ export default function Dashboard({ academyId, initialData }: Props) {
       }
     };
     checkRedirect();
-  }, [isRegistered, router]);
+  }, [isRegistered, router, academyId, initialData]);
 
 
   const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;

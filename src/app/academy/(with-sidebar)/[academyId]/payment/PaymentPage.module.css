@@ -111,7 +111,7 @@
     gap: 5px;
   }
   
-  .searchBarWrapper {
+  .searchBar {
     width: 100%;
   }
 
@@ -350,8 +350,9 @@
 }
 
 .checkboxCol {
-  width: 5%;
-  min-width: 50px;
+  width: 60px;
+  min-width: 60px;
+  text-align: center;
 }
 
 .classNameColHeader {
@@ -375,10 +376,12 @@
 }
 
 .paymentTable input[type='checkbox'] {
-  width: 17px;
-  height: 17px;
+  width: 18px;
+  height: 18px;
   accent-color: var(--primary-color);
   cursor: pointer;
+  vertical-align: middle;
+  margin: 0; /* 불필요한 마진 제거로 정렬 통일 */
 }
 
 .mainRow {
@@ -496,45 +499,8 @@
   color: var(--text-primary);
 }
 
-.searchBarWrapper {
-  display: flex;
-  align-items: center;
-  border: 1px solid var(--border-primary);
-  border-radius: 12px;
-  padding: 12px 16px;
-  background-color: var(--bg-primary);
-  width: 100%;
-  box-sizing: border-box;
-  transition: border-color 0.2s;
-}
-
-.searchBarWrapper:focus-within {
-  border-color: var(--primary-color);
-}
-
-.searchIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-  color: #999;
-}
-
-.searchIcon svg path {
-  stroke: currentColor;
-}
-
-.searchInput {
-  border: none;
-  outline: none;
-  font-size: 1rem;
-  width: 100%;
-  color: var(--text-primary);
-  background-color: transparent;
-}
-
-.searchInput::placeholder {
-  color: #ccc;
+.searchBar {
+  margin-top: 10px;
 }
 
 .noCardBadge {
@@ -623,5 +589,4 @@
   height: 18px;
   accent-color: var(--primary-color);
   cursor: pointer;
-  margin-right: 8px;
 }

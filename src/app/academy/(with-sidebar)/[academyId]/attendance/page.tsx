@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import styles from './AttendancePage.module.css';
-import { SearchIcon } from '@/components/icons/BasicIcons';
 import AttendanceClassCard from './components/AttendanceClassCard';
 import { formatFullDate } from '@/utils/dateUtils';
 import { attendanceService } from '@/services/attendanceService';
 import { DateController } from '@/components/common/DateController';
 import { ClassAttendanceSummary } from '@/types/attendance';
+import Loading from '@/components/common/Loading';
+import SearchBar from '@/components/common/SearchBar';
 
 export default function AttendancePage() {
     const { academyId } = useParams();
@@ -71,18 +72,12 @@ export default function AttendancePage() {
                 />
             </div>
 
-            <div className={styles.searchBarWrapper}>
-                <div className={styles.searchIcon}>
-                    <SearchIcon />
-                </div>
-                <input
-                    type="text"
-                    className={styles.searchInput}
-                    placeholder="클래스명을 입력해주세요"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-            </div>
+            <SearchBar 
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="클래스명을 입력해주세요"
+                className={styles.searchBar}
+            />
 
             <div className={styles.infoRow}>
                 <span className={styles.classCount}>오늘 수업 클래스 수 {classes.length}</span>
@@ -91,8 +86,28 @@ export default function AttendancePage() {
 
             <div className={styles.classGrid}>
                 {isLoading ? (
-                    <div>로딩 중...</div>
-                ) : filteredClasses.length > 0 ? (
+                    <Loading />
+                ) : classes.length === 0 ? (
+                    /* 학원에 클래스가 하나도 없는 경우 */
+                    <div className={styles.emptyState}>
+                        <div className={styles.emptyIcon}>📅</div>
+                        <div className={styles.emptyTitle}>등록된 수업이 없습니다.</div>
+                        <div className={styles.emptyDesc}>
+                            아직 등록된 클래스가 없어요.<br />
+                            우측 상단의 [+ 클래스 추가] 버튼을 눌러 첫 수업을 만들어 보세요!
+                        </div>
+                    </div>
+                ) : filteredClasses.length === 0 ? (
+                    /* 검색 결과가 없는 경우 */
+                    <div className={styles.emptyState}>
+                        <div className={styles.emptyIcon}>🔍</div>
+                        <div className={styles.emptyTitle}>검색 결과가 없습니다.</div>
+                        <div className={styles.emptyDesc}>
+                            '{searchQuery}'에 해당하는 클래스를 찾을 수 없어요.<br />
+                            검색어를 다시 확인해 주세요.
+                        </div>
+                    </div>
+                ) : (
                     filteredClasses.map(cls => (
                         <AttendanceClassCard 
                             key={cls.classId}
@@ -105,8 +120,6 @@ export default function AttendancePage() {
                             onClick={() => router.push(`/academy/${academyId}/attendance/${cls.classId}?className=${encodeURIComponent(cls.className)}&classTime=${encodeURIComponent(cls.classTime)}`)}
                         />
                     ))
-                ) : (
-                    <div>수업이 없습니다.</div>
                 )}
             </div>
         </div>

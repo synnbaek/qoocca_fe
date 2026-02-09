@@ -30,7 +30,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 6px 16px;
+  padding: 10px 20px;
   border: 1px solid var(--border-primary);
   border-radius: 10px; /* 살짝 더 둥글게 */
   background-color: var(--bg-surface);
@@ -56,6 +56,9 @@
   padding: 0;
   cursor: pointer;
   font-family: inherit;
+  line-height: 1; /* 높낮이 차이 해결을 위해 명시적으로 설정 */
+  display: flex; /* flex center를 위해 추가 */
+  align-items: center;
 }
 
 .headerLinks a:hover,
@@ -71,6 +74,8 @@
 
 .notificationWrapper {
   position: relative;
+  display: flex; /* 형제들(Link, button)과 동일한 flex 컨텍스트 유지 */
+  align-items: center;
 }
 
 .notificationDropdown {
