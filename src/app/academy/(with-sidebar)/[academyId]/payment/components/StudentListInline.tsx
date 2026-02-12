@@ -78,9 +78,10 @@ export default function StudentListInline({
               onChange={() => onSelectStudent(student.studentId)}
               checked={selectedStudentIds.includes(student.studentId)}
               disabled={student.status !== 'BEFORE_REQUEST' || !student.cardRegistered}
+              aria-label={`${student.studentName} 학생 선택`}
             />
           </td>
-          <td className={styles.classNameCol} style={{ textAlign: 'left' }}>
+          <td className={styles.classNameCol} style={{ textAlign: 'left' }} role="gridcell">
             <span className={styles.studentName}>
               {student.studentName}
               {!student.cardRegistered && (

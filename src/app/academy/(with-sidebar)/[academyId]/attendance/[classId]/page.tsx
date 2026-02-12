@@ -12,12 +12,15 @@ import { getClasses } from '@/api/classApi';
 import Loading from '@/components/common/Loading';
 import SearchBar from '@/components/common/SearchBar';
 
+import { toast } from 'sonner';
+
 export default function ClassAttendancePage() {
     const { academyId, classId } = useParams();
     const searchParams = useSearchParams();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [searchQuery, setSearchQuery] = useState('');
     const [students, setStudents] = useState<StudentMonthlyStat[]>([]);
+    const [selectedStudentIds, setSelectedStudentIds] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const [classInfo, setClassInfo] = useState<{ name: string; time: string | null }>({
@@ -26,6 +29,31 @@ export default function ClassAttendancePage() {
     });
 
     const router = useRouter();
+
+    const mockStudents: StudentMonthlyStat[] = [
+        { studentId: 1, studentName: '김철수', presentCount: 15, lateCount: 2, absentCount: 1 },
+        { studentId: 2, studentName: '이영희', presentCount: 18, lateCount: 0, absentCount: 0 },
+        { studentId: 3, studentName: '박지민', presentCount: 12, lateCount: 4, absentCount: 2 },
+        { studentId: 4, studentName: '최다은', presentCount: 14, lateCount: 1, absentCount: 3 },
+        { studentId: 5, studentName: '정우진', presentCount: 17, lateCount: 1, absentCount: 0 },
+        { studentId: 6, studentName: '강한나', presentCount: 16, lateCount: 2, absentCount: 0 },
+    ];
+
+    const fetchStats = async () => {
+        if (!classId) return;
+
+        try {
+            setIsLoading(true);
+            // 실제 API 호출 대신 임시 데이터 사용
+            setTimeout(() => {
+                setStudents(mockStudents);
+                setIsLoading(false);
+            }, 500);
+        } catch (error) {
+            console.error('월별 출결 현황 로딩 실패:', error);
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
         const loadClassInfo = async () => {
@@ -49,23 +77,6 @@ export default function ClassAttendancePage() {
     }, [academyId, classId]);
 
     useEffect(() => {
-        const fetchStats = async () => {
-            if (!classId) return;
-
-            try {
-                setIsLoading(true);
-                const year = currentDate.getFullYear();
-                const month = currentDate.getMonth() + 1;
-
-                const data = await attendanceService.getClassMonthlyStats(classId as string, year, month);
-                setStudents(data);
-            } catch (error) {
-                console.error('월별 출결 현황 로딩 실패:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         fetchStats();
     }, [classId, currentDate]);
 
@@ -81,9 +92,57 @@ export default function ClassAttendancePage() {
         setCurrentDate(newDate);
     };
 
+    const handleSelectStudent = (id: number) => {
+        setSelectedStudentIds(prev => 
+            prev.includes(id) ? prev.filter(studentId => studentId !== id) : [...prev, id]
+        );
+    };
+
+    const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.checked) {
+            setSelectedStudentIds(filteredStudents.map(s => s.studentId));
+        } else {
+            setSelectedStudentIds([]);
+        }
+    };
+
+    const handleBulkAttendance = async (type: 'IN' | 'OUT') => {
+        if (selectedStudentIds.length === 0) return;
+
+        try {
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            const timeStr = now.toTimeString().split(' ')[0]; // HH:mm:ss
+
+            if (type === 'IN') {
+                await attendanceService.updateBatchAttendance({
+                    studentIds: selectedStudentIds,
+                    attendanceDate: todayStr,
+                    checkIn: timeStr
+                });
+                toast.success(`${selectedStudentIds.length}명의 학생을 등원 처리했습니다.`);
+            } else {
+                await attendanceService.updateBatchCheckOut({
+                    studentIds: selectedStudentIds,
+                    attendanceDate: todayStr,
+                    checkOut: timeStr
+                });
+                toast.success(`${selectedStudentIds.length}명의 학생을 하원 처리했습니다.`);
+            }
+            
+            setSelectedStudentIds([]);
+            fetchStats(); // 목록 새로고침
+        } catch (error) {
+            toast.error('일괄 처리에 실패했습니다.');
+            console.error(error);
+        }
+    };
+
     const filteredStudents = students.filter(student => 
         student.studentName.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    const isAllSelected = filteredStudents.length > 0 && selectedStudentIds.length === filteredStudents.length;
 
     return (
         <div className={styles.container}>
@@ -122,7 +181,13 @@ export default function ClassAttendancePage() {
                 <table className={styles.studentTable}>
                     <thead>
                         <tr>
-                            <th className={styles.checkboxCol}><input type="checkbox" /></th>
+                            <th className={styles.checkboxCol}>
+                                <input 
+                                    type="checkbox" 
+                                    onChange={handleSelectAll}
+                                    checked={isAllSelected}
+                                />
+                            </th>
                             <th className={styles.nameCol}>이름</th>
                             <th className={styles.statCol}>출석</th>
                             <th className={styles.statCol}>지각</th>
@@ -137,8 +202,8 @@ export default function ClassAttendancePage() {
                                 <StudentAttendanceRow
                                     key={student.studentId}
                                     student={student}
-                                    isSelected={false}
-                                    onSelectStudent={() => {}}
+                                    isSelected={selectedStudentIds.includes(student.studentId)}
+                                    onSelectStudent={handleSelectStudent}
                                     onClick={() => router.push(`/academy/${academyId}/attendance/${classId}/${student.studentId}`)}
                                 />
                             ))
@@ -148,6 +213,19 @@ export default function ClassAttendancePage() {
                     </tbody>
                 </table>
             </div>
+
+            {selectedStudentIds.length > 0 && (
+                <div className={styles.bulkActionBar}>
+                    <div className={styles.selectedInfo}>
+                        <span className={styles.selectedCount}>{selectedStudentIds.length}</span>명 선택됨
+                    </div>
+                    <div className={styles.bulkActions}>
+                        <button className={`${styles.bulkBtn} ${styles.presentBtn}`} onClick={() => handleBulkAttendance('IN')}>일괄 등원</button>
+                        <button className={`${styles.bulkBtn} ${styles.absentBtn}`} onClick={() => handleBulkAttendance('OUT')}>일괄 하원</button>
+                        <button className={`${styles.bulkBtn} ${styles.cancelBtn}`} onClick={() => setSelectedStudentIds([])}>취소</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

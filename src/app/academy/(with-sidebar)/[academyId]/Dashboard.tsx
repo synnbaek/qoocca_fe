@@ -112,11 +112,8 @@ export default function Dashboard({ academyId, initialData }: Props) {
   // SSR 데이터를 받았을 경우 클라이언트 사이드 중복 요청 방지
   useEffect(() => {
     const checkRedirect = async () => {
-      // 이미 서버에서 충분한 데이터를 받았다면 fetch 생략
-      if (isRegistered && initialData.academyInfo && initialData.classes && initialData.stats) {
-        setIsLoading(false);
-        return;
-      }
+      // SSR 데이터를 받았더라도 최신 상태 확인을 위해 client-side에서도 fetch 수행 (상태 업데이트 확인용)
+      // if (isRegistered && initialData.academyInfo && initialData.classes && initialData.stats) { ... }
 
       if (!isRegistered) {
         try {
@@ -138,8 +135,8 @@ export default function Dashboard({ academyId, initialData }: Props) {
         setIsLoading(true);
 
         const academyInfo = await dashboardService.getAcademyInfo(academyId);
-
         const status = academyInfo.approvalStatus;
+
         setApprovalStatus(status);
 
         if (status === 'REJECTED') {
@@ -154,31 +151,41 @@ export default function Dashboard({ academyId, initialData }: Props) {
           });
           setIsRejectionModalOpen(true);
         } else if (status === 'APPROVED') {
-          const [classData, statsData] = await Promise.all([
-            dashboardService.getClassSummary(academyId),
-            dashboardService.getStats(academyId),
-          ]);
-
-          setClasses(classData || []);
-          if (classData && classData.length > 0) {
-            setSelectedClassId(classData[0].classId);
-          }
-          setStats(statsData);
-
+          // statsData와 classData 요청은 실패하더라도 전체 상태가 PENDING으로 가지 않도록 개별 catch 처리
           try {
+            const [classData, statsData] = await Promise.all([
+              dashboardService.getClassSummary(academyId).catch(err => {
+                console.warn('클래스 정보 로딩 실패:', err);
+                return [];
+              }),
+              dashboardService.getStats(academyId).catch(err => {
+                console.warn('통계 정보 로딩 실패:', err);
+                return stats; // 기존 통계 유지
+              }),
+            ]);
+
+            setClasses(classData || []);
+            if (classData && classData.length > 0) {
+              setSelectedClassId(classData[0].classId);
+            }
+            setStats(statsData);
+
             const receiptData = await dashboardService.getReceiptSummary(
               academyId,
               new Date().getFullYear(),
               new Date().getMonth() + 1
-            );
+            ).catch(err => {
+              console.warn('영수증 정보 로딩 실패:', err);
+              return [];
+            });
             setReceipts(receiptData || []);
           } catch (e) {
-            setReceipts([]);
+            console.error('Dashboard data partial fetch failed:', e);
           }
         }
       } catch (err: any) {
-        console.error('데이터 로딩 실패:', err.response?.data || err.message);
-        setApprovalStatus('PENDING');
+        console.error('학원 정보 로딩 실패:', err.response?.data || err.message);
+        // 학원 정보 조회 자체가 실패한 경우에만 fallback 처리 고려
       } finally {
         setIsLoading(false);
       }
@@ -285,13 +292,18 @@ export default function Dashboard({ academyId, initialData }: Props) {
           <DashboardBanner isRegistered={isRegistered} approvalStatus={''} />
         )}
 
-        <div onClickCapture={(e) => {
-          if (approvalStatus !== 'APPROVED') {
-            e.preventDefault();
-            e.stopPropagation();
-            handleFeatureClick();
-          }
-        }}>
+        <div 
+          className={`${styles.lockedSection} ${approvalStatus !== 'APPROVED' ? styles.isLocked : ''}`}
+          onClickCapture={(e) => {
+            if (approvalStatus !== 'APPROVED') {
+              e.preventDefault();
+              e.stopPropagation();
+              handleFeatureClick();
+            }
+          }}
+        >
+          {approvalStatus !== 'APPROVED' && <div className={styles.lockedOverlay} />}
+          
           <DashboardStats
             isRegistered={isRegistered}
             studentCount={isRegistered ? stats.studentCount : 0}
@@ -299,6 +311,14 @@ export default function Dashboard({ academyId, initialData }: Props) {
             totalTodayCount={stats.totalTodayCount}
             noCardCount={stats.noCardCount}
             totalMonthlyFee={stats.totalMonthlyFee}
+            onStatClick={(type) => {
+              const paths = {
+                student: `/academy/${academyId}/student`,
+                attendance: `/academy/${academyId}/attendance`,
+                payment: `/academy/${academyId}/payment`,
+              };
+              handleFeatureClick(paths[type]);
+            }}
           />
 
           <h3 className={styles.sectionTitle}>수업 목록</h3>
@@ -334,7 +354,6 @@ export default function Dashboard({ academyId, initialData }: Props) {
 
           <section
             className={styles.reportContainer}
-            onClick={() => handleFeatureClick()}
           >
             <DashboardReport
               title="오늘의 보상"
@@ -366,7 +385,6 @@ export default function Dashboard({ academyId, initialData }: Props) {
                 ))}
             </DashboardReport>
           </section>
-
         </div>
 
         <AcademySelectionModal

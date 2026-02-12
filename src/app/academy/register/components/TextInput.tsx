@@ -9,6 +9,7 @@ type Props = {
   disabled?: boolean;
   type?: string;
   autoComplete?: string;
+  id?: string;
 };
 
 export default function TextInput({
@@ -20,9 +21,11 @@ export default function TextInput({
   disabled,
   type = 'text',
   autoComplete = 'off',
+  id,
 }: Props) {
   return (
     <Input
+      id={id}
       label={label}
       value={value}
       placeholder={placeholder}

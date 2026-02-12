@@ -41,16 +41,28 @@ export default function AdminPage() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
 
-  const fetchList = useCallback(async () => {
+  // 일괄 선택 상태
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  // 페이지네이션 상태
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const PAGE_SIZE = 15;
+
+  const fetchList = useCallback(async (page = 0) => {
     setIsLoading(true);
+    setSelectedIds([]); 
     try {
       const response = 
         activeTab === 'ALL'
-          ? await adminService.getAllAcademies(0, 50)
+          ? await adminService.getAllAcademies(page, PAGE_SIZE)
           : activeTab === 'PENDING' 
-            ? await adminService.getPendingAcademies(0, 50)
-            : await adminService.getRejectedAcademies(0, 50);
+            ? await adminService.getPendingAcademies(page, PAGE_SIZE)
+            : await adminService.getRejectedAcademies(page, PAGE_SIZE);
+      
       setAcademies(response.content);
+      setTotalPages(response.totalPages);
+      setCurrentPage(response.number);
     } catch (error) {
       console.error('목록 로딩 실패:', error);
       toast.error('목록을 불러오지 못했습니다.');
@@ -60,9 +72,16 @@ export default function AdminPage() {
   }, [activeTab]);
 
   useEffect(() => {
-    fetchList();
+    fetchList(0);
     setSearchTerm(''); // 탭 변경 시 검색어 초기화
   }, [fetchList, activeTab]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      fetchList(newPage);
+      window.scrollTo(0, 0);
+    }
+  };
 
   // 검색 필터링 로직
   const filteredAcademies = academies.filter(academy => 
@@ -141,6 +160,42 @@ export default function AdminPage() {
     }
   };
 
+  // 일괄 선택 핸들러
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      const pendingIds = filteredAcademies
+        .filter(a => a.approvalStatus === 'PENDING')
+        .map(a => (a.id || a.academyId) as number);
+      setSelectedIds(pendingIds);
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectOne = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation(); // 행 클릭 이벤트(상세보기) 방지
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  // 일괄 승인 처리
+  const handleBulkApprove = async () => {
+    if (selectedIds.length === 0) return;
+
+    setIsProcessing(true);
+    try {
+      await adminService.approveBatchAcademies(selectedIds);
+      toast.success(`${selectedIds.length}개의 학원이 일괄 승인되었습니다.`);
+      setSelectedIds([]);
+      fetchList();
+    } catch (error: any) {
+      toast.error('일괄 승인 중 오류가 발생했습니다.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
     // 상태 라벨 헬퍼
   const statusLabel = (status: string) => {
     switch (status) {
@@ -164,7 +219,7 @@ export default function AdminPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>학원 승인 관리</h1>
-        <button className={styles.refreshBtn} onClick={fetchList}>새로고침</button>
+        <button className={styles.refreshBtn} onClick={() => fetchList(currentPage)}>새로고침</button>
       </div>
 
       {/* 탭 네비게이션 */}
@@ -210,6 +265,14 @@ export default function AdminPage() {
         <table className={styles.table}>
           <thead>
             <tr>
+              <th>
+                <input 
+                  type="checkbox" 
+                  className={styles.checkbox}
+                  onChange={handleSelectAll}
+                  checked={selectedIds.length > 0 && selectedIds.length === filteredAcademies.filter(a => a.approvalStatus === 'PENDING').length}
+                />
+              </th>
               <th>ID</th>
               <th>학원명</th>
               <th>상태</th>
@@ -219,7 +282,7 @@ export default function AdminPage() {
           <tbody>
             {!isLoading && filteredAcademies.length === 0 && (
                 <tr>
-                    <td colSpan={4} className={styles.emptyState}>
+                    <td colSpan={5} className={styles.emptyState}>
                         {searchTerm ? '검색 결과가 없습니다.' : (
                             activeTab === 'ALL' ? '등록된 학원이 없습니다.' :
                             activeTab === 'PENDING' ? '승인 대기 중인 학원이 없습니다.' : '반려된 학원이 없습니다.'
@@ -228,9 +291,19 @@ export default function AdminPage() {
                 </tr>
             )}
             {!isLoading && filteredAcademies.map((academy) => {
-              const displayId = academy.id || academy.academyId;
+              const displayId = (academy.id || academy.academyId) as number;
               return (
                 <tr key={displayId} onClick={() => displayId && openDetail(displayId)}>
+                  <td onClick={(e) => academy.approvalStatus === 'PENDING' && handleSelectOne(e, displayId)}>
+                    {academy.approvalStatus === 'PENDING' && (
+                      <input 
+                        type="checkbox" 
+                        className={styles.checkbox}
+                        checked={selectedIds.includes(displayId)}
+                        readOnly
+                      />
+                    )}
+                  </td>
                   <td>{displayId || '-'}</td>
                   <td>{academy.name}</td>
                 <td>
@@ -246,6 +319,101 @@ export default function AdminPage() {
           </tbody>
         </table>
       </div>
+
+      {selectedIds.length > 0 && (
+        <div className={styles.bulkActionBar}>
+          <div className={styles.selectedInfo}>
+            선택된 학원 <span className={styles.selectedCount}>{selectedIds.length}</span>개
+          </div>
+          <div className={styles.bulkActions}>
+            <button 
+              className={`${styles.bulkBtn} ${styles.bulkApproveBtn}`}
+              onClick={handleBulkApprove}
+              disabled={isProcessing}
+            >
+              {isProcessing ? '처리 중...' : '일괄 승인'}
+            </button>
+            <button 
+              className={`${styles.bulkBtn} ${styles.bulkCancelBtn}`}
+              onClick={() => setSelectedIds([])}
+            >
+              취소
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 페이지네이션 */}
+      {!isLoading && totalPages > 1 && (
+        <div className={styles.pagination}>
+          <button 
+            className={styles.pageBtn} 
+            disabled={currentPage === 0}
+            onClick={() => handlePageChange(0)}
+            title="맨 처음"
+          >
+            <svg className={styles.arrowIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="11 17 6 12 11 7"></polyline>
+              <polyline points="18 17 13 12 18 7"></polyline>
+            </svg>
+          </button>
+          
+          <button 
+            className={styles.pageBtn} 
+            disabled={currentPage === 0}
+            onClick={() => handlePageChange(currentPage - 1)}
+          >
+            <svg className={styles.arrowIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            let pageNum: number;
+            if (totalPages <= 5) {
+              pageNum = i;
+            } else if (currentPage <= 2) {
+              pageNum = i;
+            } else if (currentPage >= totalPages - 3) {
+              pageNum = totalPages - 5 + i;
+            } else {
+              pageNum = currentPage - 2 + i;
+            }
+
+            return (
+              <button 
+                key={pageNum} 
+                className={`${styles.pageBtn} ${currentPage === pageNum ? styles.activePage : ''}`}
+                onClick={() => handlePageChange(pageNum)}
+              >
+                {pageNum + 1}
+              </button>
+            );
+          })}
+
+          <button 
+            className={styles.pageBtn} 
+            disabled={currentPage === totalPages - 1}
+            onClick={() => handlePageChange(currentPage + 1)}
+          >
+            <svg className={styles.arrowIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+
+          <button 
+            className={styles.pageBtn} 
+            disabled={currentPage === totalPages - 1}
+            onClick={() => handlePageChange(totalPages - 1)}
+            title="맨 끝"
+          >
+            <svg className={styles.arrowIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="13 17 18 12 13 7"></polyline>
+              <polyline points="6 17 11 12 6 7"></polyline>
+            </svg>
+          </button>
+        </div>
+      )}
 
       {isDetailOpen && (
           <div className={styles.modalOverlay} onClick={() => setIsDetailOpen(false)}>

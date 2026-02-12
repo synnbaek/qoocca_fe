@@ -76,6 +76,26 @@
   gap: 12px;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem 1rem;
+    border-radius: 0;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .form {
+    gap: 16px;
+  }
+
+  .existingImageGrid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+  }
+}
+
 .existingImageItem {
   position: relative;
   width: 100%;

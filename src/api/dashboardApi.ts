@@ -16,7 +16,9 @@ export const ACADEMY_ENDPOINTS = {
 
 /** 학원 상세 정보 조회 */
 export const getAcademyInfo = async (academyId: string | number): Promise<AcademyInfo> => {
-    const response = await axiosInstance.get<AcademyInfo>(ACADEMY_ENDPOINTS.getAcademyInfo(academyId));
+    const response = await axiosInstance.get<AcademyInfo>(ACADEMY_ENDPOINTS.getAcademyInfo(academyId), {
+        params: { _t: Date.now() },
+    });
     return response.data;
 };
 
@@ -65,7 +67,9 @@ export const deleteAcademyImage = async (academyId: string | number, imageId: nu
 
 /** 내 학원 목록 조회 */
 export const getMyAcademies = async (): Promise<AcademyInfo[]> => {
-    const response = await axiosInstance.get<AcademyInfo[]>(ACADEMY_ENDPOINTS.getMyAcademyList);
+    const response = await axiosInstance.get<AcademyInfo[]>(ACADEMY_ENDPOINTS.getMyAcademyList, {
+        params: { _t: Date.now() },
+    });
     return response.data;
 };
 

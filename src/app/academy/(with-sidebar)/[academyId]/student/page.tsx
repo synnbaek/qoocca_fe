@@ -108,10 +108,10 @@ export default function StudentPage() {
   }, [mergedData]);
 
   return (
-    <div className={styles.studentContainer}>
+    <main className={styles.studentContainer}>
       <header className={styles.pageHeader}>
         <div className={styles.titleSection}>
-          <div className={styles.statsContainer}>
+          <div className={styles.statsContainer} role="region" aria-label="원생 요약 정보">
             <div className={styles.statsBadge}>
               전체 클래스 <span className={styles.statsValue}>{totalClasses}</span>
             </div>
@@ -121,10 +121,11 @@ export default function StudentPage() {
           </div>
         </div>
         
-        <div className={styles.buttonGroup}>
+        <nav className={styles.buttonGroup} aria-label="원생 및 클래스 관리">
           <button
             className={styles.addStudentBtn}
             onClick={() => router.push(`/academy/${academyId}/student/form`)}
+            aria-label="신규 원생 등록 페이지로 이동"
           >
             + 원생 등록
           </button>
@@ -132,26 +133,33 @@ export default function StudentPage() {
           <button
             className={styles.addStudentBtn}
             onClick={() => router.push(`/academy/${academyId}/class/register`)}
+            aria-label="신규 클래스 추가 페이지로 이동"
           >
             + 신규 클래스 추가
           </button>
-        </div>
+        </nav>
       </header>
 
-      <div className={styles.sectionBox}>
+      <section className={styles.sectionBox} aria-label="원생 검색">
         <SearchBar
           value={keyword}
           onChange={setKeyword}
           placeholder="클래스명, 원생이름 또는 학부모이름을 입력하세요"
           className={styles.searchBar}
         />
-      </div>
+      </section>
 
-      <div className={styles.sectionBox}>
-        {loading && <Loading />}
-        {error && <p>{error}</p>}
-        {!loading && !error && <StudentCell data={filteredData} />}
-      </div>
-    </div>
+      <section className={styles.sectionBox} aria-label="원생 목록 리스트">
+        {loading ? (
+          <div style={{ minHeight: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Loading />
+          </div>
+        ) : error ? (
+          <p role="alert" className={styles.errorMessage}>{error}</p>
+        ) : (
+          <StudentCell data={filteredData} />
+        )}
+      </section>
+    </main>
   );
 }

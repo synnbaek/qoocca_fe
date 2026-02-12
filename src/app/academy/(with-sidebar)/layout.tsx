@@ -27,11 +27,19 @@ export default function AcademyLayout({
             dashboardService.getAcademyInfo(safeId),
             dashboardService.getMyAcademies().catch(() => [])
           ]);
+
+          // 상세 정보에서 가져온 최신 상태를 목록에도 반영 (백엔드 목록 API가 지연될 경우 대비)
+          const mergedList = list.map((a: any) => 
+            String(a.academyId) === String(safeId) 
+              ? { ...a, approvalStatus: info.approvalStatus } 
+              : a
+          );
+
           setApprovalStatus(info.approvalStatus);
-          setAcademyList(list);
+          setAcademyList(mergedList);
         } catch (error) {
           console.error('Layout failed to fetch academy info:', error);
-          setApprovalStatus('PENDING');
+          // 상태를 강제로 PENDING으로 바꾸지 않고, 리스트만이라도 가져오기 시도
           const list = await dashboardService.getMyAcademies().catch(() => []);
           setAcademyList(list);
         }

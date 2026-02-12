@@ -29,6 +29,7 @@ export default function SearchBar({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         autoComplete="off"
+        aria-label="검색"
       />
     </div>
   );

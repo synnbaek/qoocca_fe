@@ -1,7 +1,7 @@
 // src/app/academy/[academyId]/modify/AcademyEditPageClient.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import TextInput from '@/app/academy/register/components/TextInput';
 import MultiFileInput from '@/app/academy/register/components/MultiFileInput';
@@ -105,27 +105,35 @@ export default function AcademyEditPageClient({ academyId }: Props) {
         }
     };
 
+    const ageSelectLabels = useMemo(() => ageOptions.map(a => a.label), [ageOptions]);
+    const subjectSelectLabels = useMemo(() => subjectOptions.map(s => s.label), [subjectOptions]);
+
     return (
         <div className={styles.container}>
-            <form className={styles.form}>
-                <h1>학원 정보 수정</h1>
+            <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
+                <h1 id="edit-title">학원 정보 수정</h1>
 
                 <TextInput label="기본 주소" value={baseAddress} onChange={setBaseAddress} />
                 <TextInput label="상세 주소" value={detailAddress} onChange={setDetailAddress} />
                 <TextInput label="전화번호" value={phone} onChange={setPhone} />
 
-                <MultiSelect label="학원생 나이" options={ageOptions.map(a => a.label)} selected={ages} onChange={setAges} />
-                <MultiSelect label="과목" options={subjectOptions.map(s => s.label)} selected={subjects} onChange={setSubjects} />
+                <MultiSelect label="학원생 나이" options={ageSelectLabels} selected={ages} onChange={setAges} />
+                <MultiSelect label="과목" options={subjectSelectLabels} selected={subjects} onChange={setSubjects} />
 
                 {existingImages.length > 0 && (
-                    <div className={styles.existingImageGrid}>
-                        {existingImages.map(img => (
+                    <div className={styles.existingImageGrid} role="group" aria-label="현재 등록된 이미지">
+                        {existingImages.map((img, index) => (
                             <div key={img.imageId} className={styles.existingImageItem}>
-                                <img src={img.imageUrl} alt="academy image" className={styles.existingImage} />
+                                <img 
+                                    src={img.imageUrl} 
+                                    alt={`학원 사진 ${index + 1}`} 
+                                    className={styles.existingImage} 
+                                />
                                 <button
                                     type="button"
                                     className={styles.deleteBtn}
                                     onClick={() => handleRemoveExistingImage(img.imageId)}
+                                    aria-label={`사진 ${index + 1} 삭제`}
                                 >
                                     ×
                                 </button>
@@ -137,7 +145,12 @@ export default function AcademyEditPageClient({ academyId }: Props) {
 
                 <MultiFileInput label="이미지 추가" files={newImageFiles} onChange={setNewImageFiles} multiple />
 
-                <Button onClick={handleUpdate}>수정하기</Button>
+                <div className={styles.buttonWrapper}>
+                    <Button onClick={handleUpdate} type="button">수정하기</Button>
+                </div>
+                <div className="sr-only" aria-live="polite">
+                    {/* 스크린 리더용 상태 알림 */}
+                </div>
             </form>
         </div>
     );

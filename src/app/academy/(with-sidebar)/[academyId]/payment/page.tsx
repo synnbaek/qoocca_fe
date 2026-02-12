@@ -81,15 +81,16 @@ export default function PaymentPage() {
         onNextMonth={handleNextMonth}
       />
 
-      <div className={styles.summarySection}>
+      <section className={styles.summarySection} aria-labelledby="payment-summary-title">
+        <h2 id="payment-summary-title" className="sr-only">수납 요약 및 클래스 관리</h2>
         <div className={styles.topRow}>
           <div className={styles.totalAmountWrapper}>
             <span className={styles.totalLabel}>이번달 수납 금액</span>
-            <span className={styles.totalAmount}>
+            <span className={styles.totalAmount} aria-live="polite">
               {totalMonthlyFee.toLocaleString()}원
             </span>
           </div>
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '10px' }} role="group" aria-label="수납 작업">
             {selectedIds.length > 0 && (
               <button onClick={handleBulkPaymentRequest} className={styles.bulkRequestBtn}>
                 일괄 결제 요청 ({selectedIds.length})
@@ -109,30 +110,31 @@ export default function PaymentPage() {
           placeholder="클래스명 또는 학생이름을 입력해주세요"
           className={styles.searchBar}
         />
-      </div>
+      </section>
 
       <div className={styles.tableSection}>
         <div className={styles.totalInfo}>
           전체 클래스 {filteredClassList.length}
         </div>
 
-        <table className={styles.paymentTable}>
-          <thead>
-            <tr>
-              <th className={styles.checkboxCol}>
+        <table className={styles.paymentTable} role="grid" aria-label="수납 현황 목록">
+          <thead role="rowgroup">
+            <tr role="row">
+              <th className={styles.checkboxCol} role="columnheader">
                 <input
                   type="checkbox"
                   onChange={handleSelectAll}
                   checked={isAllSelected}
+                  aria-label="전체 클래스 선택"
                 />
               </th>
-              <th className={styles.classNameColHeader}>클래스명</th>
-              <th className={styles.statCol}>결제 요청 전</th>
-              <th className={styles.statCol}>결제 대기</th>
-              <th className={styles.statCol}>수납 완료</th>
+              <th className={styles.classNameColHeader} role="columnheader">클래스명</th>
+              <th className={styles.statCol} role="columnheader">결제 요청 전</th>
+              <th className={styles.statCol} role="columnheader">결제 대기</th>
+              <th className={styles.statCol} role="columnheader">수납 완료</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody role="rowgroup">
             {isLoading ? (
               <tr><td colSpan={6}><Loading /></td></tr>
             ) : filteredClassList.length > 0 ? (

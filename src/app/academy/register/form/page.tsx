@@ -8,9 +8,10 @@ import MultiSelect from '../components/MultiSelect';
 import styles from './form.module.css';
 import { useSubjects } from '@/hooks/useSubjects';
 import { useAges } from '@/hooks/useAges';
-import { createAcademy } from '@/api/academyApi';
+import { createAcademy, uploadAcademyImages } from '@/api/academyApi';
 import { useAcademy } from '@/context/AcademyContext';
 import Button from '../../../../components/common/Button';
+import { toast } from 'sonner';
 
 export default function AcademyFormPage() {
   const router = useRouter();
@@ -47,8 +48,11 @@ export default function AcademyFormPage() {
       return;
     }
 
+    let academyId: number;
+
     try {
-      const academyId = await createAcademy({
+      // 1) 학원 정보 및 인증서 등록
+      academyId = await createAcademy({
         name: academyName,
         baseAddress,
         detailAddress,
@@ -58,14 +62,24 @@ export default function AcademyFormPage() {
         instagramUrl: instagram,
         blogUrl: blog,
         certificateFile: businessFiles[0],
-        imageFiles: academyImageFiles.length > 0 ? academyImageFiles : undefined,
         ageIds: selectedAgeIds,
         subjects: selectedSubjectIds,
       });
+
+      // 2) 이미지 업로드 (별도 호출, 실패해도 등록은 유지)
+      if (academyImageFiles.length > 0) {
+        try {
+          await uploadAcademyImages(academyId, academyImageFiles);
+        } catch (imageErr) {
+          console.error('이미지 업로드 실패:', imageErr);
+          toast.error('학원 등록은 완료되었으나, 이미지 업로드에 실패했습니다. 마이페이지에서 다시 시도해주세요.');
+        }
+      }
+
       router.push(`/academy/register/complete?academyId=${academyId}`);
     } catch (err) {
-      console.error(err);
-      alert('학원 등록 중 오류가 발생했습니다.');
+      console.error('학원 등록 실패:', err);
+      alert('학원 등록 중 오류가 발생했습니다. 모든 필수 항목과 인증서를 확인해주세요.');
     }
   };
 

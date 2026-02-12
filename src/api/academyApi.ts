@@ -6,6 +6,8 @@ import axios from "./axiosInstance";
 export const ACADEMY_ENDPOINTS = {
   /** 학원 등록 신청 */
   createAcademy: "/api/academy/registrations",
+  /** 학원 이미지 업로드 */
+  uploadAcademyImages: (academyId: string | number) => `/api/academy/${academyId}/files`,
   /** 내 학원 목록 조회 */
   getMyAcademyList: "/api/me/academies",
   /** 내 학원 등록 상태 조회 */
@@ -36,9 +38,9 @@ export interface AcademyCreatePayload {
 }
 
 /**
- * 학원 등록 신청 함수
+ * 학원 등록 신청 함수 (1단계: 기본 정보 및 인증서)
  */
-export const createAcademy = async (payload: AcademyCreatePayload) => {
+export const createAcademy = async (payload: Omit<AcademyCreatePayload, 'imageFiles'>) => {
   const formData = new FormData();
 
   formData.append("name", payload.name);
@@ -50,9 +52,7 @@ export const createAcademy = async (payload: AcademyCreatePayload) => {
   if (payload.websiteUrl) formData.append("websiteUrl", payload.websiteUrl);
   if (payload.instagramUrl) formData.append("instagramUrl", payload.instagramUrl);
   if (payload.certificateFile) formData.append("certificateFile", payload.certificateFile);
-  if (payload.imageFiles) {
-    payload.imageFiles.forEach(file => formData.append("imageFiles", file));
-  }
+  
   if (payload.ageIds) payload.ageIds.forEach(id => formData.append("ageIds", String(id)));
   if (payload.subjects) payload.subjects.forEach(id => formData.append("subjects", String(id)));
   if (payload.detailInfo) formData.append("detailInfo", payload.detailInfo);
@@ -61,6 +61,19 @@ export const createAcademy = async (payload: AcademyCreatePayload) => {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return response.data; // 등록된 학원 ID 반환
+};
+
+/**
+ * 학원 이미지 업로드 함수 (2단계: 별도 호출)
+ */
+export const uploadAcademyImages = async (academyId: string | number, imageFiles: File[]) => {
+  const formData = new FormData();
+  imageFiles.forEach(file => formData.append("imageFiles", file));
+
+  const response = await axios.post(ACADEMY_ENDPOINTS.uploadAcademyImages(academyId), formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
 };
 
 /**
@@ -76,7 +89,9 @@ export interface AcademyListResponse {
  * 내가 가입된 학원 목록 조회 함수
  */
 export const getMyAcademyList = async () => {
-  const response = await axios.get<AcademyListResponse[]>(ACADEMY_ENDPOINTS.getMyAcademyList);
+  const response = await axios.get<AcademyListResponse[]>(ACADEMY_ENDPOINTS.getMyAcademyList, {
+    params: { _t: Date.now() },
+  });
   return response.data;
 };
 

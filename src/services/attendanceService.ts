@@ -41,5 +41,40 @@ export const attendanceService = {
         month: number
     ): Promise<StudentCalendarResponse> => {
         return await attendanceApi.getStudentCalendarView(studentId, academyId, year, month);
+    },
+
+    /**
+     * 여러 명의 학생을 한 번에 출석 처리합니다.
+     * 백엔드에 벌크 API가 없으므로 서비스 레벨에서 병렬 처리합니다.
+     */
+    updateBatchAttendance: async (data: {
+        studentIds: number[];
+        attendanceDate: string;
+        checkIn: string;
+    }): Promise<void> => {
+        const promises = data.studentIds.map(studentId => 
+            attendanceApi.createAttendance(studentId, {
+                attendanceDate: data.attendanceDate,
+                checkIn: data.checkIn
+            })
+        );
+        await Promise.all(promises);
+    },
+
+    /**
+     * 여러 명의 학생을 한 번에 하원 처리합니다.
+     */
+    updateBatchCheckOut: async (data: {
+        studentIds: number[];
+        attendanceDate: string;
+        checkOut: string;
+    }): Promise<void> => {
+        const promises = data.studentIds.map(studentId => 
+            attendanceApi.checkOut(studentId, {
+                attendanceDate: data.attendanceDate,
+                checkOut: data.checkOut
+            })
+        );
+        await Promise.all(promises);
     }
 };

@@ -93,14 +93,17 @@ export default function ExcelRegistrationForm({ academyId }: Props) {
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
+                    role="button"
+                    aria-label="엑셀 파일 업로드 구역"
                 >
                     <input
                         type="file"
                         accept=".xlsx, .xls"
                         onChange={handleFileChange}
                         className={styles.hiddenInput}
+                        aria-label="엑셀 파일 선택"
                     />
-                    <div className={styles.uploadIcon}>
+                    <div className={styles.uploadIcon} aria-hidden="true">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
@@ -109,10 +112,18 @@ export default function ExcelRegistrationForm({ academyId }: Props) {
                     <span className={styles.uploadSubText}>또는 파일을 여기로 드래그하세요</span>
                 </label>
             ) : (
-                <div className={styles.fileInfo}>
-                    <div className={styles.fileIcon}>📊</div>
+                <div className={styles.fileInfo} aria-live="polite">
+                    <div className={styles.fileIcon} aria-hidden="true">📊</div>
                     <div className={styles.fileName}>{excelFile.name}</div>
-                    <div className={styles.removeFile} onClick={() => setExcelFile(null)}>삭제</div>
+                    <button 
+                        type="button"
+                        className={styles.removeFile} 
+                        onClick={() => setExcelFile(null)}
+                        aria-label="선택한 파일 삭제"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', fontSize: '14px' }}
+                    >
+                        삭제
+                    </button>
                 </div>
             )}
 
