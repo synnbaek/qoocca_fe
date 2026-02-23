@@ -325,7 +325,7 @@ export default function Dashboard({ academyId, initialData }: Props) {
           <div className={styles.scrollSection} ref={scrollRef}>
             <section className={styles.classSection}>
               {isRegistered &&
-                classes.map((cls: any, index: number) => (
+                classes.map((cls: ClassSummary, index: number) => (
                   <ClassCard
                     key={cls.classId}
                     name={cls.className}
@@ -334,7 +334,7 @@ export default function Dashboard({ academyId, initialData }: Props) {
                     late={cls.lateCount}
                     absent={cls.absentCount}
                     bgColor={
-                      index % 2 === 0 ? 'var(--tertiary-color)' : 'var(--perple)'
+                      index % 2 === 0 ? 'var(--tertiary-color)' : 'var(--purple)'
                     }
                     onClick={() =>
                       handleFeatureClick(

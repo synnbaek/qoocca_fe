@@ -44,7 +44,7 @@ export default function AcademyFormPage() {
 
   const handleRegister = async () => {
     if (!academyName || businessFiles.length === 0) {
-      alert('학원명과 사업자등록증을 먼저 입력해주세요.');
+      toast.error('학원명과 사업자등록증을 먼저 입력해주세요.');
       return;
     }
 
@@ -58,6 +58,9 @@ export default function AcademyFormPage() {
         detailAddress,
         phoneNumber: phone,
         briefInfo: intro,
+        operatingHours, // 추가됨
+        tuition,       // 추가됨
+        levelTest,     // 추가됨
         websiteUrl: website,
         instagramUrl: instagram,
         blogUrl: blog,
@@ -69,17 +72,26 @@ export default function AcademyFormPage() {
       // 2) 이미지 업로드 (별도 호출, 실패해도 등록은 유지)
       if (academyImageFiles.length > 0) {
         try {
-          await uploadAcademyImages(academyId, academyImageFiles);
-        } catch (imageErr) {
+          const jobResponse = await uploadAcademyImages(academyId, academyImageFiles);
+          toast.info('이미지 업로드가 시작되었습니다.');
+          router.push(`/academy/register/complete?academyId=${academyId}&jobId=${jobResponse.jobId}`);
+          return;
+        } catch (imageErr: any) {
           console.error('이미지 업로드 실패:', imageErr);
-          toast.error('학원 등록은 완료되었으나, 이미지 업로드에 실패했습니다. 마이페이지에서 다시 시도해주세요.');
+          if (imageErr?.response?.status === 503 && imageErr?.response?.data?.code === 'AC010') {
+            toast.error('업로드 요청이 많습니다. 잠시 후 마이페이지에서 다시 시도해주세요.');
+          } else {
+            toast.error('학원 등록은 완료되었으나, 이미지 업로드에 실패했습니다. 마이페이지에서 다시 시도해주세요.');
+          }
         }
       }
 
+      toast.success('학원 등록이 완료되었습니다!');
       router.push(`/academy/register/complete?academyId=${academyId}`);
-    } catch (err) {
+    } catch (err: any) {
       console.error('학원 등록 실패:', err);
-      alert('학원 등록 중 오류가 발생했습니다. 모든 필수 항목과 인증서를 확인해주세요.');
+      const errorMsg = err.response?.data?.message || '학원 등록 중 오류가 발생했습니다. 모든 필수 항목과 인증서를 확인해주세요.';
+      toast.error(errorMsg);
     }
   };
 

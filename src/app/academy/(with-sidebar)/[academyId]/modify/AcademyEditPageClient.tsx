@@ -12,6 +12,7 @@ import {
     getAcademyInfo,
     updateAcademyProfile,
     uploadAcademyImages,
+    getImageUploadStatus,
     deleteAcademyImage,
 } from '@/api/dashboardApi';
 import { useSubjects } from '@/hooks/useSubjects';
@@ -42,6 +43,8 @@ export default function AcademyEditPageClient({ academyId }: Props) {
     // 이미지 상태
     const [existingImages, setExistingImages] = useState<AcademyImage[]>([]);
     const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+    const [uploadStatus, setUploadStatus] = useState<'IDLE' | 'UPLOADING' | 'COMPLETED' | 'FAILED'>('IDLE');
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -76,6 +79,32 @@ export default function AcademyEditPageClient({ academyId }: Props) {
         }
     };
 
+    const pollUploadStatus = async (jobId: string) => {
+        try {
+            const statusData = await getImageUploadStatus(academyId, jobId);
+            
+            if (statusData.status === 'COMPLETED') {
+                setUploadStatus('COMPLETED');
+                toast.success('이미지 업로드 완료');
+                // 이미지 목록 갱신
+                const data = await getAcademyInfo(academyId);
+                setExistingImages(data.images ?? []);
+                setNewImageFiles([]); // 업로드 완료 후 파일 목록 비우기
+            } else if (statusData.status === 'FAILED') {
+                setUploadStatus('FAILED');
+                setErrorMessage(statusData.errorMessage || '이미지 처리 중 오류가 발생했습니다.');
+                toast.error('이미지 업로드 실패');
+            } else {
+                // QUEUED or PROCESSING: 1.5초 후 다시 확인
+                setTimeout(() => pollUploadStatus(jobId), 1500);
+            }
+        } catch (e) {
+            console.error('Polling failed', e);
+            // 통신 에러 시 잠시 후 재시도
+            setTimeout(() => pollUploadStatus(jobId), 3000);
+        }
+    };
+
     const handleUpdate = async () => {
         try {
             // 기본 정보 업데이트
@@ -94,12 +123,26 @@ export default function AcademyEditPageClient({ academyId }: Props) {
 
             // 새 이미지 업로드
             if (newImageFiles.length > 0) {
-                await uploadAcademyImages(academyId, newImageFiles);
-                setNewImageFiles([]);
+                setUploadStatus('UPLOADING');
+                setErrorMessage(null);
+                try {
+                    const jobResponse = await uploadAcademyImages(academyId, newImageFiles);
+                    pollUploadStatus(jobResponse.jobId);
+                    toast.info('이미지 업로드를 시작합니다.');
+                } catch (e: any) {
+                    setUploadStatus('FAILED');
+                    if (e?.response?.status === 503 && e?.response?.data?.code === 'AC010') {
+                        setErrorMessage('업로드 요청이 많습니다. 잠시 후 다시 시도해주세요.');
+                        toast.error('업로드 요청이 많습니다. 잠시 후 다시 시도해주세요.');
+                    } else {
+                        toast.error(e?.response?.data?.message ?? '이미지 업로드 요청 실패');
+                    }
+                    return; // 이미지 업로드 실패 시 중단하거나 알림
+                }
+            } else {
+                toast.success('수정 완료');
+                router.push(`/${academyId}/dashboard`);
             }
-
-            toast.success('수정 완료');
-            router.push(`/${academyId}/dashboard`);
         } catch (e: any) {
             toast.error(e?.response?.data?.message ?? '수정 실패');
         }
@@ -145,8 +188,37 @@ export default function AcademyEditPageClient({ academyId }: Props) {
 
                 <MultiFileInput label="이미지 추가" files={newImageFiles} onChange={setNewImageFiles} multiple />
 
+                {uploadStatus !== 'IDLE' && (
+                    <div className={styles.uploadStatusInfo}>
+                        {uploadStatus === 'UPLOADING' && (
+                            <p className={styles.uploadLoading}>이미지 업로드 처리 중...</p>
+                        )}
+                        {uploadStatus === 'COMPLETED' && (
+                            <p className={styles.uploadSuccess}>이미지 업로드 완료!</p>
+                        )}
+                        {uploadStatus === 'FAILED' && (
+                            <div className={styles.uploadFailedContainer}>
+                                <p className={styles.uploadFailed}>{errorMessage || '이미지 업로드 실패'}</p>
+                                <button 
+                                    type="button" 
+                                    className={styles.retryBtn}
+                                    onClick={() => handleUpdate()}
+                                >
+                                    다시 시도
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 <div className={styles.buttonWrapper}>
-                    <Button onClick={handleUpdate} type="button">수정하기</Button>
+                    <Button 
+                        onClick={handleUpdate} 
+                        type="button"
+                        disabled={uploadStatus === 'UPLOADING'}
+                    >
+                        {uploadStatus === 'UPLOADING' ? '업로드 중...' : '수정하기'}
+                    </Button>
                 </div>
                 <div className="sr-only" aria-live="polite">
                     {/* 스크린 리더용 상태 알림 */}

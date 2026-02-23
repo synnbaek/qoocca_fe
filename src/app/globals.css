@@ -23,7 +23,7 @@
   --secondary-hover: #2d3748;
   --tertiary-color: #e6f1fd;
   --tertiary-hover: #f0f6ff;
-  --perple: #edeefc;
+  --purple: #edeefc;
   --divider-color: #e9ecef;
   --kakao-color: #fee500;
   --naver-color: #03c75a;
@@ -55,7 +55,7 @@
     --header-bg: rgba(11, 15, 26, 0.85);
     --sidebar-bg: #111827;
     --overlay-bg: rgba(0, 0, 0, 0.75);
-    --perple: #312e81;
+    --purple: #312e81;
     --tertiary-color: #1e293b;
     --tertiary-hover: #334155;
     --white: #161e2e;

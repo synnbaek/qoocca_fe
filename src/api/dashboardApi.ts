@@ -1,5 +1,13 @@
 import axiosInstance from '@/api/axiosInstance';
-import { DashboardStatsData, ReceiptSummary, ClassSummary, AcademyInfo, AcademyImage } from '@/types/dashboard';
+import { 
+    DashboardStatsData, 
+    ReceiptSummary, 
+    ClassSummary, 
+    AcademyInfo, 
+    AcademyImage,
+    ImageUploadJobResponse,
+    ImageUploadStatus
+} from '@/types/dashboard';
 
 /**
  * 대시보드 관련 학원 API 엔드포인트
@@ -41,16 +49,22 @@ export const updateAcademyProfile = async (academyId: string | number, data: Rec
     });
 };
 
-/** 학원 이미지 업로드 */
-export const uploadAcademyImages = async (academyId: string | number, imageFiles: File[]): Promise<AcademyImage[]> => {
+/** 학원 이미지 업로드 (비동기 전환) */
+export const uploadAcademyImages = async (academyId: string | number, imageFiles: File[]): Promise<ImageUploadJobResponse> => {
     const formData = new FormData();
     imageFiles.forEach(file => formData.append('images', file));
 
-    const response = await axiosInstance.post<AcademyImage[]>(`/api/academy/${academyId}/images`, formData, {
+    const response = await axiosInstance.post<ImageUploadJobResponse>(`/api/academy/${academyId}/images`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-        transformRequest: (data, headers) => data // FormData 그대로 전송
-
+        transformRequest: (data) => data
     });
+    // 202 Accepted 반환 시 jobId 포함된 구조 반환
+    return response.data;
+};
+
+/** 학원 이미지 업로드 상태 조회 */
+export const getImageUploadStatus = async (academyId: string | number, jobId: string): Promise<ImageUploadStatus> => {
+    const response = await axiosInstance.get<ImageUploadStatus>(`/api/academy/${academyId}/images/uploads/${jobId}`);
     return response.data;
 };
 

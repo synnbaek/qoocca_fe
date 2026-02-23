@@ -71,7 +71,7 @@
 }
 
 .selected {
-  background-color: var(--perple);
+  background-color: var(--purple);
   color: var(--primary-color);
   font-weight: 600;
 }

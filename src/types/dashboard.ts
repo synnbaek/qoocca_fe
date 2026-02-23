@@ -50,3 +50,18 @@ export interface AcademyInfo {
     ages?: { ageCode: string }[];
     subjects?: { detailSubject: string }[];
 }
+
+export interface ImageUploadJobResponse {
+    jobId: string;
+    status: 'QUEUED' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+    submittedAt: string;
+}
+
+export interface ImageUploadStatus {
+    jobId: string;
+    academyId: number;
+    status: 'QUEUED' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+    submittedAt: string;
+    completedAt?: string;
+    errorMessage?: string | null;
+}

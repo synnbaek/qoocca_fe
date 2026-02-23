@@ -66,7 +66,7 @@ export const getStudentCalendarView = async (
 export const createAttendance = async (studentId: number, data: {
     attendanceDate: string; // yyyy-MM-dd
     checkIn: string;        // HH:mm:ss
-}): Promise<any> => {
+}): Promise<{ id: number; status: string; [key: string]: any }> => {
     const response = await axiosInstance.post(`/api/student/${studentId}/attendance`, data);
     return response.data;
 };
@@ -77,7 +77,7 @@ export const createAttendance = async (studentId: number, data: {
 export const checkOut = async (studentId: number, data: {
     attendanceDate: string; // yyyy-MM-dd
     checkOut: string;       // HH:mm:ss
-}): Promise<any> => {
+}): Promise<{ id: number; status: string; [key: string]: any }> => {
     const response = await axiosInstance.patch(`/api/student/${studentId}/attendance/check-out`, data);
     return response.data;
 };
