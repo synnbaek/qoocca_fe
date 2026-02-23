@@ -32,18 +32,36 @@ export default function StudentClassRow({ row, isSearching }: Props) {
 
 
 
-    const students = row.students ?? [];
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setOpen(prev => !prev);
+        }
+    };
 
+    const handleStudentKeyDown = (e: React.KeyboardEvent, studentId: number) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            router.push(`/academy/${academyId}/student/${studentId}`);
+        }
+    };
+
+    const students = row.students ?? [];
 
     return (
         <>
             <tr
                 className={`${styles.mainRow} ${open ? styles.expanded : ''}`}
                 onClick={() => setOpen(prev => !prev)}
+                onKeyDown={handleKeyDown}
+                tabIndex={0}
+                role="button"
+                aria-expanded={open}
+                aria-label={`${row.className} 클래스, 총원 ${row.totalStudents}명, ${open ? '상세 정보 닫기' : '상세 정보 보기'}`}
             >
                 <td className={styles.classNameCell}>
                     <div className={styles.classNameContent}>
-                        <ChevronRight className={styles.chevron} />
+                        <ChevronRight className={`${styles.chevron} ${open ? styles.chevronOpen : ''}`} />
                         {row.className}
                     </div>
                 </td>
@@ -59,7 +77,7 @@ export default function StudentClassRow({ row, isSearching }: Props) {
             {open && (
                 <>
                     {students.length === 0 ? (
-                        <tr>
+                        <tr role="row">
                             <td colSpan={4} className={styles.noStudents}>
                                 학생 정보가 없습니다.
                             </td>
@@ -70,6 +88,10 @@ export default function StudentClassRow({ row, isSearching }: Props) {
                                 key={student.id}
                                 className={styles.studentRow}
                                 onClick={() => router.push(`/academy/${academyId}/student/${student.studentId}`)}
+                                onKeyDown={(e) => handleStudentKeyDown(e, student.studentId)}
+                                tabIndex={0}
+                                role="button"
+                                aria-label={`${student.name} 원생 상세 정보 보기`}
                                 style={{ cursor: 'pointer' }}
                             >
                                 <td className={styles.studentNameCell}>

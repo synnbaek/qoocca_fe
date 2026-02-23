@@ -19,13 +19,21 @@ export default function PaymentDateController({
   return (
     <div className={styles.headerBar}>
       <div className={styles.dateController}>
-        <button onClick={onPrevMonth} className={styles.arrowBtn}>
+        <button 
+          onClick={onPrevMonth} 
+          className={styles.arrowBtn}
+          aria-label="이전 달"
+        >
           &lt;
         </button>
-        <span className={styles.currentDate}>
+        <span className={styles.currentDate} aria-live="polite">
           {formatYearMonth(currentDate)}
         </span>
-        <button onClick={onNextMonth} className={styles.arrowBtn}>
+        <button 
+          onClick={onNextMonth} 
+          className={styles.arrowBtn}
+          aria-label="다음 달"
+        >
           &gt;
         </button>
       </div>

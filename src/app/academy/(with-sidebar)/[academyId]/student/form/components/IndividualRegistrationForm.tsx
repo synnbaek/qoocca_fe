@@ -369,17 +369,19 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
     return (
         <>
             {/* 원생 정보 섹션 */}
-            <div className={styles.sectionTitle}>
+            <h2 className={styles.sectionTitle} id="student-info-heading">
                 원생 정보 
                 {registrationMode === 'existing' && (
-                    <span 
-                        style={{ fontSize: '13px', color: 'var(--primary-color)', marginLeft: '8px', cursor: 'pointer', fontWeight: 500 }} 
+                    <button 
+                        type="button"
+                        style={{ background: 'none', border: 'none', fontSize: '13px', color: 'var(--primary-color)', marginLeft: '8px', cursor: 'pointer', fontWeight: 500 }} 
                         onClick={handleResetToNew}
+                        aria-label="다른 원생 선택하거나 새로 입력하기"
                     >
                         [다른 원생 선택/새로 입력]
-                    </span>
+                    </button>
                 )}
-            </div>
+            </h2>
             
             <div style={{ position: 'relative', width: '100%' }} ref={searchRef}>
                 <TextInput
@@ -395,11 +397,18 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                     }}
                     placeholder="원생 이름을 입력하세요"
                     readOnly={registrationMode === 'existing'}
+                    id="student-name-input"
                 />
                 
                 {/* 검색 드롭다운 (신규 입력 중에만 노출) */}
                 {isSearchOpen && filteredStudents.length > 0 && registrationMode === 'new' && (
-                    <div className={styles.multiSelectOptionsDropdown} style={{ top: '100%', marginTop: '-8px' }}>
+                    <div 
+                        className={styles.multiSelectOptionsDropdown} 
+                        style={{ top: '100%', marginTop: '-8px' }}
+                        role="listbox"
+                        aria-label="원생 검색 결과"
+                        aria-live="polite"
+                    >
                         <div style={{ padding: '8px 16px', fontSize: '12px', color: 'var(--text-tertiary)', backgroundColor: 'var(--bg-primary)' }}>
                             이미 등록된 원생인가요? 선택하면 정보를 불러옵니다.
                         </div>
@@ -413,6 +422,8 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                                     className={styles.multiSelectOption}
                                     onClick={() => handleSelectExistingStudent(std)}
                                     style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                    role="option"
+                                    aria-selected="false"
                                 >
                                     <div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -421,7 +432,12 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                                                 ({std.studentPhone ? formatPhoneNumber(std.studentPhone) : '연락처 없음'})
                                             </span>
                                             {isAlreadyInSome && (
-                                                <span style={{ fontSize: '10px', color: '#ff4d4f', border: '1px solid #ff4d4f', padding: '0 4px', borderRadius: '2px' }}>수강 중</span>
+                                                <span 
+                                                    style={{ fontSize: '10px', color: '#ff4d4f', border: '1px solid #ff4d4f', padding: '0 4px', borderRadius: '2px' }}
+                                                    aria-label="강좌 수강 중"
+                                                >
+                                                    수강 중
+                                                </span>
                                             )}
                                         </div>
                                         {std.enrolledClassNames && std.enrolledClassNames.length > 0 && (
@@ -467,11 +483,17 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
             />
 
             {/* 보호자 정보 섹션 */}
-            <div style={{ position: 'relative', width: '100%' }}>
-                <div className={`${styles.sectionTitle} ${styles.marginTop24}`}>
+            <section style={{ position: 'relative', width: '100%' }} aria-labelledby="parent-info-heading">
+                <h2 className={`${styles.sectionTitle} ${styles.marginTop24}`} id="parent-info-heading">
                     보호자 정보 {registrationMode === 'existing' && '(확인/수정)'}
-                </div>
-                <div className={styles.inputGroup} style={{ marginTop: '16px', gap: '24px' }}>
+                </h2>
+                <div 
+                    className={styles.inputGroup} 
+                    style={{ marginTop: '16px', gap: '24px' }} 
+                    role="group" 
+                    aria-describedby="parent-info-desc"
+                >
+                    <p id="parent-info-desc" className="sr-only">보호자의 이름, 연락처, 원생과의 관계를 입력해주세요.</p>
                     <div style={{ position: 'relative' }} ref={parentSearchRef}>
                         <TextInput
                             label="보호자 이름"
@@ -481,11 +503,18 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                                 setIsParentSearchOpen(true);
                             }}
                             placeholder="보호자 이름을 입력하세요"
+                            id="parent-name-input"
                         />
 
                         {/* 보호자 검색 드롭다운 */}
                         {isParentSearchOpen && filteredParents.length > 0 && registrationMode === 'new' && (
-                            <div className={styles.multiSelectOptionsDropdown} style={{ top: '100%', marginTop: '4px', zIndex: 10 }}>
+                            <div 
+                                className={styles.multiSelectOptionsDropdown} 
+                                style={{ top: '100%', marginTop: '4px', zIndex: 10 }}
+                                role="listbox"
+                                aria-label="기존 보호자 검색 결과"
+                                aria-live="polite"
+                            >
                                 <div style={{ padding: '8px 16px', fontSize: '12px', color: 'var(--text-tertiary)', backgroundColor: 'var(--bg-primary)' }}>
                                     기존 보호자 정보를 불러옵니다.
                                 </div>
@@ -495,6 +524,8 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                                         className={styles.multiSelectOption}
                                         onClick={() => handleSelectExistingParent(parent)}
                                         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                        role="option"
+                                        aria-selected="false"
                                     >
                                         <div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -519,6 +550,7 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                         value={formatPhoneNumber(parentPhone)}
                         onChange={(val) => setParentPhone(val.replace(/\D/g, ''))}
                         placeholder="보호자 연락처 입력"
+                        id="parent-phone-input"
                     />
                     <SingleSelect
                         label="원생과의 관계"
@@ -527,40 +559,61 @@ export default function IndividualRegistrationForm({ academyId }: Props) {
                         onChange={setRelationship}
                     />
                 </div>
-            </div>
+            </section>
 
             {/* 카드 정보 섹션 */}
-            <>
-                <div className={`${styles.sectionTitle} ${styles.marginTop24}`}>
+            <section aria-labelledby="card-info-heading">
+                <h2 className={`${styles.sectionTitle} ${styles.marginTop24}`} id="card-info-heading">
                     카드 정보 {registrationMode === 'existing' && '(확인/수정)'}
-                </div>
+                </h2>
                 {!cardInfo ? (
-                    <div className={styles.cardBox} onClick={() => setIsCardModalOpen(true)}>
+                    <button 
+                        type="button"
+                        className={styles.cardBox} 
+                        onClick={() => setIsCardModalOpen(true)}
+                        aria-label="결제 카드 등록하기 창 열기"
+                    >
                         <span className={styles.addCardText}>+ 카드 등록하기</span>
-                    </div>
+                    </button>
                 ) : (
-                    <div className={styles.registeredContainer}>
+                    <div 
+                        className={styles.registeredContainer} 
+                        role="status" 
+                        aria-label="등록된 카드 정보"
+                    >
                         <div className={styles.cardNumberBox}>
-                            <span>
+                            <span aria-label={`등록된 카드 번호: ${cardInfo.cardNumber.slice(-4)}`}>
                                 {cardInfo.cardNumber.length >= 16 
                                     ? `${cardInfo.cardNumber.slice(0, 4)}-****-****-${cardInfo.cardNumber.slice(-4)}`
                                     : cardInfo.cardNumber
                                 }
                             </span>
-                            <button className={styles.changeButton} onClick={() => setCardInfo(null)}>취소</button>
+                            <button 
+                                type="button"
+                                className={styles.changeButton} 
+                                onClick={() => setCardInfo(null)}
+                                aria-label="카드 등록 취소 및 다시 등록"
+                            >
+                                취소
+                            </button>
                         </div>
                     </div>
                 )}
-            </>
+            </section>
 
-            <div className={`${styles.sectionBox} ${styles.buttonGroup}`} style={{ marginTop: '32px' }}>
+            <div className={`${styles.sectionBox} ${styles.buttonGroup}`} style={{ marginTop: '32px' }} role="region" aria-label="등록 제출">
                 <Button
                     onClick={handleRegister}
                     disabled={isSubmitting}
                     className={styles.flex1}
+                    aria-label={isSubmitting ? '등록 처리 중' : (registrationMode === 'new' ? '신규 원생으로 등록하기' : '기존 원생 클래스 추가하기')}
                 >
                     {isSubmitting ? '등록 중...' : (registrationMode === 'new' ? '신규 원생으로 등록' : '기존 원생 클래스 추가')}
                 </Button>
+            </div>
+
+            <div className="sr-only" aria-live="assertive" id="registration-status">
+                {isSubmitting ? '원생 정보를 등록하고 있습니다.' : ''}
             </div>
 
             <CardRegistrationModal

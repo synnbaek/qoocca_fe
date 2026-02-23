@@ -5,9 +5,12 @@
 
 .mainContent {
   flex: 1;
-  margin: 0; /* 중앙 정렬 해제 및 좌측 정렬 */
+  margin: 0 auto; /* 중앙 정렬 */
   display: flex;
   flex-direction: column;
+  max-width: 1240px; 
+  width: 100%;
+  padding-bottom: 40px;
 }
 
 .promoBanner > p,
@@ -22,9 +25,11 @@
   font-weight: bold;
 }
 
-.todayDate {
+.dashboardSummary .todayDate {
   color: var(--text-primary);
-  margin-bottom: 20px;
+  margin-bottom: 28px;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .promoBanner {
@@ -65,9 +70,10 @@
 .dashboardSummary {
   background-color: var(--bg-secondary);
   border-radius: var(--radius-lg);
-  padding: 30px;
-  color: var(--text-tertiary); /* 상단 라벨 색상 (전체 원생 등) */
+  padding: 32px;
+  color: var(--text-primary);
   font-size: 14px;
+  border: 1px solid var(--border-primary); /* 연한 테두리 추가로 경계 명확히 */
 }
 
 .statCard > p {
@@ -78,26 +84,24 @@
 }
 
 .statLabelText {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--primary-color);
+  margin-right: 4px;
 }
 
 .statNum {
   font-size: 24px;
-  font-weight: bold;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
 .statsGrid {
-  display: flex;
-  flex-wrap: nowrap; /* 한 줄로 나오도록 설정 */
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* 유연한 그리드로 변경 */
+  gap: 20px;
   width: 100%;
-  overflow-x: auto; /* 공간 부족 시 스크롤 허용 (잘림 방지) */
+  margin-top: 10px;
 }
 
 .statsGrid > * {
@@ -107,11 +111,62 @@
 
 .statCard {
   flex: 1;
-  min-width: 180px; /* 각 카드의 최소 너비 확보 */
-  text-align: center;
-  box-sizing: border-box;
-  padding: 0 10px;
-  border-right: 1px solid var(--divider-color);
+  min-width: 160px;
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  cursor: pointer; /* 클릭 가능함 표시 */
+  user-select: none;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-color);
+}
+
+.statHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.statIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.statLabel {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.statContent {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.statUnit {
+  font-size: 14px;
+  color: var(--text-tertiary);
+}
+
+.statDivider {
+  margin: 0 4px;
+  color: var(--divider-color);
+  font-weight: 300;
 }
 
 .statCard:last-child {
@@ -139,33 +194,54 @@
   justify-content: space-between;
   align-items: center;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 20px;
   margin-bottom: 25px;
+  cursor: pointer;
+  color: var(--text-primary);
 }
 
 .reportArrow {
-  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: all 0.2s ease;
+  border-radius: 50%;
 }
+
+.reportTitle:hover .reportArrow {
+  color: var(--primary-color);
+  background: var(--tertiary-color);
+  transform: translateX(4px);
+}
+
 
 .reportHeader {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--divider-color);
 }
 
 .reportHeader .reportItem {
-  opacity: 0.4;
+  color: var(--text-tertiary);
+  font-weight: 500;
+  font-size: 12px;
 }
 
 .reportItem {
   flex: 1;
   text-align: center;
-  font-size: 13px; /* 살짝 줄임 */
+  font-size: 14px;
   color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 0 4px;
+  padding: 0 8px;
 }
 
 .reportRowContent {
@@ -196,15 +272,34 @@
   color: var(--text-primary);
 }
 
-.divider {
-  border: 0;
-  border-top: 1px solid var(--divider-color);
-  margin: 15px 0;
+.emptyReportState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  gap: 12px;
+}
+
+.emptyIcon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.emptyReportState p {
+  color: var(--text-tertiary);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
 }
 
 .sectionTitle {
-  margin-top: 40px;
-  margin-bottom: 0;
+  margin-top: 48px;
+  margin-bottom: 16px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .scrollSection {
@@ -291,4 +386,26 @@
   .statsGrid {
     grid-template-columns: 1fr;
   }
+}
+
+.lockedSection {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.lockedSection.isLocked {
+  opacity: 0.6;
+  filter: grayscale(0.8);
+  cursor: not-allowed;
+}
+
+.lockedOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0); 
+  z-index: 100;
+  cursor: pointer;
 }

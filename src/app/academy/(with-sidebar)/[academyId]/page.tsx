@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import Dashboard from './Dashboard';
 import { dashboardService } from '@/services/dashboardService';
 import { cookies } from 'next/headers';
+export const revalidate = 0;
 
 interface PageProps {
   params: Promise<{

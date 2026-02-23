@@ -2,7 +2,7 @@
 
 import Input from '@/components/common/Input';
 import { useRouter, useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { getSubjects, getAges } from '@/api/academyApi';
 import { createClass } from '@/api/classApi';
 import { toast } from 'sonner';
@@ -55,9 +55,12 @@ export default function ClassRegisterPage() {
     price: '',
   });
 
+  const [isLoadingOptions, setIsLoadingOptions] = useState(true);
+
   useEffect(() => {
     const fetchAgesSubjects = async () => {
       try {
+        setIsLoadingOptions(true);
         const [subData, ageData] = await Promise.all([
           getSubjects(academyId as string),
           getAges(academyId as string),
@@ -66,6 +69,8 @@ export default function ClassRegisterPage() {
         setAgeOptions(ageData || []);
       } catch (err) {
         console.error('과목 로딩 실패:', err);
+      } finally {
+        setIsLoadingOptions(false);
       }
     };
 
@@ -73,7 +78,7 @@ export default function ClassRegisterPage() {
   }, [academyId]);
 
 
-  const handleChange = (
+  const handleChange = useCallback((
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
@@ -84,12 +89,24 @@ export default function ClassRegisterPage() {
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
-  };
+  }, []);
+
+  const handlePriceChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/\D/g, '');
+    setFormData(prev => ({ ...prev, price: rawValue }));
+  }, []);
+
+  const handleAgeChange = useCallback((val: any) => {
+    setSelectedAgeId(Number(val));
+  }, []);
+
+  const handleSubjectChange = useCallback((val: any) => {
+    setSelectedSubjectId(Number(val));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 1. 요일 체크
     const hasDay = DAYS.some((day) => (formData as any)[day.id]);
     if (!hasDay) {
       toast.error('수업 요일을 최소 하나 이상 선택해주세요.');
@@ -115,6 +132,18 @@ export default function ClassRegisterPage() {
     }
   };
 
+  const ageSelectOptions = useMemo(() => 
+    ageOptions.map((a) => ({ label: a.ageCode, value: a.id })),
+    [ageOptions]
+  );
+
+  const subjectSelectOptions = useMemo(() => 
+    subjectOptions.map((s) => ({ label: s.detailSubject, value: s.id })),
+    [subjectOptions]
+  );
+
+  const formattedPrice = useMemo(() => formatPrice(formData.price), [formData.price]);
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -137,20 +166,20 @@ export default function ClassRegisterPage() {
         <div className={styles.inputGroup}>
           <Select
             label="학년 구분"
-            options={ageOptions.map((a) => ({ label: a.ageCode, value: a.id }))}
+            options={ageSelectOptions}
             value={selectedAgeId}
-            onChange={(val) => setSelectedAgeId(Number(val))}
-            placeholder="학년을 선택하세요"
+            onChange={handleAgeChange}
+            placeholder={isLoadingOptions ? "로딩 중..." : "학년을 선택하세요"}
           />
         </div>
 
         <div className={styles.inputGroup}>
           <Select
             label="과목"
-            options={subjectOptions.map((s) => ({ label: s.detailSubject, value: s.id }))}
+            options={subjectSelectOptions}
             value={selectedSubjectId}
-            onChange={(val) => setSelectedSubjectId(Number(val))}
-            placeholder="과목을 선택하세요"
+            onChange={handleSubjectChange}
+            placeholder={isLoadingOptions ? "로딩 중..." : "과목을 선택하세요"}
           />
         </div>
 
@@ -192,11 +221,8 @@ export default function ClassRegisterPage() {
           label="월 수업비"
           type="text"
           name="price"
-          value={formatPrice(formData.price)}
-          onChange={(e) => {
-            const rawValue = e.target.value.replace(/\D/g, '');
-            setFormData(prev => ({ ...prev, price: rawValue }));
-          }}
+          value={formattedPrice}
+          onChange={handlePriceChange}
           placeholder="ex) 200,000"
         />
 

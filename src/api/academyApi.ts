@@ -1,4 +1,5 @@
 import axios from "./axiosInstance";
+import { ImageUploadJobResponse, ImageUploadStatus } from "@/types/dashboard";
 
 /**
  * 학원 관련 API 엔드포인트 상수
@@ -6,6 +7,10 @@ import axios from "./axiosInstance";
 export const ACADEMY_ENDPOINTS = {
   /** 학원 등록 신청 */
   createAcademy: "/api/academy/registrations",
+  /** 학원 이미지 업로드 (최신 비동기 API) */
+  uploadAcademyImages: (academyId: string | number) => `/api/academy/${academyId}/images`,
+  /** 학원 이미지 업로드 상태 조회 */
+  getImageUploadStatus: (academyId: string | number, jobId: string) => `/api/academy/${academyId}/images/uploads/${jobId}`,
   /** 내 학원 목록 조회 */
   getMyAcademyList: "/api/me/academies",
   /** 내 학원 등록 상태 조회 */
@@ -25,6 +30,9 @@ export interface AcademyCreatePayload {
   detailAddress?: string;    // 상세 주소
   briefInfo?: string;        // 한 줄 소개
   phoneNumber?: string;      // 전화번호
+  operatingHours?: string;   // 운영 시간
+  tuition?: string;          // 수업 비용
+  levelTest?: string;        // 레벨 테스트
   blogUrl?: string;          // 블로그 URL
   websiteUrl?: string;       // 웹사이트 URL
   instagramUrl?: string;     // 인스타그램 URL
@@ -36,9 +44,9 @@ export interface AcademyCreatePayload {
 }
 
 /**
- * 학원 등록 신청 함수
+ * 학원 등록 신청 함수 (1단계: 기본 정보 및 인증서)
  */
-export const createAcademy = async (payload: AcademyCreatePayload) => {
+export const createAcademy = async (payload: Omit<AcademyCreatePayload, 'imageFiles'>) => {
   const formData = new FormData();
 
   formData.append("name", payload.name);
@@ -46,13 +54,14 @@ export const createAcademy = async (payload: AcademyCreatePayload) => {
   if (payload.detailAddress) formData.append("detailAddress", payload.detailAddress);
   if (payload.briefInfo) formData.append("briefInfo", payload.briefInfo);
   if (payload.phoneNumber) formData.append("phoneNumber", payload.phoneNumber);
+  if (payload.operatingHours) formData.append("operatingHours", payload.operatingHours);
+  if (payload.tuition) formData.append("tuition", payload.tuition);
+  if (payload.levelTest) formData.append("levelTest", payload.levelTest);
   if (payload.blogUrl) formData.append("blogUrl", payload.blogUrl);
   if (payload.websiteUrl) formData.append("websiteUrl", payload.websiteUrl);
   if (payload.instagramUrl) formData.append("instagramUrl", payload.instagramUrl);
   if (payload.certificateFile) formData.append("certificateFile", payload.certificateFile);
-  if (payload.imageFiles) {
-    payload.imageFiles.forEach(file => formData.append("imageFiles", file));
-  }
+  
   if (payload.ageIds) payload.ageIds.forEach(id => formData.append("ageIds", String(id)));
   if (payload.subjects) payload.subjects.forEach(id => formData.append("subjects", String(id)));
   if (payload.detailInfo) formData.append("detailInfo", payload.detailInfo);
@@ -61,6 +70,28 @@ export const createAcademy = async (payload: AcademyCreatePayload) => {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return response.data; // 등록된 학원 ID 반환
+};
+
+/**
+ * 학원 이미지 업로드 함수 (2단계: 비동기 처리)
+ */
+export const uploadAcademyImages = async (academyId: string | number, imageFiles: File[]): Promise<ImageUploadJobResponse> => {
+  const formData = new FormData();
+  // 백엔드 스펙에 맞춰 'images' 필드명 사용
+  imageFiles.forEach(file => formData.append("images", file));
+
+  const response = await axios.post<ImageUploadJobResponse>(ACADEMY_ENDPOINTS.uploadAcademyImages(academyId), formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+};
+
+/**
+ * 학원 이미지 업로드 상태 조회
+ */
+export const getImageUploadStatus = async (academyId: string | number, jobId: string): Promise<ImageUploadStatus> => {
+  const response = await axios.get<ImageUploadStatus>(ACADEMY_ENDPOINTS.getImageUploadStatus(academyId, jobId));
+  return response.data;
 };
 
 /**
@@ -76,7 +107,9 @@ export interface AcademyListResponse {
  * 내가 가입된 학원 목록 조회 함수
  */
 export const getMyAcademyList = async () => {
-  const response = await axios.get<AcademyListResponse[]>(ACADEMY_ENDPOINTS.getMyAcademyList);
+  const response = await axios.get<AcademyListResponse[]>(ACADEMY_ENDPOINTS.getMyAcademyList, {
+    params: { _t: Date.now() },
+  });
   return response.data;
 };
 

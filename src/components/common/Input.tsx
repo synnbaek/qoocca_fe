@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, memo } from 'react';
 import styles from './Input.module.css';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -6,7 +6,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-export default function Input({ label, error, onClick, ...props }: InputProps) {
+function Input({ label, error, onClick, ...props }: InputProps) {
   const generatedId = useId();
   const id = props.id || generatedId;
 
@@ -46,3 +46,5 @@ export default function Input({ label, error, onClick, ...props }: InputProps) {
     </div>
   );
 }
+
+export default memo(Input);

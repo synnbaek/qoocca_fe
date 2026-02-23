@@ -22,7 +22,7 @@ interface SidebarProps {
 
 export default function Sidebar({ 
   academyId: propsId, 
-  approvalStatus, 
+  approvalStatus: propsStatus, 
   initialAcademies = [],
   isOpen = false,
   onClose
@@ -51,10 +51,22 @@ export default function Sidebar({
   };
 
   const [academies, setAcademies] = useState<AcademyListResponse[]>(initialAcademies);
+  
+  // Props로 받은 학원 목록이나 승인 상태가 변경되면 내부 상태 동기화
+  useEffect(() => {
+    if (initialAcademies && initialAcademies.length > 0) {
+      // 상세 페이지에서 성곡적으로 가져온 최신 propsStatus가 있다면 현재 학원의 상태를 강제로 업데이트
+      const syncList = initialAcademies.map(a => {
+        if (String(a.academyId) === String(academyId) && propsStatus) {
+          return { ...a, approvalStatus: propsStatus as any };
+        }
+        return a;
+      });
+      setAcademies(syncList);
+    }
+  }, [initialAcademies, propsStatus, academyId]);
 
   useEffect(() => {
-    if (initialAcademies.length > 0) return;
-
     const fetchAcademies = async () => {
       try {
         const data = await getMyAcademyList();
@@ -63,8 +75,30 @@ export default function Sidebar({
         console.error('Failed to fetch academy list:', error);
       }
     };
-    fetchAcademies();
+    
+    // 목록이 비어있거나 초기화가 필요한 경우 직접 fetch
+    if (!initialAcademies || initialAcademies.length === 0) {
+      fetchAcademies();
+    }
   }, [initialAcademies]);
+
+  const currentAcademy = academies.find(a => String(a.academyId) === String(academyId));
+  
+  // prop으로 넘어온 status가 있으면 그것을 우선시하고, 없으면 목록에서 찾음
+  const activeStatus = (String(academyId) === String(propsId) && propsStatus) 
+    ? propsStatus 
+    : (currentAcademy?.approvalStatus || 'PENDING');
+    
+  const isDisabled = activeStatus !== 'APPROVED';
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'APPROVED': return '';
+      case 'PENDING': return '(승인 대기)';
+      case 'REJECTED': return '(승인 거절)';
+      default: return '';
+    }
+  };
 
   const handleLinkClick = () => {
     if (window.innerWidth <= 1024 && onClose) {
@@ -84,24 +118,11 @@ export default function Sidebar({
     handleLinkClick();
   };
 
-  const currentAcademy = academies.find(a => String(a.academyId) === String(academyId));
-  
-  const activeStatus = currentAcademy ? currentAcademy.approvalStatus : approvalStatus;
-  const isDisabled = activeStatus !== 'APPROVED';
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'APPROVED': return '';
-      case 'PENDING': return '(승인 대기)';
-      case 'REJECTED': return '(승인 거절)';
-      default: return '';
-    }
-  };
-
   return (
     <nav className={`${style.sidebar} ${isOpen ? style.isOpen : ''}`}>
       <div className={style.academySwitcher}>
         <Select
+          key={academies.map(a => `${a.academyId}-${a.approvalStatus}`).join(',')}
           options={academies.map((academy) => ({
             value: academy.academyId,
             label: `${academy.name} ${getStatusLabel(academy.approvalStatus)}`
@@ -192,7 +213,6 @@ export default function Sidebar({
         </li>
       </ul>
 
-      {/* 모바일 전용 사용자 섹션 */}
       <div className={style.userSectionMobile}>
         {role === 'ROLE_ADMIN' && (
           <Link href="/admin" className={style.userAction} onClick={handleLinkClick}>
@@ -202,7 +222,6 @@ export default function Sidebar({
         <Link href="/academy/register" className={style.userAction} onClick={handleLinkClick}>
           신규 학원 등록
         </Link>
-
         <button 
           type="button" 
           className={`${style.userAction} ${style.logoutAction}`} 

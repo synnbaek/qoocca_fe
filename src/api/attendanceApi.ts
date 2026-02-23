@@ -59,3 +59,25 @@ export const getStudentCalendarView = async (
     );
     return response.data;
 };
+/**
+ * 특정 날짜에 특정 학생의 출석(등원)을 등록합니다.
+ * 백엔드에서 등원 시간을 기준으로 출석/지각을 자동 계산합니다.
+ */
+export const createAttendance = async (studentId: number, data: {
+    attendanceDate: string; // yyyy-MM-dd
+    checkIn: string;        // HH:mm:ss
+}): Promise<{ id: number; status: string; [key: string]: any }> => {
+    const response = await axiosInstance.post(`/api/student/${studentId}/attendance`, data);
+    return response.data;
+};
+
+/**
+ * 특정 학생의 하원(체크아웃)을 처리합니다.
+ */
+export const checkOut = async (studentId: number, data: {
+    attendanceDate: string; // yyyy-MM-dd
+    checkOut: string;       // HH:mm:ss
+}): Promise<{ id: number; status: string; [key: string]: any }> => {
+    const response = await axiosInstance.patch(`/api/student/${studentId}/attendance/check-out`, data);
+    return response.data;
+};

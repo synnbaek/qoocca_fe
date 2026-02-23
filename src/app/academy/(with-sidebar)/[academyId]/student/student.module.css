@@ -275,3 +275,157 @@
 .expanded .chevron {
     transform: rotate(90deg);
 }
+
+@media (max-width: 1024px) {
+    .pageHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .buttonGroup {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .addStudentBtn {
+        flex: 1;
+        min-width: 140px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .studentContainer {
+        padding: 16px;
+    }
+
+    .tableWrapper {
+        margin: 0 -16px;
+        width: calc(100% + 32px);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        min-width: 600px;
+    }
+
+    .classNameCell {
+        padding-left: 20px !important;
+    }
+
+    .studentNameCell {
+        padding-left: 30px !important;
+    }
+    
+    .studentNameWrapper {
+        gap: 16px;
+    }
+
+    .table, 
+    .table thead, 
+    .table tbody, 
+    .table tr, 
+    .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table thead {
+        display: none; /* 헤더 숨김 */
+    }
+
+    .table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .mainRow {
+        background-color: var(--bg-surface) !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 0;
+    }
+
+    .mainRow td {
+        padding: 0 !important;
+        border: none !important;
+        text-align: left !important;
+    }
+
+    .classNameCell {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        padding-left: 0 !important;
+    }
+
+    .classNameContent {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    /* 통계 정보 (전체학생, 비활성화, 운영여부) 가로 배치 */
+    .mainRow::after {
+        content: '';
+        display: block;
+        height: 1px;
+        background-color: var(--divider-color);
+        margin: 12px 0;
+    }
+
+    .mainRow td:nth-child(2),
+    .mainRow td:nth-child(3),
+    .mainRow td:nth-child(4) {
+        display: inline-flex;
+        width: 33.33%;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.9rem;
+    }
+
+    .mainRow td:nth-child(2)::before { content: '전체'; color: var(--text-tertiary); font-weight: 400; }
+    .mainRow td:nth-child(3)::before { content: '비활성'; color: var(--text-tertiary); font-weight: 400; }
+    .mainRow td:nth-child(4)::before { content: '상태'; color: var(--text-tertiary); font-weight: 400; }
+
+    /* 학생 상세 행 스타일 */
+    .studentRow {
+        margin-top: -1px;
+        border-left: 1px solid var(--border-primary) !important;
+        border-right: 1px solid var(--border-primary) !important;
+        border-bottom: 1px solid var(--border-primary) !important;
+        background-color: var(--bg-secondary) !important;
+        padding: 12px 16px !important;
+    }
+
+    .studentRow:last-child {
+        border-radius: 0 0 12px 12px;
+    }
+
+    .studentNameCell {
+        padding-left: 0 !important;
+        margin-bottom: 4px;
+    }
+
+    .studentNameWrapper {
+        gap: 12px;
+    }
+
+    .studentParentCell,
+    .studentCardCell {
+        font-size: 0.85rem;
+        padding-left: 28px !important; /* ↳ 화살표 공간 확보 */
+        text-align: left !important;
+        color: var(--text-tertiary) !important;
+    }
+
+    .studentRow td:last-child {
+        display: none; /* 빈 칸 숨김 */
+    }
+}

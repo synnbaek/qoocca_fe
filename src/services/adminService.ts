@@ -56,4 +56,12 @@ export const adminService = {
     rejectAcademy: async (academyId: string | number, reason: string): Promise<void> => {
         await adminApi.rejectAcademy(academyId, reason);
     },
+
+    /**
+     * 여러 학원 등록 신청을 한꺼번에 승인 처리합니다.
+     */
+    approveBatchAcademies: async (academyIds: number[]): Promise<void> => {
+        const promises = academyIds.map(id => adminApi.approveAcademy(id));
+        await Promise.all(promises);
+    }
 };
