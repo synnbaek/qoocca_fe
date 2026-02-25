@@ -1,8 +1,10 @@
 .container {
   width: 100%;
+  max-width: 1240px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  padding: var(--space-6) var(--space-8);
 }
 
 .headerBar {
@@ -10,7 +12,7 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  margin-bottom: 30px;
+  margin-bottom: var(--space-8);
   width: 100%;
 }
 
@@ -75,16 +77,17 @@
   background-color: var(--bg-primary);
   color: var(--primary-color);
   border: 1px solid var(--primary-color);
-  padding: 8px 16px;
-  border-radius: 20px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition-base);
 }
 
 .addClassBtn:hover {
-  background-color: var(--bg-secondary);
+  background-color: var(--tertiary-hover);
+  transform: translateY(-1px);
 }
 
 .classGrid {
@@ -105,13 +108,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 100px 40px;
-    background: linear-gradient(145deg, #ffffff, #f1f3f5);
-    border-radius: 24px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    padding: var(--space-12) var(--space-10);
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-primary);
+    box-shadow: var(--shadow-lg);
     text-align: center;
-    margin-top: 20px;
+    margin-top: var(--space-5);
 }
 
 .emptyIcon {

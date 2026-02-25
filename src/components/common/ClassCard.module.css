@@ -1,5 +1,5 @@
 .card {
-  min-width: 250px;
+  width: 267px;
   height: 144px;
   background-color: var(--tertiary-color);
   border-radius: 20px;
@@ -10,50 +10,63 @@
   flex-shrink: 0;
   border: none;
   transition: all 0.3s ease;
+  position: relative;
 }
 
 .titleGroup {
   display: flex;
   align-items: center;
-  margin-bottom: 30px;
-  gap: 8px;
+  margin-bottom: 24px;
+  gap: 6px;
+  width: 100%;
 }
 
-.className,
-.label {
-  font-size: 18px;
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }
 
 .className {
+  font-size: 16px;
+  font-weight: 700;
   white-space: nowrap;
-  overflow: hidden;
 }
 
 .studentCount {
-  font-size: 14px;
+  font-size: 12px;
   opacity: 0.4;
+  white-space: nowrap;
 }
 
 .cardBody {
   display: flex;
   justify-content: space-around;
+  align-items: center;
+  margin-top: auto;
 }
 
 .statItem {
   display: flex;
   align-items: center;
+  gap: 12px;
+}
+
+.label {
+  font-size: 16px;
+  color: var(--text-secondary);
 }
 
 .value {
-  margin-left: 10px;
   font-size: 32px;
   font-weight: bold;
 }
 
 .vLine {
   width: 1px;
-  background-color: rgba(255, 255, 255, 0.4);
-  flex-shrink: 0;
+  height: 32px;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .emptyCard {
@@ -75,18 +88,20 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-.plusWrapper {
+.plusContent {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   color: #3b9cff;
 }
 
 .plusIcon {
-  font-size: 20px;
-  margin-right: 10px;
+  font-size: 32px;
+  line-height: 1;
 }
 
 .addText {
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 600;
 }

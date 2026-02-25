@@ -1,9 +1,10 @@
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  padding: var(--space-6) var(--space-8);
 }
 
 .headerBar {
@@ -39,16 +40,16 @@
 .addClassBtn {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-1);
   background-color: var(--bg-primary);
   color: var(--primary-color);
   border: 1px solid var(--primary-color);
-  padding: 8px 16px;
-  border-radius: 20px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition-base);
   white-space: nowrap;
 }
 
@@ -56,14 +57,14 @@
     background-color: var(--primary-color);
     color: #ffffff;
     border: none;
-    padding: 8px 18px;
-    border-radius: 20px;
+    padding: var(--space-2) var(--space-5);
+    border-radius: var(--radius-full);
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: var(--transition-base);
     white-space: nowrap;
-    box-shadow: 0 2px 6px rgba(56, 189, 248, 0.3);
+    box-shadow: 0 4px 10px rgba(0, 122, 255, 0.2);
 }
 
 .bulkRequestBtn:hover {
@@ -311,10 +312,21 @@
   margin-right: 20px;
 }
 
-.totalInfo {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  margin-bottom: 15px;
+.totalBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background-color: var(--bg-secondary);
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.count {
+  color: var(--primary-color);
+  font-weight: 700;
+  margin-left: 4px;
 }
 
 .tableSection {
@@ -389,8 +401,13 @@
   transition: background-color 0.2s;
 }
 
+.mainRow:hover {
+  background-color: var(--bg-secondary);
+}
+
 .mainRow.expanded {
   background-color: var(--bg-surface);
+  font-weight: 600;
 }
 
 .detailActionRow td,
@@ -403,6 +420,10 @@
   padding: 15px 10px 10px 10px;
   background-color: var(--bg-surface);
   border: none;
+}
+
+.studentRow:last-child td {
+  border-bottom: 1px solid var(--border-primary) !important;
 }
 
 .checkboxWrapper {
@@ -437,6 +458,7 @@
   align-items: center;
   gap: 20px;
   text-align: left;
+  padding-left: var(--space-4); /* 학생 이름 들여쓰기 */
 }
 
 .studentAmount {
@@ -469,22 +491,28 @@
 .summarySection {
   display: flex;
   flex-direction: column; 
-  gap: 15px;
-  margin-bottom: 30px;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
 }
 
-.topRow {
+.summaryBottom {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end; 
+  align-items: center; 
   width: 100%;
+}
+
+.actionButtonGroup {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
 }
 
 
 .totalAmountWrapper {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .totalLabel {
@@ -500,7 +528,8 @@
 }
 
 .searchBar {
-  margin-top: 10px;
+  margin-top: var(--space-3);
+  margin-bottom: var(--space-8); /* 검색창과 표 사이 여백 확보 */
 }
 
 .noCardBadge {

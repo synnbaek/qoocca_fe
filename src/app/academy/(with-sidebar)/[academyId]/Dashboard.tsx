@@ -321,35 +321,37 @@ export default function Dashboard({ academyId, initialData }: Props) {
             }}
           />
 
-          <h3 className={styles.sectionTitle}>수업 목록</h3>
-          <div className={styles.scrollSection} ref={scrollRef}>
-            <section className={styles.classSection}>
-              {isRegistered &&
-                classes.map((cls: ClassSummary, index: number) => (
-                  <ClassCard
-                    key={cls.classId}
-                    name={cls.className}
-                    count={`${cls.presentCount + cls.lateCount}/${cls.currentCount
-                      }`}
-                    late={cls.lateCount}
-                    absent={cls.absentCount}
-                    bgColor={
-                      index % 2 === 0 ? 'var(--tertiary-color)' : 'var(--purple)'
-                    }
-                    onClick={() =>
-                      handleFeatureClick(
-                        `/academy/${academyId}/attendance/${cls.classId}?className=${encodeURIComponent(cls.className)}`
-                      )
-                    }
-                  />
-                ))}
-              <ClassCard
-                isEmpty
-                onClick={() =>
-                  handleFeatureClick(`/academy/${academyId}/class/register`)
-                }
-              />
-            </section>
+          <div className={styles.classContainer}>
+            <h3 className={styles.sectionTitle}>수업 목록</h3>
+            <div className={styles.scrollSection} ref={scrollRef}>
+              <section className={styles.classSection}>
+                {isRegistered &&
+                  classes.map((cls: ClassSummary, index: number) => (
+                    <ClassCard
+                      key={cls.classId}
+                      name={cls.className}
+                      count={`${cls.presentCount + cls.lateCount}/${cls.currentCount
+                        }`}
+                      late={cls.lateCount}
+                      absent={cls.absentCount}
+                      bgColor={
+                        index % 2 === 0 ? 'var(--tertiary-color)' : 'var(--purple)'
+                      }
+                      onClick={() =>
+                        handleFeatureClick(
+                          `/academy/${academyId}/attendance/${cls.classId}?className=${encodeURIComponent(cls.className)}`
+                        )
+                      }
+                    />
+                  ))}
+                <ClassCard
+                  isEmpty
+                  onClick={() =>
+                    handleFeatureClick(`/academy/${academyId}/class/register`)
+                  }
+                />
+              </section>
+            </div>
           </div>
 
           <section

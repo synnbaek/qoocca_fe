@@ -4,6 +4,7 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  padding: 10px 0; /* 여백 축소 */
 }
 
 .headerBar {
@@ -11,7 +12,7 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
   width: 100%;
 }
 
@@ -199,10 +200,15 @@
 }
 
 .summarySection {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: 24px 32px;
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* 가벼운 박스 느낌 */
+  margin-bottom: 24px;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin-bottom: 30px;
 }
 
 .searchBar {
@@ -272,7 +278,16 @@
   color: var(--text-tertiary);
   font-weight: 500;
   font-size: 0.9rem;
-  white-space: nowrap; /* 줄바꿈 방지 */
+  white-space: nowrap; 
+  background: transparent; /* 배경 제거 */
+}
+
+.tableCard {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); /* 테이블 박스 강조 */
 }
 
 .checkboxCol {

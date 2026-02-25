@@ -88,7 +88,9 @@ export default function AttendanceRightSidebar({ isOpen, onClose }: AttendanceRi
           /* 그룹화된 출석 현황을 순회하며 렌더링 */
           Object.entries(groupedAttendances).map(([className, students]) => (
             <div key={className} className={styles.classGroup}>
-              <h4 className={styles.classGroupTitle}>{className}</h4>
+              <h4 className={styles.classGroupTitle} title={className}>
+                {className}
+              </h4>
               <div className={styles.studentList}>
                 {students.map((student) => (
                   <div key={`${student.studentId}-${student.className}`} className={styles.studentItem}>
@@ -101,7 +103,9 @@ export default function AttendanceRightSidebar({ isOpen, onClose }: AttendanceRi
                     </div>
                     {/* 학생 이름 및 현재 상태 (출석 등) */}
                     <div className={styles.studentInfo}>
-                      <div className={styles.studentName}>{student.studentName}</div>
+                      <div className={styles.studentName} title={student.studentName}>
+                        {student.studentName}
+                      </div>
                       <div className={styles.statusLabel}>{student.statusLabel}</div>
                     </div>
                   </div>

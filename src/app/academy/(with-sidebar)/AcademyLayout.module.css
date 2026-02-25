@@ -7,11 +7,11 @@
 
 .mainContent {
   flex: 1;
-  padding: 40px 40px 10px 40px;
+  padding: var(--space-6) var(--space-10); /* 시스템 간격 적용 */
   display: flex;
   flex-direction: column;
-  margin-left: 240px; /* 사이드바 영역 확보 */
-  transition: all 0.3s ease;
+  margin-left: 240px; 
+  transition: var(--transition-base); /* 부드러운 전환 효과 */
 }
 
 @media (min-width: 1025px) {
@@ -27,9 +27,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1100; /* 헤더(999)와 버튼(1000)을 모두 덮도록 상향 */
-  backdrop-filter: blur(2px); /* 배경을 살짝 흐리게 해서 더 고급스럽게 */
+  background-color: var(--overlay-bg);
+  z-index: var(--z-overlay); /* 시스템 레이어 적용 */
+  backdrop-filter: blur(4px);
 }
 
 .mobileToggle {
@@ -43,7 +43,7 @@
   .mainContent {
     margin-left: 0;
     margin-right: 0; /* 모바일에서는 우측 마진 해제 */
-    padding: 30px 20px 60px 20px;
+    padding: 50px 20px 60px 20px;
   }
 
   .sidebarOverlay.active {
@@ -56,23 +56,24 @@
     align-items: center;
     justify-content: center;
     position: fixed;
-    top: 10px;
-    width: 40px;
-    height: 40px;
+    top: 0;
+    height: 60px; /* 헤더 높이에 맞춤 */
+    width: 60px; /* 클릭 영역 확보 */
     background-color: transparent;
     border: none;
-    z-index: 1000;
+    z-index: 1001; /* 헤더(999) 보다 위에 위치 */
     cursor: pointer;
     color: var(--text-primary);
-    transition: opacity 0.2s;
+    transition: all 0.2s;
+    box-shadow: none;
   }
 
   .mobileToggle {
-    left: 10px;
+    left: 0;
   }
 
   .mobileRightToggle {
-    right: 10px;
+    right: 0;
   }
 
   .mobileToggle:active,
@@ -83,6 +84,6 @@
 
 @media (max-width: 768px) {
   .mainContent {
-    padding: 20px 16px 60px 16px;
+    padding: 40px 16px 60px 16px;
   }
 }

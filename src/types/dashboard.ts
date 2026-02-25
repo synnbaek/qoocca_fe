@@ -21,6 +21,8 @@ export interface ClassSummary {
     presentCount: number;
     lateCount: number;
     absentCount: number;
+    startTime?: string;
+    endTime?: string;
 }
 
 export interface AcademyImage {
