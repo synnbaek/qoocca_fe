@@ -8,10 +8,10 @@ import { formatYearMonth } from '@/utils/dateUtils';
 import { attendanceService } from '@/services/attendanceService';
 import { DateController } from '@/components/common/DateController';
 import { StudentMonthlyStat } from '@/types/attendance';
-import { getClasses } from '@/api/classApi';
+import { dashboardService } from '@/services/dashboardService';
+import { ClassSummary } from '@/types/dashboard';
 import Loading from '@/components/common/Loading';
 import SearchBar from '@/components/common/SearchBar';
-
 import { toast } from 'sonner';
 
 export default function ClassAttendancePage() {
@@ -30,37 +30,34 @@ export default function ClassAttendancePage() {
 
     const router = useRouter();
 
-    const mockStudents: StudentMonthlyStat[] = [
-        { studentId: 1, studentName: '김철수', presentCount: 15, lateCount: 2, absentCount: 1 },
-        { studentId: 2, studentName: '이영희', presentCount: 18, lateCount: 0, absentCount: 0 },
-        { studentId: 3, studentName: '박지민', presentCount: 12, lateCount: 4, absentCount: 2 },
-        { studentId: 4, studentName: '최다은', presentCount: 14, lateCount: 1, absentCount: 3 },
-        { studentId: 5, studentName: '정우진', presentCount: 17, lateCount: 1, absentCount: 0 },
-        { studentId: 6, studentName: '강한나', presentCount: 16, lateCount: 2, absentCount: 0 },
-    ];
-
     const fetchStats = async () => {
         if (!classId) return;
 
         try {
             setIsLoading(true);
-            // 실제 API 호출 대신 임시 데이터 사용
-            setTimeout(() => {
-                setStudents(mockStudents);
-                setIsLoading(false);
-            }, 500);
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth() + 1;
+            
+            const data = await attendanceService.getClassMonthlyStats(
+                classId as string,
+                year,
+                month
+            );
+            setStudents(data);
         } catch (error) {
             console.error('월별 출결 현황 로딩 실패:', error);
+            toast.error('출결 현황을 불러오는데 실패했습니다.');
+        } finally {
             setIsLoading(false);
         }
     };
 
     useEffect(() => {
         const loadClassInfo = async () => {
-            if (!academyId) return;
+            if (!academyId || typeof academyId !== 'string') return;
             try {
-                const classes = await getClasses(Number(academyId));
-                const currentClass = classes.find(c => c.classId === Number(classId));
+                const classes = await dashboardService.getClassSummary(academyId);
+                const currentClass = classes.find((c: ClassSummary) => c.classId === Number(classId));
                 if (currentClass) {
                     const startTime = currentClass.startTime ? currentClass.startTime.substring(0, 5) : '';
                     const endTime = currentClass.endTime ? currentClass.endTime.substring(0, 5) : '';
@@ -112,7 +109,7 @@ export default function ClassAttendancePage() {
         try {
             const now = new Date();
             const todayStr = now.toISOString().split('T')[0];
-            const timeStr = now.toTimeString().split(' ')[0]; // HH:mm:ss
+            const timeStr = now.toTimeString().split(' ')[0];
 
             if (type === 'IN') {
                 await attendanceService.updateBatchAttendance({
@@ -131,7 +128,7 @@ export default function ClassAttendancePage() {
             }
             
             setSelectedStudentIds([]);
-            fetchStats(); // 목록 새로고침
+            fetchStats();
         } catch (error) {
             toast.error('일괄 처리에 실패했습니다.');
             console.error(error);
@@ -176,42 +173,44 @@ export default function ClassAttendancePage() {
                 </div>
             </div>
 
-            <div className={styles.tableSection}>
-                <div className={styles.totalCount}>전체 {filteredStudents.length}</div>
-                <table className={styles.studentTable}>
-                    <thead>
-                        <tr>
-                            <th className={styles.checkboxCol}>
-                                <input 
-                                    type="checkbox" 
-                                    onChange={handleSelectAll}
-                                    checked={isAllSelected}
-                                />
-                            </th>
-                            <th className={styles.nameCol}>이름</th>
-                            <th className={styles.statCol}>출석</th>
-                            <th className={styles.statCol}>지각</th>
-                            <th className={styles.statCol}>결석</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {isLoading ? (
-                            <tr><td colSpan={5}><Loading /></td></tr>
-                        ) : filteredStudents.length > 0 ? (
-                            filteredStudents.map(student => (
-                                <StudentAttendanceRow
-                                    key={student.studentId}
-                                    student={student}
-                                    isSelected={selectedStudentIds.includes(student.studentId)}
-                                    onSelectStudent={handleSelectStudent}
-                                    onClick={() => router.push(`/academy/${academyId}/attendance/${classId}/${student.studentId}`)}
-                                />
-                            ))
-                        ) : (
-                            <tr><td colSpan={5}>데이터가 없습니다.</td></tr>
-                        )}
-                    </tbody>
-                </table>
+            <div className={styles.tableCard}>
+                <div className={styles.tableSection}>
+                    <div className={styles.totalCount}>전체 {filteredStudents.length}</div>
+                    <table className={styles.studentTable}>
+                        <thead>
+                            <tr>
+                                <th className={styles.checkboxCol}>
+                                    <input 
+                                        type="checkbox" 
+                                        onChange={handleSelectAll}
+                                        checked={isAllSelected}
+                                    />
+                                </th>
+                                <th className={styles.nameCol}>이름</th>
+                                <th className={styles.statCol}>출석</th>
+                                <th className={styles.statCol}>지각</th>
+                                <th className={styles.statCol}>결석</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {isLoading ? (
+                                <tr><td colSpan={5}><Loading /></td></tr>
+                            ) : filteredStudents.length > 0 ? (
+                                filteredStudents.map(student => (
+                                    <StudentAttendanceRow
+                                        key={student.studentId}
+                                        student={student}
+                                        isSelected={selectedStudentIds.includes(student.studentId)}
+                                        onSelectStudent={handleSelectStudent}
+                                        onClick={() => router.push(`/academy/${academyId}/attendance/${classId}/${student.studentId}`)}
+                                    />
+                                ))
+                            ) : (
+                                <tr><td colSpan={5} style={{ padding: '40px', color: '#999' }}>데이터가 없습니다.</td></tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {selectedStudentIds.length > 0 && (

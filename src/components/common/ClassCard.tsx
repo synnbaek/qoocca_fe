@@ -20,6 +20,12 @@ export default function ClassCard({
   onClick,
   bgColor,
 }: ClassCardProps) {
+  // 중간 생략 로직 (예: k6-class-1771901470488_1_0 -> k6-class..._1_0)
+  const truncateMiddle = (str: string = '', start: number = 8, end: number = 6) => {
+    if (str.length <= start + end + 3) return str;
+    return `${str.substring(0, start)}...${str.substring(str.length - end)}`;
+  };
+
   if (isEmpty) {
     return (
       <button
@@ -28,7 +34,7 @@ export default function ClassCard({
       >
         <div className={styles.plusContent}>
           <span className={styles.plusIcon}>+</span>
-          <span className={styles.addText}>클래스 추가하기</span>
+          <span className={styles.addText}>수업 추가</span>
         </div>
       </button>
     );
@@ -40,12 +46,14 @@ export default function ClassCard({
       style={{ backgroundColor: bgColor }}
       onClick={onClick}
     >
-      <div className={styles.cardHeader}>
-        <div className={styles.titleGroup}>
+      <div className={styles.titleGroup}>
+        <div className={styles.titleRow}>
           <AcademicCap />
-          <span className={styles.className}>{name}</span>
-          <span className={styles.studentCount}>등원 {count}</span>
+          <span className={styles.className} title={name}>
+            {truncateMiddle(name)}
+          </span>
         </div>
+        <span className={styles.studentCount}>등원 {count}</span>
       </div>
 
       <div className={styles.cardBody}>

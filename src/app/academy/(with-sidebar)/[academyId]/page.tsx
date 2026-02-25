@@ -1,7 +1,13 @@
 import { redirect } from 'next/navigation';
 import Dashboard from './Dashboard';
 import { dashboardService } from '@/services/dashboardService';
-import { cookies } from 'next/headers';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '대시보드 | 쿠카티처스',
+  description: '학원 운영 현황을 한눈에 파악하세요.',
+};
+
 export const revalidate = 0;
 
 interface PageProps {

@@ -1,0 +1,43 @@
+﻿ M .gitignore
+ M src/api/axiosInstance.ts
+ M src/app/(auth)/login/page.tsx
+ M src/app/(auth)/signup/components/PhoneSection.module.css
+ M src/app/(auth)/signup/components/SignupForm.module.css
+ M src/app/academy/(with-sidebar)/AcademyLayout.module.css
+ M src/app/academy/(with-sidebar)/[academyId]/Dashboard.module.css
+ M src/app/academy/(with-sidebar)/[academyId]/Dashboard.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/attendance/AttendancePage.module.css
+ M src/app/academy/(with-sidebar)/[academyId]/attendance/[classId]/ClassAttendancePage.module.css
+ M src/app/academy/(with-sidebar)/[academyId]/attendance/[classId]/page.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/attendance/components/AttendanceClassCard.module.css
+ M src/app/academy/(with-sidebar)/[academyId]/attendance/components/AttendanceClassCard.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/attendance/layout.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/class/register/layout.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/components/AttendanceRightSidebar.module.css
+ M src/app/academy/(with-sidebar)/[academyId]/components/AttendanceRightSidebar.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/modify/layout.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/page.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/payment/PaymentPage.module.css
+ M src/app/academy/(with-sidebar)/[academyId]/payment/components/StudentListInline.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/payment/layout.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/payment/page.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/student/form/layout.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/student/layout.tsx
+ M src/app/academy/(with-sidebar)/[academyId]/student/student.module.css
+ M src/app/academy/register/academyLayout.module.css
+ M src/app/academy/register/layout.tsx
+ M src/app/globals.css
+ M src/app/layout.tsx
+ M src/components/common/ClassCard.module.css
+ M src/components/common/ClassCard.tsx
+ M src/components/layout/Header.module.css
+ M src/components/layout/Header.tsx
+ M src/types/dashboard.ts
+?? src/app/(auth)/signup/layout.tsx
+?? src/app/academy/(with-sidebar)/[academyId]/attendance/[classId]/[studentId]/layout.tsx
+?? src/app/academy/(with-sidebar)/[academyId]/attendance/[classId]/layout.tsx
+?? src/app/academy/register/AcademyRegisterClient.tsx
+?? src/app/academy/register/complete/layout.tsx
+?? src/app/academy/register/form/layout.tsx
+?? src/app/admin/layout.tsx
+?? status_temp.txt

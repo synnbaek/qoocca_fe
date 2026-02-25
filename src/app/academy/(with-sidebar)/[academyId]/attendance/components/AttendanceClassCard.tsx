@@ -43,7 +43,7 @@ export default function AttendanceClassCard({
         <span className={styles.time}>{time}</span>
       </div>
 
-      <div className={styles.sectionTitle}>출결 요약</div>
+
 
       <div className={styles.statsList}>
         <div className={styles.statRow}>

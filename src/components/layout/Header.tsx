@@ -15,8 +15,10 @@ export default function Header() {
     pathname === "/social-auth" ||
     pathname?.startsWith("/oauth2");
 
+  const isAcademyPage = pathname?.startsWith("/academy/") && !pathname?.startsWith("/academy/register");
+
   return (
-    <nav className={styles.header}>
+    <nav className={`${styles.header} ${isAcademyPage ? styles.academyHeader : ""}`}>
       <div className={styles.headerLogo} aria-label="쿠카티처스 로고">
         <LogoIcon />
       </div>

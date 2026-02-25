@@ -7,16 +7,6 @@
 }
 
 :root {
-  --title-font: 'GangwonEducationTteontteon', sans-serif;
-
-  --input-height: 60px;
-  --radius-lg: 20px;
-  --radius-md: 16px;
-  --radius-sm: 8px;
-
-  --container-width: 450px;
-  --reg-container-width: 700px; /* 등록 및 관리 화면용 너비 */
-
   --primary-color: #007aff;
   --primary-hover: #0056b3;
   --secondary-color: #1f2937;
@@ -29,7 +19,7 @@
   --naver-color: #03c75a;
   --white: #ffffff;
 
-  
+  /* Basic Colors & Surfaces */
   --bg-primary: #ffffff;
   --bg-secondary: #f8f9fa;
   --bg-surface: #ffffff;
@@ -40,12 +30,52 @@
   --header-bg: rgba(255, 255, 255, 0.8);
   --sidebar-bg: #ffffff;
   --overlay-bg: rgba(0, 0, 0, 0.5);
+
+  /* Spacing System (8px based) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows (Modern & Soft) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Transitions */
+  --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.3s ease;
+
+  /* Z-index */
+  --z-header: 1000;
+  --z-sidebar: 1100;
+  --z-overlay: 1200;
+  --z-modal: 1300;
+  --z-toast: 1400;
+
+  /* Dimensions */
+  --input-height: 60px;
+  --container-width: 450px;
+  --reg-container-width: 700px;
+  --title-font: 'GangwonEducationTteontteon', sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-primary: #0b0f1a; /* 더 깊은 미드나잇 블랙 */
-    --bg-secondary: #161e2e; /* 세련된 다크 카드 배경 */
+    --bg-primary: #0b0f1a;
+    --bg-secondary: #161e2e;
     --bg-surface: #1f2937;
     --text-primary: #f1f5f9;
     --text-secondary: #94a3b8;
@@ -59,6 +89,11 @@
     --tertiary-color: #1e293b;
     --tertiary-hover: #334155;
     --white: #161e2e;
+    
+    /* Dark shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
   }
 }
 

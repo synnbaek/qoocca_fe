@@ -12,7 +12,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
  * Axios 인스턴스 초기화
  */
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://qoocca-teachers.r-e.kr',
   withCredentials: true, // 쿠키 포함 여부
 });
 

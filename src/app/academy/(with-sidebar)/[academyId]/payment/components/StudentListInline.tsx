@@ -53,11 +53,11 @@ export default function StudentListInline({
           <label htmlFor={`selectAll-${cls.classId}`} className={styles.selectAllLabel}>
             전체 선택
           </label>
-          <span className={styles.totalInfo} style={{ marginLeft: '15px', marginBottom: 0 }}>
-            총 {cls.students?.length || 0}명
+          <span className={styles.totalBadge} style={{ marginLeft: '15px' }}>
+            총 <span className={styles.count}>{cls.students?.length || 0}</span>명
           </span>
         </td>
-        <td style={{ textAlign: 'right', paddingRight: '20px' }}>
+        <td style={{ textAlign: 'right', paddingRight: '50px' }}>
           <button 
             className={styles.requestBtn}
             onClick={() => onPaymentRequest(cls)}

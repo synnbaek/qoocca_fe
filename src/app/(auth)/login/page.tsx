@@ -1,7 +1,13 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
 import styles from './login.module.css';
 import LoginForm from './components/LoginForm';
 import SocialSection from './components/SocialSection';
+
+export const metadata: Metadata = {
+  title: '로그인 | 쿠카티처스',
+  description: '쿠카티처스에 로그인하여 학원 관리를 시작하세요.',
+};
 
 export default function LoginPage() {
   return (

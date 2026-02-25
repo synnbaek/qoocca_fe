@@ -83,14 +83,17 @@ export default function PaymentPage() {
 
       <section className={styles.summarySection} aria-labelledby="payment-summary-title">
         <h2 id="payment-summary-title" className="sr-only">수납 요약 및 클래스 관리</h2>
-        <div className={styles.topRow}>
+        <div className={styles.summaryBottom}>
           <div className={styles.totalAmountWrapper}>
             <span className={styles.totalLabel}>이번달 수납 금액</span>
             <span className={styles.totalAmount} aria-live="polite">
               {totalMonthlyFee.toLocaleString()}원
             </span>
+            <span className={styles.totalBadge} style={{ marginLeft: '15px' }}>
+              전체 클래스 <span className={styles.count}>{filteredClassList.length}</span>
+            </span>
           </div>
-          <div style={{ display: 'flex', gap: '10px' }} role="group" aria-label="수납 작업">
+          <div className={styles.actionButtonGroup} role="group" aria-label="수납 작업">
             {selectedIds.length > 0 && (
               <button onClick={handleBulkPaymentRequest} className={styles.bulkRequestBtn}>
                 일괄 결제 요청 ({selectedIds.length})
@@ -104,18 +107,17 @@ export default function PaymentPage() {
             </button>
           </div>
         </div>
+      </section>
+
+      <div className={styles.searchBar}>
         <SearchBar 
           value={searchQuery}
           onChange={setSearchQuery}
           placeholder="클래스명 또는 학생이름을 입력해주세요"
-          className={styles.searchBar}
         />
-      </section>
+      </div>
 
       <div className={styles.tableSection}>
-        <div className={styles.totalInfo}>
-          전체 클래스 {filteredClassList.length}
-        </div>
 
         <table className={styles.paymentTable} role="grid" aria-label="수납 현황 목록">
           <thead role="rowgroup">

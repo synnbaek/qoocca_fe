@@ -195,11 +195,9 @@
   .headerLogo {
     margin-top: 5px;
     transform: scale(0.9);
-    margin-left: 44px; /* Space for mobileToggle */
   }
 
   .headerLinks {
-    margin-right: 48px;
     gap: 0.6rem;
     padding: 10px 16px; /* 모바일에서도 위아래 여백 확보 */
   }
@@ -207,6 +205,15 @@
   .headerLinks a,
   .headerLinks button {
     font-size: 13px;
+  }
+
+  /* 학원 페이지일 때 사이드바 버튼 공간 확보 */
+  .academyHeader .headerLogo {
+    margin-left: 44px;
+  }
+
+  .academyHeader .headerLinks {
+    margin-right: 44px;
   }
 }
 
